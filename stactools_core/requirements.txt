@@ -1,4 +1,3 @@
-click==7.1.2
 pystac[validation]==0.5.*
 fsspec==0.8.0
 requests==2.24.0

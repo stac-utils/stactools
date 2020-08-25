@@ -19,6 +19,12 @@ Standard pip install
 
    pip install stactools
 
+To install all available sub-packages, use
+
+.. code-block:: bash
+
+   pip install stactools[all]
+
 ``stactools`` Features
 ==================
 

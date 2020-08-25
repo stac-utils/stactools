@@ -4,7 +4,11 @@ from setuptools import setup, find_packages
 from glob import glob
 import io
 
-__version__ = load_source('stactools.version', 'stactools/version.py').__version__
+__version__ = load_source('stactools.core.version',
+                          os.path.join(
+                              os.path.dirname(__file__),
+                              'stactools_core/stactools/core/version.py'
+                          )).__version__
 
 from os.path import (
     basename,
@@ -13,12 +17,22 @@ from os.path import (
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-# get the dependencies and installs
-with io.open(os.path.join(here, 'requirements.txt'), encoding='utf-8') as f:
-    install_requires = f.read().split('\n')
-
 with open(os.path.join(here, 'README.md')) as readme_file:
     readme = readme_file.read()
+
+# These subpackages will be installed by default
+default_subpackages=[
+    'stactools_core=={}'.format(__version__),
+    'stactools_cli=={}'.format(__version__)
+]
+
+# List subpackages as extras
+extras_require={
+    'all': [
+        'stactools_landsat=={}'.format(__version__)
+    ],
+    'landsat': ['stactools_landsat=={}'.format(__version__)]
+}
 
 setup(
     name='stactools',
@@ -29,10 +43,11 @@ setup(
     author="stac-utils",
     author_email='stac@radiant.earth',
     url='https://github.com/stac-utils/stactools.git',
-    packages=find_packages(),
+    packages=[],
     py_modules=[splitext(basename(path))[0] for path in glob('stactools/*.py')],
     include_package_data=False,
-    install_requires=install_requires,
+    install_requires=default_subpackages,
+    extras_require=extras_require,
     license="Apache Software License 2.0",
     keywords=[
         'stactools',
@@ -42,8 +57,5 @@ setup(
         'catalog',
         'STAC'
     ],
-    entry_points={
-        'console_scripts': ['stactools=stactools.cli:cli'],
-    },
     test_suite='tests'
 )

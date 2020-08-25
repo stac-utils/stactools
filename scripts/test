@@ -13,15 +13,21 @@ Execute project linters and test suites.
 "
 }
 
+PACKAGES_TO_CHECK=(
+    "stactools_core/stactools"
+    "stactools_cli/stactools"
+    "tests"
+);
+
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
         # Lint
-        flake8 stactools tests
+        flake8 ${PACKAGES_TO_CHECK[@]}
 
         # Code formatting
-        yapf -dpr stactools tests
+        yapf -dpr ${PACKAGES_TO_CHECK[@]}
 
         # Test suite
         python -m unittest discover tests/

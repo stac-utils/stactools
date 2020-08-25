@@ -10,7 +10,7 @@ def copy(src, dst, catalog_type, copy_assets=False):
 
 
 def create_copy_command(cli):
-    @cli.command('copy', short_help='Copy a STAC Catalog')
+    @cli.command('copy', short_help='Copy a STAC Catalog (TODO)')
     @click.argument('src')
     @click.argument('dst')
     @click.argument('catalog_type',
