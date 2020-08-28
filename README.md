@@ -91,6 +91,18 @@ You can run the CLI through the source code by running
 > scripts/stactools --help
 ```
 
+## Sub-packages
+
+`stactools` is comprised of subpackages that provide library and CLI functionality. Below is a list of available subpackages.
+
+| subpackage                    | description                                                                   |
+| ----------------------------- | ----------------------------------------------------------------------------- |
+| `stactools_core`              | Contains core library functionality that is used across the other projects    |
+| `stactools_cli`               | Contains the command line interface (cli) for runnign the `stactools` command |
+| `stactools_landsat`           | Contains methods and commands for working with landsat data                   |
+
+Subpackages are symlinked to the `stactools` directory in this repo to allow them to be importable for python running at the top level directory of the repository clone.
+
 ### Unit Tests
 
 Unit tests are in the `tests` folder. To run unit tests, use `unittest`:
