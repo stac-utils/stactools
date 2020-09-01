@@ -9,7 +9,7 @@ fi
 function usage() {
     echo -n \
         "Usage: $(basename "$0")
-Execute project linters and test suites in CI.
+Install requirements for all subpackages and development.
 "
 }
 
@@ -31,13 +31,9 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         for PACKAGE_DIR in "${PACKAGES_TO_INSTALL[@]}"
         do
             pushd ./${PACKAGE_DIR}
-            pip install -e .
+            pip install -r requirements.txt
             popd
 
         done
-
-        pip install -e .[all]
-
-        ./scripts/test
     fi
 fi

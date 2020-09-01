@@ -3,14 +3,14 @@ API Reference
 
 This API reference is auto-generated for the Python docstrings.
 
-Commands
---------
+CLI
+---
 
-.. autoclass:: stactools.commands.migrate
+.. autoclass:: stactools.cli.commands.migrate
    :members:
    :inherited-members:
    :undoc-members:
 
-.. autoclass:: stactools.commands.copy
+.. autoclass:: stactools.cli.commands.copy
    :members:
    :undoc-members:

@@ -3,10 +3,13 @@ import unittest
 from tempfile import TemporaryDirectory
 
 import pystac
+from stactools.core import use_fsspec
 
 
 class IOTest(unittest.TestCase):
     def test_fsspec_io(self):
+        use_fsspec()
+
         with TemporaryDirectory() as tmp_dir:
             catalog_url = (
                 'https://raw.githubusercontent.com/stac-utils/pystac/v0.5.2/tests/data-files/'

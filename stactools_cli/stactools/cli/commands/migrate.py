@@ -7,7 +7,7 @@ def migrate(option):
 
 
 def create_migrate_command(cli):
-    @cli.command('migrate', short_help='Migrate a STAC catalog')
+    @cli.command('migrate', short_help='Migrate a STAC catalog (TODO)')
     @click.option('--option', '-o', default=1, help='A test option')
     def migrate_command(option):
         migrate(option)

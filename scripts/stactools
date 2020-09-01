@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+if [[ -n "${CI}" ]]; then
+    set -x
+fi
+
+if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
+
+   python ./stactools_cli/stactools/cli "$@"
+fi

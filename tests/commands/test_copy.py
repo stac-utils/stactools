@@ -3,7 +3,7 @@ import unittest
 import click
 from click.testing import CliRunner
 
-from stactools.commands.copy import create_copy_command
+from stactools.cli.commands.copy import create_copy_command
 
 
 class CopyTest(unittest.TestCase):
