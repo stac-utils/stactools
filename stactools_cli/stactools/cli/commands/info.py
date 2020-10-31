@@ -49,3 +49,19 @@ def create_info_command(cli):
         print_info(catalog_path)
 
     return info_command
+
+
+def create_describe_command(cli):
+    @cli.command(
+        'describe',
+        short_help='Prints out a list of all catalogs, collections and items '
+        'in this STAC.')
+    @click.argument('catalog_path')
+    @click.option('--include-hrefs',
+                  is_flag=True,
+                  help='Include HREFs in description.')
+    def describe_command(catalog_path, include_hrefs):
+        cat = pystac.read_file(catalog_path)
+        cat.describe(include_hrefs=include_hrefs)
+
+    return describe_command

@@ -2,7 +2,7 @@ import click
 
 
 def convert_mtl_to_item(mtl, dst):
-    print('LANDSAT CONVERT {} {}'.format(mtl, st))
+    print('TODO: LANDSAT CONVERT {} {}'.format(mtl, dst))
 
 
 def create_convert_command(cli):
@@ -11,6 +11,6 @@ def create_convert_command(cli):
     @click.argument('mlt')
     @click.argument('dst')
     def convert_command(mlt, dst):
-        convert_mlt_to_item(src, dst)
+        convert_mtl_to_item(mlt, dst)
 
     return convert_command
