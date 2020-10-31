@@ -1,0 +1,51 @@
+version: '3.5'
+
+services:
+  data:
+    build:
+      context: .
+      dockerfile: Dockerfile-node
+    ports:
+      - "4326:4326"
+    volumes:
+      - {{ catalog_dir }}:/opt/data
+    working_dir: /opt/data
+    command: ['http-server', '-p', '4326', '--cors']
+  tiles:
+    build:
+      context: .
+      dockerfile: Dockerfile-titiler
+    ports:
+      - "8000:8000"
+    environment:
+      - CPL_TMPDIR=/tmp
+      - GDAL_CACHEMAX=75%
+      - GDAL_DISABLE_READDIR_ON_OPEN=EMPTY_DIR
+      - GDAL_HTTP_MERGE_CONSECUTIVE_RANGES=YES
+      - GDAL_HTTP_MULTIPLEX=YES
+      - GDAL_HTTP_VERSION=2
+      - MODULE_NAME=titiler.main
+      - PORT=8000
+      - PYTHONWARNINGS=ignore
+      - VARIABLE_NAME=app
+      - VSI_CACHE=TRUE
+      - VSI_CACHE_SIZE=536870912
+      - WORKERS_PER_CORE=1
+    links:
+        - data
+  browser:
+    build:
+      context: .
+      dockerfile: Dockerfile-node
+    ports:
+      - "1234:1234"
+    environment:
+      - CATALOG_URL=http://localhost:4326/{{ catalog_filename }}
+      - TILE_SOURCE_TEMPLATE=http://localhost:8000/cog/tiles/{z}/{x}/{y}?url={ASSET_HREF}
+      - STAC_PROXY_URL={{ catalog_dir }}|http://localhost:4326
+      - TILE_PROXY_URL=http://localhost:4326|http://data:4326
+
+networks:
+  default:
+    name: stactools_browse
+    driver: bridge
