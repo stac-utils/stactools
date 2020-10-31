@@ -88,7 +88,7 @@ To install all the requirements for subpackages and the development requirements
 You can run the CLI through the source code by running
 
 ```
-> scripts/stactools --help
+> scripts/stac --help
 ```
 
 ## Sub-packages
