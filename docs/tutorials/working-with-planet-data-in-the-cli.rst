@@ -6,7 +6,13 @@ merge the STACs, modify their layout, and browse results using the ``stac browse
 
 If you'd like to use the Python library functionality, see the :ref:`tutorial notebook </tutorials/working-withplanet-data.ipynb>` that performs the same actions, but in Python.
 
-If you're using a cloned repository to run this tutorial, you can use `scripts/stac` wherever `stac` is used. Remember to run `scripts/update` to ensure all the necessary dependencies are installed.
+You'll need the `stactools_planet` and `stactools_browse` packages to follow along. You can install these with:
+
+.. code-block:: console
+
+   > pip install stactools[planet,browse]
+
+If you're using a cloned repository to run this tutorial, you can use ``scripts/stac`` wherever ``stac`` is used. Remember to run ``scripts/update`` to ensure all the necessary dependencies are installed.
 
 Prerequisites
 =============
@@ -35,8 +41,8 @@ We'll need to specify a tool to ensure our GeoTIFFs are delivered as COGs. To do
 
    [
         {
-          'file_format': {
-            'format': 'COG'
+          "file_format": {
+            "format": "COG"
           }
         }
    ]
@@ -54,7 +60,7 @@ Now we can use the planet CLI to order visual PSScene3Band bundles for these ite
    --id ${TUTORIAL_ORDER_IDS} \
    --bundle visual --item-type psscene3band --zip order --email --tools tools.json
 
-Grab the `"id"` value from the JSON response, and store it in an environment variable `ORDER_ID` (or replace instances of that variable with the ID in the commands below).
+Grab the ``"id"`` value from the JSON response, and store it in an environment variable ``ORDER_ID`` (or replace instances of that variable with the ID in the commands below).
 
 We can check the status of our order with:
 
@@ -83,8 +89,7 @@ If the unzipping process asks you to override ``manifest.json``, select yes.
 Ordering analytic products
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Perform the same actions as above, but instead of ordering visual products, order 4 band Analytic Surface Reflectance
-for the same items. Do this by replacing the ``bundle`` to ``analytic_sr`` and ``item-type`` to ``psscene4band``:
+We'll order PSScene4Band analytic surface reflectance bundles next by performing the same actions as above, with the same items, but specifying by replacing the ``bundle`` to ``analytic_sr`` and ``item-type`` to ``psscene4band`` in the order:
 
 .. code-block:: console
 
@@ -92,7 +97,7 @@ for the same items. Do this by replacing the ``bundle`` to ``analytic_sr`` and `
    --id ${TUTORIAL_ORDER_IDS} \
    --bundle analytic_sr --item-type psscene4band --zip order --email --tools tools.json
 
-Once finished, download the results of that order and unzip to ``order-downloads/analytic`` as above.
+Once finished, download the results of that order and unzip to ``order-downloads/analytic`` similar to how we did above.
 
 Creating STACs
 ==============
@@ -105,8 +110,8 @@ Back at the root directory where we started, we can create STACs of these orders
        order-downloads/visual/manifest.json \
        planet-stacs/visual \
        planet-data \
+       "A planet order converted to STAC" \
        --assets copy \
-       --description "A planet order converted to STAC" \
        --title "Planet data over S Myanmar"
 
 We use the ``--assets copy`` option to copy our files alongside of the STAC Items that are created so that ``stac browse`` can have proper access to them when serving out tiles on the map.

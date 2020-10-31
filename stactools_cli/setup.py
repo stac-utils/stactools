@@ -44,5 +44,5 @@ setup(name=name,
       license="Apache Software License 2.0",
       keywords=['stactools', 'psytac', 'imagery', 'raster', 'catalog', 'STAC'],
       entry_points={
-          'console_scripts': ['stactools=stactools.cli.cli:run_cli'],
+          'console_scripts': ['stac=stactools.cli.cli:run_cli'],
       })

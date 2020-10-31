@@ -1,2 +1,1 @@
 planet==1.4.6
-Shapely==1.7.1

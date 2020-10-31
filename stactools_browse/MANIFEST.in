@@ -1,0 +1,3 @@
+include stactools/browse/Dockerfile-node
+include stactools/browse/Dockerfile-titiler
+include stactools/browse/docker-compose.yml.template
