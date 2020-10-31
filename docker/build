@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -e
+
+if [[ -n "${STACTOOLS_DEBUG}" ]]; then
+    set -x
+fi
+
+function usage() {
+
+    echo -n \
+        "Usage: $(basename "$0")
+Build stactools containers. Must be run from the repository root
+"
+}
+
+function build_containers() {
+    echo "Building containers"
+    docker build -t stactools -f docker/Dockerfile .
+}
+
+if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
+    if [ "${1:-}" = "--help" ]; then
+        usage
+    else
+        build_containers
+    fi
+    exit
+fi
