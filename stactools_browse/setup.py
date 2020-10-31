@@ -9,9 +9,9 @@ description = ("Subpackage for running stac-browser against local "
                "STACs through docker.")
 
 __version__ = load_source(
-    'stactools.core.version',
-    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                 'stactools_core/stactools/core/version.py')).__version__
+    'stactools.browse.version',
+    os.path.join(os.path.dirname(__file__),
+                 'stactools/browse/version.py')).__version__
 
 from os.path import (basename, splitext)
 
