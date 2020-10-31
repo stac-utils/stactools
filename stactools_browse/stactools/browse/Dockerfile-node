@@ -1,0 +1,19 @@
+FROM node:13.11
+
+RUN mkdir /opt/src
+WORKDIR /opt/src
+
+RUN npm install --global http-server
+
+RUN git clone --depth=1 \
+    https://github.com/lossyrob/stac-browser.git \
+    --branch feature/ts
+
+WORKDIR /opt/src/stac-browser
+
+RUN npm install
+
+WORKDIR /opt/src/stac-browser
+
+CMD ["npm", "start"]
+

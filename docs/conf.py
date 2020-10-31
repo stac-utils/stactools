@@ -17,19 +17,12 @@ import sys
 import subprocess
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))
-from stactools.version import __version__
-
-# git_branch = subprocess.check_output(['git',
-#                                       'rev-parse',
-#                                       '--abbrev-ref',
-#                                       'HEAD']) \
-#                        .decode("utf-8") \
-#                        .strip()
+from stactools.core.version import __version__
 
 # -- Project information -----------------------------------------------------
 
 project = 'stactools'
-copyright = '2019, stac-utils'
+copyright = '2020, stac-utils'
 author = 'stac-utils'
 
 # The short X.Y version
@@ -54,6 +47,7 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx.ext.extlinks',
     'sphinxcontrib.fulltoc',
+    'sphinx_click',
     'nbsphinx'
 ]
 

@@ -17,9 +17,11 @@ Options:
 }
 
 PACKAGES_TO_PUBLISH=(
+    "stactools_cli"
     "stactools_core"
     "stactools_landsat"
-    "stactools_cli"
+    "stactools_planet"
+    "stactools_browse"
 );
 
 POSITIONAL=()

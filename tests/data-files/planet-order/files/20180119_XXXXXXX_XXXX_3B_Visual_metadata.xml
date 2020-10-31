@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ps:EarthObservation
+    xsi:schemaLocation="http://schemas.planet.com/ps/v1/planet_product_metadata_geocorrected_level http://schemas.planet.com/ps/v1/planet_product_metadata_geocorrected_level.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:opt="http://earth.esa.int/opt"
+    xmlns:gml="http://www.opengis.net/gml"
+    xmlns:eop="http://earth.esa.int/eop"
+    version="1.2.1"
+    planet_standard_product_version="1.0"
+    xmlns:ps="http://schemas.planet.com/ps/v1/planet_product_metadata_geocorrected_level">
+  <removed></removed>
+</ps:EarthObservation>
