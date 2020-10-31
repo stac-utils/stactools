@@ -15,8 +15,10 @@ Install requirements for all subpackages and development.
 
 PACKAGES_TO_INSTALL=(
     "stactools_core"
-    "stactools_landsat"
     "stactools_cli"
+    "stactools_landsat"
+    "stactools_planet"
+    "stactools_browse"
 );
 
 

@@ -41,18 +41,18 @@ To install stactools with all subpackages, use:
 to install
 
 ```bash
-> pip install stactools_landsat
+> pip install stactools_planet
 ```
 
 ```bash
-> pip install stactools[landsat]
+> pip install stactools[planet]
 ```
 
 
 | install command                    | description                                                         |
 | ---------------------------------- | ------------------------------------------------------------------- |
 | pip install stactools[all]         | Installs all available subpackages contained in the stac-tools repo |
-| pip install stactools[landsat]     | Installs the [landsat] subpackage for working with landsat data     |
+| pip install stactools[planet]      | Installs the `planet` subpackage for working with planet data       |
 
 
 ## Running
@@ -95,11 +95,13 @@ You can run the CLI through the source code by running
 
 `stactools` is comprised of subpackages that provide library and CLI functionality. Below is a list of available subpackages.
 
-| subpackage                    | description                                                                   |
-| ----------------------------- | ----------------------------------------------------------------------------- |
-| `stactools_core`              | Contains core library functionality that is used across the other projects    |
-| `stactools_cli`               | Contains the command line interface (cli) for runnign the `stactools` command |
-| `stactools_landsat`           | Contains methods and commands for working with landsat data                   |
+| subpackage                    | description                                                                     |
+| ------------------------------| ------------------------------------------------------------------------------- |
+| `stactools_core`              | Contains core library functionality that is used across the other projects      |
+| `stactools_cli`               | Contains the command line interface (cli) for running the `stactools` command   |
+| `stactools_planet`            | Contains methods and commands for working with planet data                      |
+| `stactools_landsat`           | Contains methods and commands for working with landsat data (TODO)              |
+| `stactools_browse`            | Contains a command for launching stac-browser against a local STAC              |
 
 Subpackages are symlinked to the `stactools` directory in this repo to allow them to be importable for python running at the top level directory of the repository clone.
 
@@ -133,7 +135,13 @@ To format code:
 > yapf -ipr stactools_* tests
 ```
 
-You can also run the `./scripts/test` script to check flake8 and yapf.
+To check for spelling mistakes in modified files:
+
+```
+> git diff --name-only | xargs codespell -I .codespellignore -f
+```
+
+You can also run the `./scripts/test` script to check for linting, spelling, and run unit tests.
 
 ### Documentation
 

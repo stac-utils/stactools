@@ -29,9 +29,13 @@ default_subpackages=[
 # List subpackages as extras
 extras_require={
     'all': [
-        'stactools_landsat=={}'.format(__version__)
+        'stactools_landsat=={}'.format(__version__),
+        'stactools_planet=={}'.format(__version__),
+        'stactools_browse=={}'.format(__version__)
     ],
-    'landsat': ['stactools_landsat=={}'.format(__version__)]
+    'landsat': ['stactools_landsat=={}'.format(__version__)],
+    'planet': ['stactools_planet=={}'.format(__version__)],
+    'browse': ['stactools_browse=={}'.format(__version__)]
 }
 
 setup(
