@@ -27,5 +27,4 @@ jobs:
           TWINE_USERNAME: ${{ secrets.PYPI_STACUTILS_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_STACUTILS_PASSWORD }}
         run: |
-          python setup.py sdist bdist_wheel
-          twine upload dist/*
+          scripts/publish
