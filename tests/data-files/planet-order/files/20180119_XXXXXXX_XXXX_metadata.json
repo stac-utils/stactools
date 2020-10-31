@@ -1,0 +1,41 @@
+{
+	"id": "20180119_XXXXXXX_XXXX",
+	"type": "Feature",
+	"geometry": {
+		"coordinates": [
+			[
+				[5.2, 6.4],
+				[5.3, 5.9],
+				[5.4, 5.9],
+				[5.5, 5.99],
+				[5.2, 6.4]
+			]
+		],
+		"type": "Polygon"
+	},
+	"properties": {
+		"acquired": "2021-01-19T13:40:04Z",
+		"anomalous_pixels": 0,
+		"cloud_cover": 0.06,
+		"columns": 256,
+		"epsg_code": 32646,
+		"ground_control": true,
+		"gsd": 3.0,
+		"instrument": "PS2",
+		"item_type": "PSScene3Band",
+		"origin_x": 7,
+		"origin_y": 8,
+		"pixel_resolution": 3,
+		"provider": "planetscope",
+		"published": "2029-01-09T12:00:00Z",
+		"publishing_stage": "finalized",
+		"quality_category": "standard",
+		"rows": 256,
+		"satellite_id": "3d",
+		"strip_id": "125",
+		"sun_azimuth": 141.3,
+		"sun_elevation": 41.7,
+		"updated": "2029-01-09T12:00:00Z",
+		"view_angle": 0.1
+	}
+}

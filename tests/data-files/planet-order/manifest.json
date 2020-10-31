@@ -1,0 +1,48 @@
+{
+  "name": "",
+  "files": [
+    {
+      "path": "files/20180119_XXXXXXX_XXXX_metadata.json",
+      "media_type": "text/plain",
+      "size": 1,
+      "digests": {
+        "md5": "XXX",
+        "sha256": "XXXX"
+      },
+      "annotations": {
+        "planet/item_id": "20180119_XXXXXXX_XXXX",
+        "planet/item_type": "PSScene3Band"
+      }
+    },
+    {
+      "path": "files/20180119_XXXXXXX_XXXX_3B_Visual_metadata.xml",
+      "media_type": "text/xml",
+      "size": 1,
+      "digests": {
+        "md5": "XXX",
+        "sha256": "XXXX"
+      },
+      "annotations": {
+        "planet/asset_type": "visual_xml",
+        "planet/bundle_type": "visual",
+        "planet/item_id": "20180119_XXXXXXX_XXXX",
+        "planet/item_type": "PSScene3Band"
+      }
+    },
+    {
+      "path": "files/20180119_XXXXXXX_XXXX_3B_Visual_file_format.tif",
+      "media_type": "image/tiff",
+      "size": 1000,
+      "digests": {
+        "md5": "XXX",
+        "sha256": "XXXX"
+      },
+      "annotations": {
+        "planet/asset_type": "visual",
+        "planet/bundle_type": "visual",
+        "planet/item_id": "20180119_XXXXXXX_XXXX",
+        "planet/item_type": "PSScene3Band"
+      }
+    }
+  ]
+}
