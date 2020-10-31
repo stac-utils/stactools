@@ -9,9 +9,9 @@ description = ("Subpackage for working with landsat data of stactools, "
                "a command line tool and Python library for working with STAC.")
 
 __version__ = load_source(
-    'stactools.core.version',
-    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                 'stactools_core/stactools/core/version.py')).__version__
+    'stactools.landsat.version',
+    os.path.join(os.path.dirname(__file__),
+                 'stactools/landsat/version.py')).__version__
 
 from os.path import (basename, splitext)
 

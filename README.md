@@ -1,5 +1,5 @@
 ## stactools
-![Build Status](https://github.com/stac-utils/stactools/workflows/CI/badge.svg?branch=develop)
+![Build Status](https://github.com/stac-utils/stactools/workflows/CI/badge.svg)
 [![Documentation](https://readthedocs.org/projects/stactools/badge/?version=latest)](https://stactools.readthedocs.io/en/latest/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
