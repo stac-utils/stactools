@@ -10,7 +10,12 @@ def create_layout_command(cli):
         short_help='Reformat the layout of a STAC based on templating.')
     @click.argument('catalog')
     @click.argument('item_path_template')
-    @click.option('-s', '--create-subcatalogs', is_flag=True)
+    @click.option(
+        '-s',
+        '--create-subcatalogs',
+        is_flag=True,
+        help=('Create subcatalogs based on the template values instead of '
+              'just creating directories.'))
     @click.option(
         '-k',
         '--remove-existing-subcatalogs',
