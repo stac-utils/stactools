@@ -39,7 +39,7 @@ setup(name=name,
       py_modules=[
           splitext(basename(path))[0] for path in glob('stactools/*.py')
       ],
-      include_package_data=False,
+      include_package_data=True,
       install_requires=install_requires,
       license="Apache Software License 2.0",
       keywords=['stactools', 'psytac', 'imagery', 'raster', 'catalog', 'STAC'])
