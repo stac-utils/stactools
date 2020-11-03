@@ -78,6 +78,11 @@
             "href": "../../../collection.json"
         },
         {
+            "rel": "root",
+            "href": "../../../collection.json",
+            "type": "application/json"
+        },
+        {
             "rel": "parent",
             "href": "../catalog.json",
             "type": "application/json"
@@ -85,7 +90,7 @@
     ],
     "assets": {
         "thumbnail": {
-            "href": "/Users/rob/proj/stac/stactools/tests/data-files/planet-disaster/hurricane-harvey/hurricane-harvey-0831/20170831_172754_101c/20170831_172754_101c_thumb_large.png",
+            "href": "./20170831_172754_101c_thumb_large.png",
             "type": "image/png",
             "title": "Thumbnail",
             "roles": [
@@ -93,7 +98,7 @@
             ]
         },
         "analytic": {
-            "href": "/Users/rob/proj/stac/stactools/tests/data-files/planet-disaster/hurricane-harvey/hurricane-harvey-0831/20170831_172754_101c/20170831_172754_101c_3B_AnalyticMS.tif",
+            "href": "./20170831_172754_101c_3B_AnalyticMS.tif",
             "type": "image/vnd.stac.geotiff; cloud-optimized=true",
             "title": "PSScene4Band Analytic GeoTIFF",
             "pl:type": "https://api.planet.com/data/v1/asset-types/analytic",
@@ -102,7 +107,7 @@
             ]
         },
         "analytic_xml": {
-            "href": "/Users/rob/proj/stac/stactools/tests/data-files/planet-disaster/hurricane-harvey/hurricane-harvey-0831/20170831_172754_101c/20170831_172754_101c_3B_AnalyticMS_metadata.xml",
+            "href": "./20170831_172754_101c_3B_AnalyticMS_metadata.xml",
             "type": "text/xml",
             "title": "PSScene4Band XML Metadata",
             "pl:type": "https://api.planet.com/data/v1/asset-types/analytic_xml",
@@ -111,7 +116,7 @@
             ]
         },
         "udm": {
-            "href": "/Users/rob/proj/stac/stactools/tests/data-files/planet-disaster/hurricane-harvey/hurricane-harvey-0831/20170831_172754_101c/20170831_172754_101c_3B_AnalyticMS_DN_udm.tif",
+            "href": "./20170831_172754_101c_3B_AnalyticMS_DN_udm.tif",
             "type": "image/vnd.stac.geotiff; cloud-optimized=true",
             "title": "PSScene4Band Unusable Data Mask",
             "pl:type": "https://api.planet.com/data/v1/asset-types/udm",
@@ -120,7 +125,7 @@
             ]
         },
         "visual": {
-            "href": "/Users/rob/proj/stac/stactools/tests/data-files/planet-disaster/hurricane-harvey/hurricane-harvey-0831/20170831_172754_101c/20170831_172754_101c_3b_Visual.tif",
+            "href": "./20170831_172754_101c_3b_Visual.tif",
             "type": "image/vnd.stac.geotiff; cloud-optimized=true",
             "title": "PSScene3Band Visual GeoTIFF",
             "pl:type": "https://api.planet.com/data/v1/asset-types/visual",
