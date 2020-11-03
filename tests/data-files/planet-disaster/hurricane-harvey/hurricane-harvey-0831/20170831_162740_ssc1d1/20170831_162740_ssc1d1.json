@@ -120,6 +120,11 @@
             "href": "../../../collection.json"
         },
         {
+            "rel": "root",
+            "href": "../../../collection.json",
+            "type": "application/json"
+        },
+        {
             "rel": "parent",
             "href": "../catalog.json",
             "type": "application/json"
@@ -127,7 +132,7 @@
     ],
     "assets": {
         "thumbnail": {
-            "href": "/Users/rob/proj/stac/stactools/tests/data-files/planet-disaster/hurricane-harvey/hurricane-harvey-0831/20170831_162740_ssc1d1/SkySat_Freeport_s03_20170831T162740Z.png",
+            "href": "./SkySat_Freeport_s03_20170831T162740Z.png",
             "type": "image/png",
             "title": "Thumbnail",
             "roles": [
@@ -135,7 +140,7 @@
             ]
         },
         "visual": {
-            "href": "/Users/rob/proj/stac/stactools/tests/data-files/planet-disaster/hurricane-harvey/hurricane-harvey-0831/20170831_162740_ssc1d1/SkySat_Freeport_s03_20170831T162740Z.tif",
+            "href": "./SkySat_Freeport_s03_20170831T162740Z.tif",
             "type": "image/vnd.stac.geotiff; cloud-optimized=true",
             "title": "SkySatScene Visual GeoTIFF",
             "pl:type": "https://api.planet.com/data/v1/asset-types/ortho_visual",
