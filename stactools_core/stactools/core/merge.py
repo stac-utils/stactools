@@ -5,7 +5,8 @@ from pystac.layout import BestPracticesLayoutStrategy
 from pystac.utils import (is_absolute_href, make_relative_href)
 from shapely.geometry import shape, mapping
 
-from stactools.core.copy import (move_asset_file_to_item)
+from stactools.core.copy import (move_asset_file_to_item, move_assets as
+                                 do_move_assets)
 
 
 def merge_items(source_item,
@@ -108,13 +109,16 @@ def merge_all_items(source_catalog,
         target_catalog.add_item(item_copy)
 
         if isinstance(target_catalog, pystac.Collection):
-            item.set_collection(target_catalog)
+            item_copy.set_collection(target_catalog)
         else:
-            item.set_collection(None)
+            item_copy.set_collection(None)
 
         if move_assets:
-            move_assets(item_copy,
-                        href_type=pystac.LinkType.RELATIVE,
-                        copy=False)
+            do_move_assets(item_copy,
+                           href_type=pystac.LinkType.RELATIVE,
+                           copy=False)
+
+    if target_catalog.STAC_OBJECT_TYPE == pystac.STACObjectType.COLLECTION:
+        target_catalog.update_extent_from_items()
 
     return target_catalog

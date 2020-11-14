@@ -193,12 +193,14 @@ def move_all_assets(catalog,
             this function will throw an error unless ignore_conflicts is True.
 
     Returns:
-        [Catalog or Collection]: Returns an updated catalog or collection.
-            Note that this method does not mutate the original catalog.
+        [Catalog or Collection]: Returns the updated catalog.
+            This operation mutates the catalog.
     """
+    for item in catalog.get_all_items():
+        move_assets(item, asset_subdirectory, href_type, copy,
+                    ignore_conflicts)
 
-    return catalog.map_items(lambda item: move_assets(
-        item, asset_subdirectory, href_type, copy, ignore_conflicts))
+    return catalog
 
 
 def copy_catalog(source_catalog,

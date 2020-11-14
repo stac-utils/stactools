@@ -51,7 +51,9 @@ def create_copy_command(cli):
                         'be alongside the new item location.'))
     def copy_command(src, dst, catalog_type, copy_assets):
         """Copy a STAC Catalog or Collection at SRC to the directory
-        at DST."""
+        at DST.
+
+        Note: Copying a catalog will upgrade it to the latest version of STAC."""
         source_catalog = pystac.read_file(src)
         copy_catalog(source_catalog, dst, catalog_type, copy_assets)
 

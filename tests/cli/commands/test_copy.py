@@ -1,30 +1,21 @@
 import os
-import unittest
 from tempfile import TemporaryDirectory
 
-import click
-from click.testing import CliRunner
 import pystac
 
 from stactools.cli.commands.copy import create_copy_command
-from tests.utils import TestCases
+from tests.utils import (TestCases, CliTestCase)
 
 
-class CopyTest(unittest.TestCase):
-    def setUp(self):
-        @click.group()
-        def cli():
-            pass
-
-        create_copy_command(cli)
-        self.cli = cli
+class CopyTest(CliTestCase):
+    def create_subcommand_functions(self):
+        return [create_copy_command]
 
     def test_copy(self):
         cat = TestCases.planet_disaster()
         item_ids = set([i.id for i in cat.get_all_items()])
         with TemporaryDirectory() as tmp_dir:
-            runner = CliRunner()
-            runner.invoke(self.cli, ['copy', cat.get_self_href(), tmp_dir])
+            self.run_command(['copy', cat.get_self_href(), tmp_dir])
 
             copy_cat = pystac.read_file(
                 os.path.join(tmp_dir, 'collection.json'))
