@@ -57,7 +57,8 @@ def create_describe_command(cli):
         short_help='Prints out a list of all catalogs, collections and items '
         'in this STAC.')
     @click.argument('catalog_path')
-    @click.option('--include-hrefs',
+    @click.option('-h',
+                  '--include-hrefs',
                   is_flag=True,
                   help='Include HREFs in description.')
     def describe_command(catalog_path, include_hrefs):
