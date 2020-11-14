@@ -8,6 +8,7 @@ from pystac.utils import (str_to_datetime, make_absolute_href)
 from shapely.geometry import shape
 
 from stactools.planet import PLANET_PROVIDER
+from stactools.planet.constants import PLANET_EXTENSION_PREFIX
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +64,10 @@ class PlanetItem:
         if 'epsg_code' in props:
             item.ext.enable('projection')
             item.ext.projection.epsg = props.pop('epsg_code')
+
+        # Add all additional properties with Planet extension designation.
+        for k, v in props.items():
+            item.properties['{}:{}'.format(PLANET_EXTENSION_PREFIX, k)] = v
 
         for planet_asset in self.item_assets:
             href = make_absolute_href(planet_asset['path'],

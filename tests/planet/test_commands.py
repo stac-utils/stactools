@@ -46,3 +46,5 @@ class ConvertOrderTest(unittest.TestCase):
                 self.assertTrue(os.path.exists(asset.get_absolute_href()))
                 self.assertEqual(os.path.dirname(asset.get_absolute_href()),
                                  os.path.dirname(item.get_self_href()))
+
+            self.assertEqual(item.properties.get('pl:quality_category'), 'standard')

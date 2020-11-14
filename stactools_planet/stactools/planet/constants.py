@@ -1,5 +1,7 @@
 import pystac
 
+PLANET_EXTENSION_PREFIX = 'pl'
+
 PLANET_PROVIDER = pystac.Provider(
     name='Planet',
     description=(
