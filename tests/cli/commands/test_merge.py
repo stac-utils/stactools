@@ -25,7 +25,7 @@ def copy_two_planet_disaster_subsets(tmp_dir):
         col.update_extent_from_items()
         col.normalize_hrefs(os.path.join(tmp_dir, item_id))
         col.save(catalog_type=pystac.CatalogType.SELF_CONTAINED)
-        col = move_all_assets(col, copy=True)
+        move_all_assets(col, copy=True)
         col.save()
         new_cols.append(col.get_self_href())
 
