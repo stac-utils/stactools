@@ -1,36 +1,26 @@
 import os
-import unittest
 from tempfile import TemporaryDirectory
 
-import click
-from click.testing import CliRunner
 import pystac
 
 from stactools.planet.commands import create_planet_command
-from tests.utils import TestCases
+from tests.utils import (TestCases, CliTestCase)
 
 
-class ConvertOrderTest(unittest.TestCase):
-    def setUp(self):
-        @click.group()
-        def cli():
-            pass
-
-        create_planet_command(cli)
-        self.cli = cli
+class ConvertOrderTest(CliTestCase):
+    def create_subcommand_functions(self):
+        return [create_planet_command]
 
     def test_converts(self):
         test_order_manifest = TestCases.get_path(
             'data-files/planet-order/manifest.json')
 
         with TemporaryDirectory() as tmp_dir:
-            runner = CliRunner()
-            result = runner.invoke(self.cli, [
+            result = self.run_command([
                 'planet', 'convert-order', test_order_manifest, tmp_dir,
                 'test_id', 'A test catalog', '--title', 'test-catalog', '-a',
                 'copy'
-            ],
-                                   catch_exceptions=False)
+            ])
 
             self.assertEqual(result.exit_code,
                              0,
@@ -46,3 +36,6 @@ class ConvertOrderTest(unittest.TestCase):
                 self.assertTrue(os.path.exists(asset.get_absolute_href()))
                 self.assertEqual(os.path.dirname(asset.get_absolute_href()),
                                  os.path.dirname(item.get_self_href()))
+
+            self.assertEqual(item.properties.get('pl:quality_category'),
+                             'standard')

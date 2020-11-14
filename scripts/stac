@@ -8,5 +8,5 @@ fi
 
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
 
-   python ./stactools_cli/stactools/cli "$@"
+   python -m stactools.cli "$@"
 fi
