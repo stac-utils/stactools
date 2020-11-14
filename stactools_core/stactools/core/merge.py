@@ -109,9 +109,9 @@ def merge_all_items(source_catalog,
         target_catalog.add_item(item_copy)
 
         if isinstance(target_catalog, pystac.Collection):
-            item.set_collection(target_catalog)
+            item_copy.set_collection(target_catalog)
         else:
-            item.set_collection(None)
+            item_copy.set_collection(None)
 
         if move_assets:
             do_move_assets(item_copy,
