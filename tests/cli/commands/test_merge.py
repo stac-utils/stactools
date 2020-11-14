@@ -54,3 +54,46 @@ class MergeTest(CliTestCase):
                     self.assertEqual(
                         os.path.dirname(asset.get_absolute_href()),
                         os.path.dirname(item.get_self_href()))
+
+    def test_merge_updates_collection_extent(self):
+        with TemporaryDirectory() as tmp_dir:
+            col_paths = copy_two_planet_disaster_subsets(tmp_dir)
+
+            extent1 = pystac.read_file(col_paths[0]).extent
+            extent2 = pystac.read_file(col_paths[1]).extent
+
+            xmin = min(
+                [extent1.spatial.bboxes[0][0], extent2.spatial.bboxes[0][0]])
+            time_max = max([
+                extent1.temporal.intervals[0][1],
+                extent2.temporal.intervals[0][1],
+            ])
+
+            cmd = ['merge', col_paths[0], col_paths[1]]
+
+            self.run_command(cmd)
+
+            result_extent = pystac.read_file(col_paths[1]).extent
+
+            def set_of_values(x):
+                result = set([])
+                if type(x) is dict:
+                    result |= set_of_values(list(x.values()))
+                elif type(x) is list:
+                    for e in x:
+                        if type(e) is list:
+                            result |= set_of_values(e)
+                        else:
+                            result.add(e)
+                return result
+
+            # Make sure it didn't just carry forward the old extent
+            self.assertNotEqual(set_of_values(result_extent.spatial.bboxes),
+                                set_of_values(extent2.spatial.bboxes))
+
+            self.assertNotEqual(
+                set_of_values(result_extent.temporal.intervals),
+                set_of_values(extent2.temporal.intervals))
+
+            self.assertEqual(result_extent.spatial.bboxes[0][0], xmin)
+            self.assertEqual(result_extent.temporal.intervals[0][1], time_max)

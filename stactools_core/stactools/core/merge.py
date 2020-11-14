@@ -118,4 +118,7 @@ def merge_all_items(source_catalog,
                            href_type=pystac.LinkType.RELATIVE,
                            copy=False)
 
+    if target_catalog.STAC_OBJECT_TYPE == pystac.STACObjectType.COLLECTION:
+        target_catalog.update_extent_from_items()
+
     return target_catalog
