@@ -187,3 +187,15 @@ To build the docs, you can use `make html`, and to build the docs and start a se
 If using `make livehtml`, once the server starts, navigate to [http://localhost:8000](http://localhost:8000/) to see the docs.
 
 Use 'make' without arguments to see a list of available commands.
+
+### Adding a new sub-package
+
+stactools is happy to take contributions of new subpackages for working with specific data types! Below is a list of steps to add a new subpackage:
+
+- Add the new subpackage as `stactools_{pkg}`, where `{pkg}` is a short name for the dataset the subpackage works with (e.g. "landsat")
+- Create a `setup.py`, `requirements.txt`, and `README.md` in the subpackage directory.
+- The code should exist in the `stactools/{pkg}/` directory in that package subdirectory. Note that the `stactools` does not have an __init__.py (look at the other subpackages for examples).
+- Add the subpackage to the appropriate variables in `scripts/env`
+- Add the subpackage to the appropriate tables in the README.
+- Add documentation for the subpackage.
+- Add subpackage to .readthedocs.yml install
