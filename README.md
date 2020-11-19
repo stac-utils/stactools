@@ -58,38 +58,12 @@ to install
 ## Running
 
 ```
-> stactools --help
+> stac --help
 ```
 
 ## Documentation
 
 See the [documentation page](https://stactools.readthedocs.io/en/latest/) for the latest docs.
-
-## Developing
-
-### Using virtualenv
-
-It's recommended to use [virtualenv](https://virtualenv.pypa.io/en/latest/index.html) to keep isolate the python environment used to develop stactools. See virtualenv documentation for more detailed information, but as a shortcut here's some quick steps:
-
-- Make sure [virtualenv](https://virtualenv.pypa.io/en/latest/installation.html) is installed
-- Run `virtualenv venv`
-- Activate the virtualenv with `source venv/bin/active`
-
-### Installing development requirements
-
-To install all the requirements for subpackages and the development requirements, use:
-
-```
-> scripts/update
-```
-
-### Running the CLI against development code
-
-You can run the CLI through the source code by running
-
-```
-> scripts/stac --help
-```
 
 ## Sub-packages
 
@@ -99,11 +73,56 @@ You can run the CLI through the source code by running
 | ------------------------------| ------------------------------------------------------------------------------- |
 | `stactools_core`              | Contains core library functionality that is used across the other projects      |
 | `stactools_cli`               | Contains the command line interface (cli) for running the `stactools` command   |
-| `stactools_planet`            | Contains methods and commands for working with planet data                      |
-| `stactools_landsat`           | Contains methods and commands for working with landsat data (TODO)              |
-| `stactools_browse`            | Contains a command for launching stac-browser against a local STAC              |
+| `stactools_aster`             | Methods and commands for working with ASTER data                 |
+| `stactools_planet`            | Methods and commands for working with planet data                |
+| `stactools_landsat`           | Methods and commands for working with landsat data (TODO)        |
+| `stactools_browse`            | Contains a command for launching stac-browser against a local STAC |
 
 Subpackages are symlinked to the `stactools` directory in this repo to allow them to be importable for python running at the top level directory of the repository clone.
+
+## Developing
+
+### Using docker
+
+Some subpackages require environments with more complex environments than can be set up just through pip. For example, the `stactools.aster` package uses rasterio functionality that required a GDAL enabled with the HDF4 format. Because of this, it's recommended to utilize the docker environment provided by this repository.
+
+Once the container is built, you can run the `scripts/` scripts inside a docker console by running:
+
+```
+> docker/console
+```
+
+### Using virtualenv
+
+If not using docker, itt's recommended to use [virtualenv](https://virtualenv.pypa.io/en/latest/index.html) to keep isolate the python environment used to develop stactools. See virtualenv documentation for more detailed information, but as a shortcut here's some quick steps:
+
+- Make sure [virtualenv](https://virtualenv.pypa.io/en/latest/installation.html) is installed
+- Run `virtualenv venv`
+- Activate the virtualenv with `source venv/bin/active`
+
+#### Installing development requirements
+
+To install all the requirements for subpackages and the development requirements, use:
+
+```
+> scripts/update
+```
+
+Note that some packages might fail requirement installs because of required environment setup that cannot be controlled with pip-install. For instance, you may need to install rasterio with a GDAL that has non-standard formats enabled. You can avoid errors by installing the proper environment, by installing the failing requirements like rasterio manually, or by using the docker environment.
+
+### Running the CLI against development code
+
+You can run the CLI through docker by running
+
+```
+> docker/stac --help
+```
+
+or in the local environment with
+
+```
+> scripts/stac --help
+```
 
 ### Unit Tests
 
@@ -114,6 +133,12 @@ Unit tests are in the `tests` folder. To run unit tests, use `unittest`:
 ```
 
 To run linters, code formatters, and test suites all together, use `test`:
+
+```
+> ./docker/test
+```
+
+or
 
 ```
 > ./scripts/test
@@ -141,16 +166,24 @@ To check for spelling mistakes in modified files:
 > git diff --name-only | xargs codespell -I .codespellignore -f
 ```
 
-You can also run the `./scripts/test` script to check for linting, spelling, and run unit tests.
+You can also run the `./docker/test` or `./scripts/test` script to check for linting, spelling, and run unit tests.
 
 ### Documentation
 
-To build and develop the documentation locally, make sure sphinx is available (which is installed with `requirements-dev.txt`), and use the Makefile in the docs folder:
+To build and serve the docs, all of the requirements must be installed with `scripts/update`. Make sure [Pandocs](https://pandoc.org/installing.html) is installed. Also make sure sphinx is available, which should be installed with `requirements-dev.txt`. You can also run the following in the docker container using
+
+```
+> docker/console
+```
+
+To build the docs, you can use `make html`, and to build the docs and start a server that watches for changes, use `make livhtml`:
 
 ```
 > cd docs
 > make html
 > make livehtml
 ```
+
+If using `make livehtml`, once the server starts, navigate to [http://localhost:8000](http://localhost:8000/) to see the docs.
 
 Use 'make' without arguments to see a list of available commands.

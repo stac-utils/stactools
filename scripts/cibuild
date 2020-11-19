@@ -6,21 +6,15 @@ if [[ -n "${CI}" ]]; then
     set -x
 fi
 
+# Import shared variables
+source ./scripts/env
+
 function usage() {
     echo -n \
         "Usage: $(basename "$0")
 Execute project linters and test suites in CI.
 "
 }
-
-PACKAGES_TO_INSTALL=(
-    "stactools_core"
-    "stactools_cli"
-    "stactools_landsat"
-    "stactools_planet"
-    "stactools_browse"
-);
-
 
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
@@ -30,7 +24,7 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         python -m pip install --upgrade pip
         pip install -r requirements-dev.txt
 
-        for PACKAGE_DIR in "${PACKAGES_TO_INSTALL[@]}"
+        for PACKAGE_DIR in "${STACTOOLS_SUBPACKAGE_DIRS[@]}"
         do
             pushd ./${PACKAGE_DIR}
             pip install -e .

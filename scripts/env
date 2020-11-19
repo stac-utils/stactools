@@ -1,0 +1,19 @@
+# Common variables for the scripts.
+
+STACTOOLS_SUBPACKAGE_DIRS=(
+    "stactools_cli"
+    "stactools_core"
+    "stactools_aster"
+    "stactools_landsat"
+    "stactools_planet"
+    "stactools_browse"
+);
+
+STACTOOLS_COVERAGE_DIRS=(
+    "stactools_core/stactools/core"
+    "stactools_cli/stactools/cli"
+    "stactools_aster/stactools/aster"
+    "stactools_landsat/stactools/landsat"
+    "stactools_planet/stactools/planet"
+    "stactools_browse/stactools/browse"
+);
