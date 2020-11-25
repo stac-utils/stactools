@@ -1,19 +1,39 @@
 import os
+from os.path import (
+    basename,
+    splitext
+)
 from imp import load_source
 from setuptools import setup, find_packages
 from glob import glob
 import io
 
-__version__ = load_source('stactools.core.version',
+class Subpackage:
+    def __init__(self, name, is_extra=False):
+        self.name = name
+        self.is_extra = is_extra
+
+    @property
+    def version(self):
+        version_file = 'stactools_{}/stactools/{}/version.py'.format(self.name, self.name)
+        return load_source('stactools.{}.version'.format(self.name),
                           os.path.join(
                               os.path.dirname(__file__),
-                              'stactools_core/stactools/core/version.py'
+                              version_file
                           )).__version__
 
-from os.path import (
-    basename,
-    splitext
-)
+    @property
+    def requirement_name(self):
+        return 'stactools_{}=={}'.format(self.name, self.version)
+
+subpackages = [
+    Subpackage('core'),
+    Subpackage('cli'),
+    Subpackage('aster', is_extra=True),
+    Subpackage('landsat', is_extra=True),
+    Subpackage('planet', is_extra=True),
+    Subpackage('browse', is_extra=True),
+]
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -22,25 +42,24 @@ with open(os.path.join(here, 'README.md')) as readme_file:
 
 # These subpackages will be installed by default
 default_subpackages=[
-    'stactools_core=={}'.format(__version__),
-    'stactools_cli=={}'.format(__version__)
+    p.requirement_name for p in subpackages if not p.is_extra
 ]
 
 # List subpackages as extras
 extras_require={
-    'all': [
-        'stactools_landsat=={}'.format(__version__),
-        'stactools_planet=={}'.format(__version__),
-        'stactools_browse=={}'.format(__version__)
-    ],
-    'landsat': ['stactools_landsat=={}'.format(__version__)],
-    'planet': ['stactools_planet=={}'.format(__version__)],
-    'browse': ['stactools_browse=={}'.format(__version__)]
+    'all': []
 }
+
+for p in subpackages:
+    if p.is_extra:
+        extras_require[p.name] = [p.requirement_name]
+        extras_require['all'].append(p.requirement_name)
+
+version = max([p.version for p in subpackages])
 
 setup(
     name='stactools',
-    version=__version__,
+    version=version,
     description=("Command line tool and Python library for working with STAC."),
     long_description=readme,
     long_description_content_type="text/markdown",

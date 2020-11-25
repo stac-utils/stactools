@@ -4,14 +4,14 @@ from setuptools import setup, find_namespace_packages
 from glob import glob
 import io
 
-name = 'stactools_planet'
-description = ("Subpackage for working with planet data in stactools, "
+name = 'stactools_aster'
+description = ("Subpackage for working with ASTER L1T data in stactools, "
                "a command line tool and Python library for working with STAC.")
 
 __version__ = load_source(
-    'stactools.planet.version',
+    'stactools.aster.version',
     os.path.join(os.path.dirname(__file__),
-                 'stactools/planet/version.py')).__version__
+                 'stactools/aster/version.py')).__version__
 
 from os.path import (basename, splitext)
 
@@ -19,7 +19,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 # get the dependencies and installs
 with io.open(os.path.join(here, 'requirements.txt'), encoding='utf-8') as f:
-    install_requires = f.read().split('\n')
+    install_requires = [line.split(' ')[0] for line in f.read().split('\n')]
 
 # Add stactools subpackage dependencies
 install_requires.extend(['stactools_core=={}'.format(__version__)])
@@ -43,6 +43,6 @@ setup(name=name,
       install_requires=install_requires,
       license="Apache Software License 2.0",
       keywords=[
-          'stactools', 'psytac', 'planet', 'imagery', 'raster', 'catalog',
+          'stactools', 'psytac', 'aster', 'imagery', 'raster', 'catalog',
           'STAC'
       ])

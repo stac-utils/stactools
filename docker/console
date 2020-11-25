@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+
+if [[ -n "${STACTOOLS_DEBUG}" ]]; then
+    set -x
+fi
+
+function usage() {
+    echo -n \
+        "Usage: $(basename "$0")
+Run a console in a docker container with all prerequisites installed.
+"
+}
+
+if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
+    docker run --rm -it \
+        -v `pwd`:/opt/src \
+        -p 8000:8000 \
+        --entrypoint /bin/bash \
+        stactools-dev:latest
+fi

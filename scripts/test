@@ -6,6 +6,9 @@ if [[ -n "${CI}" ]]; then
     set -x
 fi
 
+# Import shared variables
+source ./scripts/env
+
 function usage() {
     echo -n \
         "Usage: $(basename "$0")
@@ -13,16 +16,11 @@ Execute project linters and test suites.
 "
 }
 
-DIRS_TO_CHECK=(
-    "tests"
-    "stactools_core/stactools/core"
-    "stactools_cli/stactools/cli"
-    "stactools_landsat/stactools/landsat"
-    "stactools_planet/stactools/planet"
-    "stactools_browse/stactools/browse"
-);
+DIRS_TO_CHECK=("tests")
+DIRS_TO_CHECK+=("${STACTOOLS_COVERAGE_DIRS[@]}")
 
-COVERAGE_PACKAGES=${DIRS_TO_CHECK[@]:1}
+# Comma separated list
+printf -v COVERAGE_DIRS '%s,' "${STACTOOLS_COVERAGE_DIRS[@]}"
 
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
@@ -43,7 +41,7 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
             docs/*.ipynb docs/**/*.ipynb
 
         # Test suite with coverage enabled
-        coverage run --source=${COVERAGE_PACKAGES[@]// /,} -m unittest discover tests/
+        coverage run --source=${COVERAGE_DIRS} -m unittest discover tests/
         coverage xml
     fi
 fi

@@ -4,7 +4,7 @@ from tempfile import TemporaryDirectory
 import pystac
 
 from stactools.planet.commands import create_planet_command
-from tests.utils import (TestCases, CliTestCase)
+from tests.utils import (TestData, CliTestCase)
 
 
 class ConvertOrderTest(CliTestCase):
@@ -12,7 +12,7 @@ class ConvertOrderTest(CliTestCase):
         return [create_planet_command]
 
     def test_converts(self):
-        test_order_manifest = TestCases.get_path(
+        test_order_manifest = TestData.get_path(
             'data-files/planet-order/manifest.json')
 
         with TemporaryDirectory() as tmp_dir:

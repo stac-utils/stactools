@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e
+
+if [[ -n "${STACTOOLS_DEBUG}" ]]; then
+    set -x
+fi
+
+function usage() {
+    echo -n \
+        "Usage: $(basename "$0")
+Run code formatters in a docker container with all prerequisites installed.
+"
+}
+
+if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
+    docker run --rm -it \
+        -v `pwd`:/opt/src \
+        --entrypoint /opt/src/scripts/format \
+        stactools-dev:latest
+fi

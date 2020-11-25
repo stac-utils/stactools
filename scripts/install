@@ -12,7 +12,7 @@ source ./scripts/env
 function usage() {
     echo -n \
         "Usage: $(basename "$0")
-Execute project linters and test suites in CI.
+Install all stactools packages.
 "
 }
 
@@ -20,12 +20,14 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
-        # Install/upgrade dependencies
-        python -m pip install --upgrade pip
-        pip install -r requirements-dev.txt
+        for PACKAGE_DIR in "${STACTOOLS_SUBPACKAGE_DIRS[@]}"
+        do
+            pushd ./${PACKAGE_DIR}
+            pip install -e .
+            popd
 
-        ./scripts/install
+        done
 
-        ./scripts/test
+        pip install -e .[all]
     fi
 fi

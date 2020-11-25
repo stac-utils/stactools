@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+
+if [[ -n "${STACTOOLS_DEBUG}" ]]; then
+    set -x
+fi
+
+function usage() {
+    echo -n \
+        "Usage: $(basename "$0")
+Run the stactools CLI in a docker container. Mounts the source
+directory inside the container, so any edits to the repository
+will be reflected in the execution.
+"
+}
+
+if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
+    docker run --rm -it \
+        -v `pwd`:/opt/src \
+        stactools:latest "${@}"
+fi
