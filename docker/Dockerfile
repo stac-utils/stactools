@@ -67,6 +67,10 @@ RUN pip install -r /tmp/corine/requirements.txt
 COPY stactools_landsat/requirements.txt /tmp/landsat/requirements.txt
 RUN pip install -r /tmp/landsat/requirements.txt
 
+# NAIP
+COPY stactools_naip/requirements.txt /tmp/naip/requirements.txt
+RUN pip install -r /tmp/naip/requirements.txt
+
 # Planet
 COPY stactools_planet/requirements.txt /tmp/planet/requirements.txt
 RUN pip install -r /tmp/planet/requirements.txt

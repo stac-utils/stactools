@@ -197,6 +197,8 @@ stactools is happy to take contributions of new subpackages for working with spe
 - Create a `setup.py`, `requirements.txt`, and `README.md` in the subpackage directory.
 - The code should exist in the `stactools/{pkg}/` directory in that package subdirectory. Note that the `stactools` does not have an __init__.py (look at the other subpackages for examples).
 - Add the subpackage to the appropriate variables in `scripts/env`
+- Add the subpackage requirements install section to
+`docker/Dockerfile`
 - Add the subpackage to the appropriate tables in the README.
 - Add documentation for the subpackage.
 - Add subpackage to .readthedocs.yml install

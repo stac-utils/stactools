@@ -1,0 +1,269 @@
+Metadata:
+  Identification_Information:
+    Citation:
+      Citation_Information:
+        Originator: USDA-FSA-APFO Aerial Photography Field Office
+        Publication_Date: 20111219
+        Title: NAIP Digital Ortho Photo Image
+        Geospatial_Data_Presentation_Form: remote-sensing image
+        Publication_Information:
+          Publication_Place: Salt Lake City, Utah
+          Publisher:  USDA-FSA-APFO Aerial Photography Field Office
+    Description:
+      Abstract:
+        This data set contains imagery from the National Agriculture
+        Imagery Program (NAIP).  NAIP acquires digital ortho imagery
+        during the agricultural growing seasons in the continental U.S..
+        A primary goal of the NAIP program is to enable availability of
+        of ortho imagery within one year of acquisition. NAIP provides
+        four main products: 1 meter ground sample distance (GSD) ortho
+        imagery rectified to a horizontal accuracy of within +/- 5
+        meters of reference digital ortho quarter quads (DOQQ's) from
+        the National Digital Ortho Program (NDOP); 2 meter GSD
+        ortho imagery rectified to within +/- 10 meters of reference
+        DOQQs; 1 meter GSD ortho imagery rectified to within +/- 6
+        meters to true ground; and, 2 meter GSD ortho imagery rectified
+        to within +/- 10 meters to true ground.  The tiling format of
+        NAIP imagery is based on a 3.75' x 3.75' quarter quadrangle
+        with a 300 meter buffer on all four sides.  NAIP quarter quads
+        are formatted to the UTM coordinate system using NAD83.  NAIP
+        imagery may contain as much as 10% cloud cover per tile.
+      Purpose:
+        NAIP imagery is available for distribution within 60 days
+        of the end of a flying season and is intended to provide current
+        information of agricultural conditions in support of USDA farm
+        programs. For USDA Farm Service Agency, the 1 meter GSD product
+        provides an ortho image base for Common Land Unit boundaries and
+        other data sets.  The 1 meter NAIP imagery is generally acquired
+        in projects covering full states in cooperation with state
+        government and other federal agencies who use the imagery for a
+        variety of purposes including land use planning and natural
+        resource assessment.  With an annual cycle, NAIP is also used
+        for disaster response often providing the most current pre-event
+        imagery.  While suitable for a variety of uses the 2 meter
+        GSD NAIP imagery is primarily intended to assess crop condition
+        and compliance to USDA farm program conditions.  The 2
+        meter imagery is generally acquired only for agricultural areas
+        within state projects.
+    Time_Period_of_Content:
+      Time_Period_Information:
+           Single_Date/Time:
+             Calendar_Date: 20110815
+      Currentness_Reference: Ground Condition
+    Status:
+      Progress: Complete
+      Maintenance_and_Update_Frequency: Irregular
+    Spatial_Domain:
+      Bounding_Coordinates:
+        West_Bounding_Coordinate:  -85.9375
+        East_Bounding_Coordinate:  -85.8750
+        North_Bounding_Coordinate:  31.0000
+        South_Bounding_Coordinate:  30.9375
+    Keywords:
+      Theme:
+        Theme_Keyword_Thesaurus: None
+        Theme_Keyword: farming
+        Theme_Keyword: Digital Ortho rectified Image
+        Theme_Keyword: Ortho Rectification
+        Theme_Keyword: Quarter Quadrangle Centered
+        Theme_Keyword: NAIP
+        Theme_Keyword: Aerial Compliance
+        Theme_Keyword: Compliance
+      Place:
+        Place_Keyword_Thesaurus: Geographic Names Information System
+        Place_Keyword: AL
+        Place_Keyword: Geneva
+        Place_Keyword: 01061
+        Place_Keyword: AL061
+        Place_Keyword: GENEVA CO AL FSA
+        Place_Keyword: 3008501
+        Place_Keyword: HOBBS CROSSROADS, NE
+        Place_Keyword: HOBBS CROSSROADS
+    Access_Constraints: There are no limitations for access.
+    Use_Constraints:
+      Imagery may be replaced to address defects found in a
+      small number of products through quality assurance
+      processes.  Imagery containing defects that require
+      the acquisition of new imagery, such as excessive
+      cloud cover, specular reflectance, etc., will not be
+      replaced within a NAIP project year.
+    Point_of_Contact:
+      Contact_Information:
+        Contact_Organization_Primary:
+          Contact_Organization: Aerial Photography Field Office (APFO)
+        Contact_Address:
+          Address_Type: mailing and physical address
+          Address: 2222 West 2300 South
+          City: Salt Lake City
+          State_or_Province: Utah
+          Postal_Code: 84119-2020
+          Country: USA
+        Contact_Voice_Telephone: 801-844-2922
+        Contact_Facsimile_Telephone: 801-956-3653
+        Contact_Electronic_Mail_Address: apfo.sales@slc.usda.gov
+    Browse_Graphic:
+      Browse_Graphic_File_Name: None
+      Browse_Graphic_File_Description: None
+      Browse_Graphic_File_Type: None
+    Native_Data_Set_Environment: Unknown
+  Data_Quality_Information:
+    Logical_Consistency_Report:
+      NAIP 3.75 minute tile file names are based
+      on the USGS quadrangle naming convention.
+    Completeness_Report: None
+    Positional_Accuracy:
+      Horizontal_Positional_Accuracy:
+        Horizontal_Positional_Accuracy_Report:
+          FSA Digital Orthophoto Specs.
+    Lineage:
+      Source_Information:
+        Source_Citation:
+          Citation_Information:
+            Originator: USDA-FSA-APFO Aerial Photography Field Office
+            Publication_Date: 20111219
+            Title: HOBBS CROSSROADS, NE
+            Geospatial_Data_Presentation_Form: remote-sensing image
+        Type_of_Source_Media: UnKnown
+        Source_Time_Period_of_Content:
+          Time_Period_Information:
+            Single_Date/Time:
+              Calendar_Date: 20110815
+          Source_Currentness_Reference:
+            Aerial Photography Date for aerial photo source.
+        Source_Citation_Abbreviation: Georectifed Image
+        Source_Contribution: Digital Georectifed Image.
+
+      Process_Step:
+        Process_Description:
+          Digital frames captured with a ZI Intergraph DMC with a 
+          footprint of 7680 x 13824 pixels were used to create Digital 
+          Orthophoto Quarter Quadrangles.  DMC Serial Numbers 001, 013, 033 and 137 
+          installed in a Rockwell 690A Turbo Commander, a Gulfstream 840 Commander, 
+          a Rockwell 690B Turbo Commander, and a Piper Cheyenne 1; 
+          N771BA, N910FC, N167R, and N400CM were used to fly this area at 28,900'.    
+          Calibration reports are on file with the USDA.  There are four 
+          camera heads which correspond to the bands captured.  Their 
+          general spectral ranges are Blue: 400nm-580nm; 
+          Green: 500nm-650nm; Red: 590nm-675nm; and 
+          NIR: 675nm-850nm.  12 micron frames were captured at eight bits 
+          with 2.5 - 2.7 foot pixel using Windows Server 2003; 
+          ZI Mission Planning 6.2; Intergraph GeoMedia 6.0; DMC Image 
+          Analyst 6.2; DMC Post Processing 6.1; ZI Image Viewer 6.1; 
+          Microsoft Access; Microsoft Excel; Delorme XMap 4.5 and Adobe 
+          PhotoShop. Flights ASL was 28,900 feet. The state was flown in 
+          blocks for efficiency of capture and in order to accommodate 
+          the different elevations throughout the state.  The camera 
+          firmware version is 2.1.  Flight planning software includes 
+          Delorme 4.5; Delorme Photo Flight 2.1.6; ZI Inflight 
+          V06.01.20.16; ZI ImageView V06.01.20.16 ; ArcView 3.2; 
+          Microsoft Access; and POSAV 2.1.  Ground control points were 
+          collected by Photo Science crews.  External Orientation files 
+          created from ABGPS data in Applanix POSPac MMS Version 5.2 
+          and are rectified using ImageStation Project Manager 5.2; 
+          Intergraph GeoMedia 6.0; and Intergraph OrthoPro 5.2.  
+          Extensive Quality Control checks are performed on the data 
+          throughout the production process.  Processed RAW Frames are 
+          checked for spectral compliance.  Rectified frames are checked 
+          for spatial accuracy and also spectral compliance. DOQQs are 
+          thoroughly checked for spectral and spatial accuracy in Iras/C 
+          and Adobe PhotoShop. CCMs are checked for overall spectral 
+          compliance and spatial accuracy in ArcGIS.  Seamline shapefiles 
+          are checked for gaps, slivers, overlaps and multipart features 
+          by building a topology in ArcGIS.  Ground control points are 
+          read off of rectified frames as a double-check and final DOQQs 
+          are used to calculate RMSE values in MicroStation and Excel.  
+          Frames are rectified with 10 meter NEDs in Intergraph OrthoPro.
+          This surface is checked for errors at the mosaicked DOQQ level.
+          If any areas presented problems, they are noted in a Digital 
+          Elevation Model Errors ASCII text file. 
+        Process_Date: 20111219
+  Spatial_Data_Organization_Information:
+    Indirect_Spatial_Reference: Geneva County, AL
+    Direct_Spatial_Reference_Method: Raster
+    Raster_Object_Information:
+      Raster_Object_Type: Pixel
+      Row_Count: 1
+      Column_Count: 1
+  Spatial_Reference_Information:
+    Horizontal_Coordinate_System_Definition:
+      Planar:
+        Grid_Coordinate_System:
+          Grid_Coordinate_System_Name: Universal Transverse Mercator
+          Universal_Transverse_Mercator:
+            UTM_Zone_Number: 16
+            Transverse_Mercator:
+              Scale_Factor_at_Central_Meridian: 0.9996
+              Longitude_of_Central_Meridian: -87.0
+              Latitude_of_Projection_Origin: 0.0
+              False_Easting: 500000
+              False_Northing: 0.0
+        Planar_Coordinate_Information:
+          Planar_Coordinate_Encoding_Method: row and column
+          Coordinate_Representation:
+            Abscissa_Resolution: 1
+            Ordinate_Resolution: 1
+          Planar_Distance_Units: meters
+      Geodetic_Model:
+        Horizontal_Datum_Name: North American Datum of 1983
+        Ellipsoid_Name: Geodetic Reference System 80 (GRS 80)
+        Semi-major_Axis: 6378137
+        Denominator_of_Flattening_Ratio: 298.257
+  Entity_and_Attribute_Information:
+    Overview_Description:
+      Entity_and_Attribute_Overview:
+        32-bit pixels, 4 band color(RGBIR) values 0 - 255
+      Entity_and_Attribute_Detail_Citation: None
+  Distribution_Information:
+    Distributor:
+      Contact_Information:
+        Contact_Person_Primary:
+          Contact_Person: Supervisor Customer Services Section
+          Contact_Organization:
+            USDA-FSA-APFO Aerial Photography Field Office
+        Contact_Address:
+          Address_Type: mailing and physical address
+          Address: 2222 West 2300 South
+          City: Salt Lake City
+          State_or_Province: Utah
+          Postal_Code: 84119-2020
+          Country: USA
+        Contact_Voice_Telephone: 801-844-2922
+        Contact_Facsimile_Telephone: 801-956-3653
+        Contact_Electronic_Mail_Address: apfo.sales@slc.usda.gov
+    Distribution_Liability:
+      In no event shall the creators, custodians, or distributors
+      of this information be liable for any damages arising out
+      of its use (or the inability to use it).
+    Standard_Order_Process:
+      Digital_Form:
+        Digital_Transfer_Information:
+          Format_Name: GeoTIFF - Georeferenced Tagged Image File Format
+          Format_Information_Content: Multispectral 4-band
+        Digital_Transfer_Option:
+          Offline_Option:
+            Offline_Media: CD-ROM
+            Recording_Format: ISO 9660 Mode 1 Level 2 Extensions
+      Fees:
+        Contact the Aerial Photography Field Office
+        for more information
+    Resource_Description:
+      m_3008501_ne_16_1_20110815_20111017.tif
+  Metadata_Reference_Information:
+    Metadata_Date: 20111219
+    Metadata_Contact:
+      Contact_Information:
+        Contact_Organization_Primary:
+          Contact_Organization:
+            USDA-FSA-APFO Aerial Photography Field Office
+        Contact_Address:
+          Address_Type: mailing and physical address
+          Address: 2222 West 2300 South
+          City: Salt Lake City
+          State_or_Province: Utah
+          Postal_Code: 84119-2020
+          Country: USA
+        Contact_Voice_Telephone: 801-844-2922
+    Metadata_Standard_Name:
+      Content Standard for Digital Geospatial Metadata
+    Metadata_Standard_Version: FGDC-STD-001-1998
+
