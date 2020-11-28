@@ -5,7 +5,7 @@ import fsspec
 def use_fsspec():
     # Use fsspec to handle IO
     def fsspec_read_method(uri):
-        with fsspec.open(uri) as f:
+        with fsspec.open(uri, 'r') as f:
             return f.read()
 
     def fsspec_write_method(uri, txt):
