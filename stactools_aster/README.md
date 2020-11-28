@@ -1,3 +1,3 @@
-# stactools_planet
+# stactools_aster
 
-A subpackage of stactools for working with Planet data.
+A subpackage of stactools for working with ASTER L1T data.
