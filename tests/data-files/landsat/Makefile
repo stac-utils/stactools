@@ -1,0 +1,13 @@
+clean:
+	rm LC08_L2SR_081119_20200101_20200823_02_T2.json
+	# rm LC08_L2SR_081119_20200101_20200823_02_T2_MTL.json
+
+download: LC08_L2SR_081119_20200101_20200823_02_T2.json LC08_L2SR_081119_20200101_20200823_02_T2_MTL.json
+
+LC08_L2SR_081119_20200101_20200823_02_T2.json:
+	wget "https://landsatlook.usgs.gov/sat-api/collections/landsat-c2l2-sr/items/LC08_L2SR_081119_20200101_20200823_02_T2" \
+		-O LC08_L2SR_081119_20200101_20200823_02_T2.json
+
+LC08_L2SR_081119_20200101_20200823_02_T2_MTL.json:
+	echo "MTL needs authentication to download."
+	# wget "https://landsatlook.usgs.gov/data/collection02/level-2/standard/oli-tirs/2020/081/119/LC08_L2SR_081119_20200101_20200823_02_T2/LC08_L2SR_081119_20200101_20200823_02_T2_MTL.json"

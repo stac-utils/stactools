@@ -3,4 +3,4 @@ def register_plugin(registry):
 
     from stactools.landsat import commands
 
-    registry.register_subcommand(commands.create_convert_command)
+    registry.register_subcommand(commands.create_landsat_command)
