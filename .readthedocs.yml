@@ -24,6 +24,8 @@ python:
     - method: pip
       path: stactools_aster/
     - method: pip
+      path: stactools_corine/
+    - method: pip
       path: stactools_landsat/
     - method: pip
       path: stactools_planet/

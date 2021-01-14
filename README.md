@@ -74,6 +74,7 @@ See the [documentation page](https://stactools.readthedocs.io/en/latest/) for th
 | `stactools_core`              | Contains core library functionality that is used across the other projects      |
 | `stactools_cli`               | Contains the command line interface (cli) for running the `stactools` command   |
 | `stactools_aster`             | Methods and commands for working with ASTER data                 |
+| `stactools_corine`            | Methods and commands for working with CORINE Land Cover data                 |
 | `stactools_planet`            | Methods and commands for working with planet data                |
 | `stactools_landsat`           | Methods and commands for working with landsat data (TODO)        |
 | `stactools_browse`            | Contains a command for launching stac-browser against a local STAC |
