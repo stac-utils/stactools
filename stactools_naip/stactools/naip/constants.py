@@ -1,8 +1,9 @@
 import pystac
 from pystac.extensions.eo import Band
 
-NAIP_COLLECTION_NAME = 'usda-naip'
-NAIP_COLLECTION_DESCRIPTION = """
+NAIP_ID = 'usda-naip'
+NAIP_TITLE = "NAIP: National Agriculture Imagery Program"
+NAIP_DESCRIPTION = """
 The National Agriculture Imagery Program (NAIP) acquires aerial imagery
 during the agricultural growing seasons in the continental U.S.
 
@@ -19,6 +20,8 @@ Older images were collected using 3 bands (Red, Green, and Blue: RGB), but
 newer imagery is usually collected with an additional near-infrared band
 (RGBN).
 """.strip('\n')
+
+NAIP_LICENSE = 'PDDL-1.0'
 
 USDA_PROVIDER = pystac.Provider(
     name='USDA Farm Service Agency',

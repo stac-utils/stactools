@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 import pystac
 from pystac.utils import str_to_datetime
@@ -6,7 +7,7 @@ from shapely.geometry import box, mapping, shape
 import utm_zone as utm
 
 from stactools.core.projection import epsg_from_utm_zone_number
-from stactools.naip.constants import (NAIP_BANDS, USDA_PROVIDER)
+from stactools.naip import constants
 from stactools.naip.utils import parse_fgdc_metadata
 
 
@@ -23,6 +24,43 @@ def naip_item_id(state, resource_name):
     """
 
     return '{}_{}'.format(state, os.path.splitext(resource_name)[0])
+
+
+def create_collection(seasons: List[int]) -> pystac.Collection:
+    """Creates a STAC COllection for NAIP data.
+
+    Args:
+        seasons (List[int]): List of years that represent the NAIP seasons
+            this collection represents.
+    """
+    extent = pystac.Extent(
+        pystac.SpatialExtent(bboxes=[[-124.784, 24.744, -66.951, 49.346]]),
+        pystac.TemporalExtent(intervals=[[
+            pystac.utils.str_to_datetime(f"{min(seasons)}-01-01T00:00:00Z"),
+            pystac.utils.str_to_datetime(f"{max(seasons)}-01-01T00:00:00Z")
+        ]]))
+
+    collection = pystac.Collection(
+        id=constants.NAIP_ID,
+        description=constants.NAIP_DESCRIPTION,
+        title=constants.NAIP_TITLE,
+        license=constants.NAIP_LICENSE,
+        providers=[constants.USDA_PROVIDER],
+        extent=extent,
+        stac_extensions=['item-assets'],
+        extra_fields={
+            'item_assets':
+                'image': {
+                    "eo:bands": [b.properties for b in constants.NAIP_BANDS],
+                    "gsd": 1.0,
+                    "roles": ["data"],
+                    "title": "RGBIR COG tile",
+                    "type": pystac.MediaType.COG
+                },
+            }
+        })
+
+    return collection
 
 
 def create_item(state,
@@ -65,7 +103,7 @@ def create_item(state,
     ymin, ymax = float(bbox_md['South_Bounding_Coordinate']), float(
         bbox_md['North_Bounding_Coordinate'])
     geom = mapping(box(xmin, ymin, xmax, ymax))
-    bounds = shape(geom).bounds
+    bounds = list(shape(geom).bounds)
 
     dt = str_to_datetime(
         fgdc['Identification_Information']['Time_Period_of_Content']
@@ -75,14 +113,13 @@ def create_item(state,
                        geometry=geom,
                        bbox=bounds,
                        datetime=dt,
-                       properties={
-                           'naip:state': state
-                       })
+                       properties={'naip:state': state})
 
     # Common metadata
-    item.common_metadata.providers = [USDA_PROVIDER]
+    item.common_metadata.providers = [constants.USDA_PROVIDER]
     if additional_providers is not None:
         item.common_metadata.providers.extend(additional_providers)
+    item.common_metadata.gsd = 1.0
 
     # eo, for asset bands
     item.ext.enable('eo')
@@ -127,6 +164,6 @@ def create_item(state,
                          roles=['thumbnail'],
                          title='Thumbnail'))
 
-    item.ext.eo.set_bands(NAIP_BANDS, item.assets['image'])
+    item.ext.eo.set_bands(constants.NAIP_BANDS, item.assets['image'])
 
     return item
