@@ -9,7 +9,7 @@ def create_move_assets_command(cli):
         'move-assets',
         short_help='Move or copy assets in a STAC to the Item locations.')
     @click.argument('catalog_path')
-    @click.option('-c', '--copy', help='Copy assets instead of moving.')
+    @click.option('-c', '--copy', help='Copy assets instead of moving.', is_flag=True)
     @click.option('-s',
                   '--asset-subdirectory',
                   help=('Subdirectory to place assets '
