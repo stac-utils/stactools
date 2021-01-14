@@ -112,8 +112,8 @@ def move_asset_file_to_item(item,
 
                     op = _op
 
-    if op is not None:
-        op(dry_run=False)
+        if op is not None:
+            op(dry_run=False)
 
     return new_asset_href
 
