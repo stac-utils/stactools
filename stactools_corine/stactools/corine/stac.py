@@ -29,17 +29,22 @@ def create_item(metadata_href):
 
     # Bounding box
     bounding_box_node = 'dataIdInfo/dataExt/geoEle/GeoBndBox/{}'
-    west_long = float(metadata_root.find(bounding_box_node.format('westBL')).text)
-    east_long = float(metadata_root.find(bounding_box_node.format('eastBL')).text)
-    south_lat = float(metadata_root.find(bounding_box_node.format('southBL')).text)
-    north_lat = float(metadata_root.find(bounding_box_node.format('northBL')).text)
+    west_long = float(
+        metadata_root.find(bounding_box_node.format('westBL')).text)
+    east_long = float(
+        metadata_root.find(bounding_box_node.format('eastBL')).text)
+    south_lat = float(
+        metadata_root.find(bounding_box_node.format('southBL')).text)
+    north_lat = float(
+        metadata_root.find(bounding_box_node.format('northBL')).text)
 
     geom = mapping(box(west_long, south_lat, east_long, north_lat))
     bounds = shape(geom).bounds
 
     # EPSG
     epsg_element = 'refSysInfo/RefSystem/refSysID/identCode'
-    epsg = int(metadata_root.find(epsg_element).attrib['code'].replace('EPSG:', ''))
+    epsg = int(
+        metadata_root.find(epsg_element).attrib['code'].replace('EPSG:', ''))
 
     # Item date
     id_dt_node = 'dataIdInfo/idCitation/date/pubDate'
@@ -51,10 +56,10 @@ def create_item(metadata_href):
     title_text = metadata_root.find(title_node).text
 
     item = pystac.Item(id=item_id,
-        geometry=geom,
-        bbox=bounds,
-        datetime=id_dt,
-        properties={'corine:title': title_text})
+                       geometry=geom,
+                       bbox=bounds,
+                       datetime=id_dt,
+                       properties={'corine:title': title_text})
 
     # Common metadata
     item.common_metadata.providers = [COPERNICUS_PROVIDER]

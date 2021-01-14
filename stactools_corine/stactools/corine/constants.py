@@ -1,6 +1,8 @@
 import pystac
 
-COPERNICUS_PROVIDER = pystac.Provider(name='European Environment Agency (EEA) under the framework of the Copernicus programme',
+provider_name = 'European Environment Agency (EEA) under the framework of the Copernicus programme'
+
+COPERNICUS_PROVIDER = pystac.Provider(name=provider_name,
                                       url=('http://www.eea.europa.eu'),
                                       roles=['producer', 'licensor'])
 
