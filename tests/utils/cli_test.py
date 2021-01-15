@@ -17,7 +17,10 @@ class CliTestCase(unittest.TestCase, ABC):
 
     def run_command(self, cmd):
         runner = CliRunner()
-        return runner.invoke(self.cli, cmd, catch_exceptions=False)
+        result = runner.invoke(self.cli, cmd, catch_exceptions=False)
+        if result.output:
+            print(result.output)
+        return result
 
     @abstractmethod
     def create_subcommand_functions(self):
