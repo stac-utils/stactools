@@ -41,9 +41,7 @@ def merge_items(source_item,
             if move_assets:
                 asset_href = asset.get_absolute_href()
                 new_asset_href = move_asset_file_to_item(
-                    target_item,
-                    asset_href,
-                    ignore_conflicts=ignore_conflicts)
+                    target_item, asset_href, ignore_conflicts=ignore_conflicts)
             else:
                 asset_href = asset.get_absolute_href()
                 if not is_absolute_href(asset.href):
