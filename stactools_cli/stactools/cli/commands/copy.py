@@ -9,25 +9,34 @@ def create_move_assets_command(cli):
         'move-assets',
         short_help='Move or copy assets in a STAC to the Item locations.')
     @click.argument('catalog_path')
-    @click.option('-c', '--copy', help='Copy assets instead of moving.', is_flag=True)
+    @click.option('-c',
+                  '--copy',
+                  help='Copy assets instead of moving.',
+                  is_flag=True)
     @click.option('-s',
                   '--asset-subdirectory',
                   help=('Subdirectory to place assets '
                         'inside of the directory containing '
                         'their items'))
-    @click.option(
-        '-h',
-        '--href-type',
-        type=click.Choice([pystac.LinkType.ABSOLUTE, pystac.LinkType.RELATIVE],
-                          case_sensitive=False),
-        help=('If supplied, forces asset HREFs to be either absolute or '
-              'relative HREFS'))
-    def move_assets_command(catalog_path, copy, asset_subdirectory, href_type):
+    def move_assets_command(catalog_path, copy, asset_subdirectory):
+        """Move or copy assets in a STAC Catalog.
+
+        For all assets in the catalog at CATALOG_PATH, move or copy
+        those assets into the directory of the item for which they belong.
+        If --asset-subdirectory is used, moves them instead into a directory
+        called 'assets' next to the item for which they belong. If -c is used,
+        assets are copied; otherwise they are moved.
+
+        Note: If the catalog is an ABSOLUTE_PUBLISHED catalog, the assets will have
+        an absolute HREF after this operation. Otherwise, it will have a relative HREF.
+        """
         catalog = pystac.read_file(catalog_path)
-        move_all_assets(catalog,
-                        asset_subdirectory=asset_subdirectory,
-                        href_type=href_type,
-                        copy=copy)
+
+        processed = move_all_assets(catalog,
+                                    asset_subdirectory=asset_subdirectory,
+                                    copy=copy)
+
+        processed.save()
 
     return move_assets_command
 

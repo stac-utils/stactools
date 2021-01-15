@@ -4,9 +4,8 @@ import logging
 import fsspec
 from fsspec.core import split_protocol
 from fsspec.registry import get_filesystem_class
-import pystac
-from pystac.utils import (is_absolute_href, make_absolute_href,
-                          make_relative_href)
+
+from pystac.utils import (is_absolute_href, make_absolute_href)
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +13,6 @@ logger = logging.getLogger(__name__)
 def move_asset_file_to_item(item,
                             asset_href,
                             asset_subdirectory=None,
-                            href_type=None,
                             copy=False,
                             ignore_conflicts=False):
     """Moves an asset file to be alongside that item.
@@ -26,10 +24,6 @@ def move_asset_file_to_item(item,
         asset_subdirectory (str or None): A subdirectory that will be used
             to store the assets. If not supplied, the assets will be moved
             or copied to the same directory as their item.
-        href_type (str or None): Either 'relative' or 'absolute' (one of the values
-            in PySTAC.LinkType), or None. If None, the asset HREF will remain
-            in its current state, either absolute or relative. If supplied,
-            the asset HREF will be made either absolute or relative.
         copy (bool): If False this function will move the asset file; if True,
             the asset file will be copied.
         ignore_conflicts (bool): If the asset destination file already exists,
@@ -54,17 +48,14 @@ def move_asset_file_to_item(item,
         target_dir = item_dir
     else:
         target_dir = os.path.join(item_dir, asset_subdirectory)
-    new_abs_href = os.path.join(target_dir, fname)
-    new_asset_href = new_abs_href
-    if href_type == pystac.LinkType.RELATIVE:
-        new_asset_href = make_relative_href(new_abs_href, item_href)
+    new_asset_href = os.path.join(target_dir, fname)
 
-    if asset_href != new_abs_href:
-        dest_protocol = split_protocol(new_abs_href)[0]
+    if asset_href != new_asset_href:
+        dest_protocol = split_protocol(new_asset_href)[0]
         fs_dest = get_filesystem_class(dest_protocol)()
         op = None
 
-        if fs_dest.exists(new_abs_href):
+        if fs_dest.exists(new_asset_href):
             if not ignore_conflicts:
                 raise FileExistsError(
                     '{} already exists'.format(new_asset_href))
@@ -73,12 +64,12 @@ def move_asset_file_to_item(item,
 
                 def _op(dry_run=False):
                     logger.info("Copying {} to {}...".format(
-                        asset_href, new_abs_href))
+                        asset_href, new_asset_href))
                     if not dry_run:
-                        fs_dest.makedirs(os.path.dirname(new_abs_href),
+                        fs_dest.makedirs(os.path.dirname(new_asset_href),
                                          exist_ok=True)
                         with fsspec.open(asset_href, 'rb') as f_src:
-                            with fsspec.open(new_abs_href, 'wb') as f_dst:
+                            with fsspec.open(new_asset_href, 'wb') as f_dst:
                                 f_dst.write(f_src.read())
 
                 op = _op
@@ -89,24 +80,25 @@ def move_asset_file_to_item(item,
 
                     def _op(dry_run=False):
                         logger.info("Moving {} to {}...".format(
-                            asset_href, new_abs_href))
+                            asset_href, new_asset_href))
                         if not dry_run:
-                            fs_dest.makedirs(os.path.dirname(new_abs_href),
+                            fs_dest.makedirs(os.path.dirname(new_asset_href),
                                              exist_ok=True)
-                            fs_dest.move(asset_href, new_abs_href)
+                            fs_dest.move(asset_href, new_asset_href)
 
                     op = _op
                 else:
 
                     def _op(dry_run=False):
                         logger.info("Moving {} to {}...".format(
-                            asset_href, new_abs_href))
+                            asset_href, new_asset_href))
                         if not dry_run:
                             fs_source = get_filesystem_class(source_protocol)()
-                            fs_dest.makedirs(os.path.dirname(new_abs_href),
+                            fs_dest.makedirs(os.path.dirname(new_asset_href),
                                              exist_ok=True)
                             with fsspec.open(asset_href, 'rb') as f_src:
-                                with fsspec.open(new_abs_href, 'wb') as f_dst:
+                                with fsspec.open(new_asset_href,
+                                                 'wb') as f_dst:
                                     f_dst.write(f_src.read())
                             fs_source.delete(asset_href)
 
@@ -120,7 +112,6 @@ def move_asset_file_to_item(item,
 
 def move_assets(item,
                 asset_subdirectory=None,
-                href_type=None,
                 copy=False,
                 ignore_conflicts=False):
     """Moves assets for an item to be alongside that item.
@@ -131,10 +122,6 @@ def move_assets(item,
         asset_subdirectory (str or None): A subdirectory that will be used
             to store the assets. If not supplied, the assets will be moved
             or copied to the same directory as their item.
-        href_type (str or None): Either 'relative' or 'absolute' (one of the values
-            in PySTAC.LinkType), or None. If None, the asset HREFs will remain
-            in their current state, either absolute or relative. If supplied,
-            all asset HREFs will be made either absolute or relative.
         copy (bool): If False this function will move the asset file; if True,
             the asset file will be copied.
         ignore_conflicts (bool): If the asset destination file already exists,
@@ -151,17 +138,12 @@ def move_assets(item,
             'requires that the Item HREFs are available.')
 
     for asset in item.assets.values():
-        original_asset_href = asset.href
-
-        is_absolute = is_absolute_href(original_asset_href)
         abs_asset_href = asset.get_absolute_href()
 
         new_asset_href = move_asset_file_to_item(
             item,
             abs_asset_href,
             asset_subdirectory=asset_subdirectory,
-            href_type=href_type or (pystac.LinkType.ABSOLUTE if is_absolute
-                                    else pystac.LinkType.RELATIVE),
             copy=copy,
             ignore_conflicts=ignore_conflicts)
 
@@ -172,7 +154,6 @@ def move_assets(item,
 
 def move_all_assets(catalog,
                     asset_subdirectory=None,
-                    href_type=None,
                     copy=False,
                     ignore_conflicts=False):
     """Moves assets in a catalog to be alongside the items that own them.
@@ -183,10 +164,6 @@ def move_all_assets(catalog,
         asset_subdirectory (str or None): A subdirectory that will be used
             to store the assets. If not supplied, the assets will be moved
             or copied to the same directory as their item.
-        href_type (str or None): Either 'relative' or 'absolute' (one of the values
-            in PySTAC.LinkType), or None. If None, the asset HREFs will remain
-            in their current state, either absolute or relative. If supplied,
-            all asset HREFs will be made either absolute or relative.
         copy (bool): If False this function will move the asset file; if True,
             the asset file will be copied.
         ignore_conflicts (bool): If the asset destination file already exists,
@@ -196,9 +173,9 @@ def move_all_assets(catalog,
         [Catalog or Collection]: Returns the updated catalog.
             This operation mutates the catalog.
     """
+
     for item in catalog.get_all_items():
-        move_assets(item, asset_subdirectory, href_type, copy,
-                    ignore_conflicts)
+        move_assets(item, asset_subdirectory, copy, ignore_conflicts)
 
     return catalog
 
