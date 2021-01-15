@@ -6,7 +6,7 @@ sphinxcontrib-fulltoc==1.2.0
 sphinxcontrib-napoleon==0.7
 sphinx-click==2.5.0
 flake8==3.8.*
-yapf==0.28.*
+yapf==0.30.*
 ipython==7.16.1
 nbsphinx==0.7.1
 coverage==5.2.*
