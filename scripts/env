@@ -1,8 +1,8 @@
 # Common variables for the scripts.
 
 STACTOOLS_SUBPACKAGE_DIRS=(
-    "stactools_cli"
     "stactools_core"
+    "stactools_cli"
     "stactools_aster"
     "stactools_landsat"
     "stactools_planet"
