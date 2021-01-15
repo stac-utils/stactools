@@ -1,5 +1,16 @@
 # Changelog
 
+## stactools 0.1.2
+
+### Added
+
+- Added ASTER package ([#16](https://github.com/stac-utils/stactools/pull/16))
+
+### Fixes
+
+- Fixed issues with copying and asset movint ([#34](https://github.com/stac-utils/stactools/pull/34))
+- Fix `stac browse` with upgrades to versions in the tiler container ([#35](https://github.com/stac-utils/stactools/pull/35))
+
 ## stactools 0.1.1
 
 See [#9](https://github.com/stac-utils/stactools/pull/9)
