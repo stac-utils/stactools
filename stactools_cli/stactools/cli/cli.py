@@ -37,7 +37,7 @@ for create_subcommand in registry.get_create_subcommand_functions():
 
 
 def run_cli():
-    cli(prog_name='stactools')
+    cli(prog_name='stac')
 
 
 if __name__ == "__main__":

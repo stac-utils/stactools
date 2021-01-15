@@ -41,10 +41,7 @@ def merge_items(source_item,
             if move_assets:
                 asset_href = asset.get_absolute_href()
                 new_asset_href = move_asset_file_to_item(
-                    target_item,
-                    asset_href,
-                    href_type=pystac.LinkType.RELATIVE,
-                    ignore_conflicts=ignore_conflicts)
+                    target_item, asset_href, ignore_conflicts=ignore_conflicts)
             else:
                 asset_href = asset.get_absolute_href()
                 if not is_absolute_href(asset.href):
@@ -114,9 +111,7 @@ def merge_all_items(source_catalog,
             item_copy.set_collection(None)
 
         if move_assets:
-            do_move_assets(item_copy,
-                           href_type=pystac.LinkType.RELATIVE,
-                           copy=False)
+            do_move_assets(item_copy, copy=False)
 
     if target_catalog.STAC_OBJECT_TYPE == pystac.STACObjectType.COLLECTION:
         target_catalog.update_extent_from_items()

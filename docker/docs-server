@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -e
+
+if [[ -n "${STACTOOLS_DEBUG}" ]]; then
+    set -x
+fi
+
+function usage() {
+    echo -n \
+        "Usage: $(basename "$0")
+Build and serve documentation from a docker container with all prerequisites installed.
+"
+}
+
+if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
+    docker run --rm -it \
+        -p 8000:8000 \
+        -v `pwd`:/opt/src \
+        -w /opt/src/docs \
+        --entrypoint /bin/bash \
+        stactools-dev:latest \
+        -c "make livehtml"
+fi

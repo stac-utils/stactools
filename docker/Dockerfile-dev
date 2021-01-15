@@ -1,0 +1,7 @@
+FROM stactools:latest
+
+# Install Pandoc
+RUN apt-get install -y pandoc
+
+COPY requirements-dev.txt /tmp/requirements-dev.txt
+RUN pip install -r /tmp/requirements-dev.txt

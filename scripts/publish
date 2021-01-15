@@ -6,6 +6,9 @@ if [[ -n "${CI}" ]]; then
     set -x
 fi
 
+# Import shared variables
+source ./scripts/env
+
 function usage() {
     echo -n \
         "Usage: $(basename "$0")
@@ -15,14 +18,6 @@ Options:
 --test    Publish to test pypi
 "
 }
-
-PACKAGES_TO_PUBLISH=(
-    "stactools_cli"
-    "stactools_core"
-    "stactools_landsat"
-    "stactools_planet"
-    "stactools_browse"
-);
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]
@@ -56,7 +51,7 @@ if [ -z "${TEST_PYPI}" ] && [ -z "${CI}" ]; then
 fi
 
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
-    for PACKAGE_DIR in "${PACKAGES_TO_PUBLISH[@]}"
+    for PACKAGE_DIR in "${STACTOOLS_SUBPACKAGE_DIRS[@]}"
     do
         echo ${PACKAGE_DIR}
         pushd ./${PACKAGE_DIR}

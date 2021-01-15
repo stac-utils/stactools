@@ -47,7 +47,9 @@ class PlanetItem:
         item.common_metadata.constellation = props.pop('provider')
         item.common_metadata.platform = props.pop('satellite_id')
         # Some do not have instrument (e.g. REOrthoTile)
-        item.common_metadata.instrument = props.pop('instrument', None)
+        instrument = props.pop('instrument', None)
+        if instrument is not None:
+            item.common_metadata.instruments = [instrument]
 
         # eo
         item.ext.enable('eo')
