@@ -46,6 +46,10 @@ RUN pip install -r /tmp/cli/requirements.txt
 COPY stactools_aster/requirements.txt /tmp/aster/requirements.txt
 RUN pip install -r /tmp/aster/requirements.txt
 
+# Corine
+COPY stactools_corine/requirements.txt /tmp/corine/requirements.txt
+RUN pip install -r /tmp/corine/requirements.txt
+
 # Landsat
 COPY stactools_landsat/requirements.txt /tmp/landsat/requirements.txt
 RUN pip install -r /tmp/landsat/requirements.txt
