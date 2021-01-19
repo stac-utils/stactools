@@ -56,7 +56,7 @@ def merge_items(source_item,
     target_geom = shape(target_item.geometry)
     union_geom = source_geom.union(target_geom).buffer(0)
     target_item.geometry = mapping(union_geom)
-    target_item.bbox = union_geom.bounds
+    target_item.bbox = list(union_geom.bounds)
 
 
 def merge_all_items(source_catalog,

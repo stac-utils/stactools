@@ -50,8 +50,7 @@ def _create_cog(item, href, subdatasets, bands):
     geom = item.geometry
     crs = 'epsg:{}'.format(item.ext.projection.epsg)
     reprojected_geom = reproject_geom('epsg:4326', crs, geom)
-    bounds = shape(reprojected_geom).bounds
-    print(bounds)
+    bounds = list(shape(reprojected_geom).bounds)
 
     with TemporaryDirectory() as tmp_dir:
         band_paths = []
