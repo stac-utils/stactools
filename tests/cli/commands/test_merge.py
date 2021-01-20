@@ -1,4 +1,5 @@
 import os
+import shutil
 from tempfile import TemporaryDirectory
 
 import pystac
@@ -97,3 +98,50 @@ class MergeTest(CliTestCase):
 
             self.assertEqual(result_extent.spatial.bboxes[0][0], xmin)
             self.assertEqual(result_extent.temporal.intervals[0][1], time_max)
+
+    def test_merges_assets(self):
+        item_id = '2017831_195552_SS02'
+
+        with TemporaryDirectory() as tmp_dir:
+            orig_data = os.path.dirname(
+                TestCases.planet_disaster().get_self_href())
+            shutil.copytree(orig_data, os.path.join(tmp_dir, '0'))
+
+            col0 = pystac.read_file(os.path.join(tmp_dir, '0/collection.json'))
+            item = col0.get_item(item_id, recursive=True)
+
+            new_col1 = col0.clone()
+            new_col1.clear_children()
+
+            item1 = item.clone()
+            del item1.assets['visual']
+            new_col1.add_item(item1)
+
+            new_col1.normalize_hrefs(os.path.join(tmp_dir, 'a'))
+            new_col1.save()
+
+            new_col2 = col0.clone()
+            new_col2.clear_children()
+
+            item2 = item.clone()
+            del item2.assets['full-jpg']
+            new_col2.add_item(item2)
+
+            new_col2.normalize_hrefs(os.path.join(tmp_dir, 'b'))
+            new_col2.save()
+
+            cmd = [
+                'merge',
+                os.path.join(tmp_dir, 'a/collection.json'),
+                os.path.join(tmp_dir, 'b/collection.json'), '--move-assets',
+                '--ignore-conflicts'
+            ]
+
+            self.run_command(cmd)
+
+            target_col = pystac.read_file(
+                os.path.join(tmp_dir, 'b/collection.json'))
+
+            result_item = target_col.get_item(item_id, recursive=True)
+            self.assertIn('visual', result_item.assets)
+            self.assertIn('full-jpg', result_item.assets)
