@@ -66,7 +66,7 @@ class CopyTest(CliTestCase):
                 item_href = item.get_self_href()
                 for asset in item.assets.values():
                     href = asset.href
-                    print(href)
+
                     self.assertFalse(is_absolute_href(href))
                     common_path = os.path.commonpath([
                         os.path.dirname(item_href),

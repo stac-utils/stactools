@@ -3,11 +3,9 @@ import os
 from subprocess import Popen, PIPE, STDOUT
 
 import pystac
-from shapely.geometry import shape
 
 from stactools.corine.constants import (ITEM_COG_IMAGE_NAME,
                                         ITEM_TIF_IMAGE_NAME)
-from stactools.core.projection import reproject_geom
 
 logger = logging.getLogger(__name__)
 
@@ -31,11 +29,6 @@ def cogify(input_path, output_path):
 
 
 def _create_cog(item, cog_directory):
-    geom = item.geometry
-    crs = item.ext.projection.epsg
-    reprojected_geom = reproject_geom('epsg:4326', crs, geom)
-    bounds = shape(reprojected_geom).bounds
-    print(bounds)
 
     tif_asset = item.assets.get(ITEM_TIF_IMAGE_NAME)
     cogify(tif_asset.href, cog_directory)
