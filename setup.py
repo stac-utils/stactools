@@ -30,6 +30,7 @@ subpackages = [
     Subpackage('core'),
     Subpackage('cli'),
     Subpackage('aster', is_extra=True),
+    Subpackage('corine', is_extra=True),
     Subpackage('landsat', is_extra=True),
     Subpackage('planet', is_extra=True),
     Subpackage('browse', is_extra=True),

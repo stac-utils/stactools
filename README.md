@@ -200,3 +200,4 @@ stactools is happy to take contributions of new subpackages for working with spe
 - Add the subpackage to the appropriate tables in the README.
 - Add documentation for the subpackage.
 - Add subpackage to .readthedocs.yml install
+- Add the subpackage to the `subpackages` list in the top-level `setup.py`, with `is_extra=True`. This will allow for an install of that specific subpackage with the pip extras syntax, e.g. `pip install stactools[aster]`.
