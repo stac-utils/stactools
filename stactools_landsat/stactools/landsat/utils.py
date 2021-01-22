@@ -2,7 +2,7 @@ import datetime
 
 import dateutil
 import rasterio
-from pystac import Item, Link
+from pystac import Item, Link, MediaType
 from rasterio import RasterioIOError
 from shapely.geometry import box, mapping, shape
 
@@ -116,7 +116,7 @@ def transform_stac_to_stac(item: Item,
                 if asset.media_type == "image/vnd.stac.geotiff; cloud-optimized=true":
                     item.ext.projection.set_transform(transform, asset=asset)
                     item.ext.projection.set_shape(shape, asset=asset)
-                    asset.media_type = "image/tiff; application=geotiff; profile=cloud-optimized"
+                    asset.media_type = MediaType.COG
 
         except RasterioIOError:
             print("Failed to load blue band, so not handling proj fields")

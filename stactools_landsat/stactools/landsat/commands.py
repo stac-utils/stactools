@@ -9,8 +9,18 @@ from stactools.landsat.utils import (transform_mtl_to_stac,
 
 
 def create_landsat_command(cli):
-    @cli.command("landsat-convert",
-                 short_help="Convert a Landsat MTL file to a STAC Item")
+    """Creates a command group for working
+    with Landsat metadata from USGS' Collection 2
+    """
+    @cli.group(
+        'landsat',
+        short_help=("Commands for working with Landsat Collection 2 metadata.")
+    )
+    def landsat():
+        pass
+
+    @landsat.command("convert",
+                     short_help="Convert a Landsat MTL file to a STAC Item")
     @click.option("--mtl", "-m", help="Path to an MTL file.")
     @click.option("--stac", "-s", help="Path to a STAC file.")
     @click.option(
@@ -33,9 +43,8 @@ def create_landsat_command(cli):
             with open(mtl) as f:
                 item = transform_mtl_to_stac(json.load(f))
         elif stac:
-            with open(stac) as f:
-                in_item = Item.from_dict(json.load(f))
-                item = transform_stac_to_stac(in_item, enable_proj=enable_proj)
+            in_item = Item.from_file(stac)
+            item = transform_stac_to_stac(in_item, enable_proj=enable_proj)
 
         item_path = os.path.join(dst, '{}.json'.format(item.id))
         item.set_self_href(item_path)

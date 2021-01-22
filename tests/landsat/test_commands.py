@@ -3,29 +3,37 @@ import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from pystac import Item, validation
+import pystac
 from stactools.landsat.commands import create_landsat_command
 from stactools.landsat.utils import (_parse_date, stac_api_to_stac,
                                      transform_mtl_to_stac,
                                      transform_stac_to_stac)
 from tests.utils import CliTestCase, TestData
 
+TEST_FOLDER = Path(TestData.get_path("data-files/landsat"))
+ALL_EXAMPLES = [
+    "LC08_L2SR_081119_20200101_20200823_02_T2_SR_stac.json",
+    "LC08_L2SP_030034_20201111_20201212_02_T1_SR_stac.json",
+    "LE07_L2SP_167064_20070321_20200913_02_T1_SR_stac.json",
+    "LT05_L2SP_201034_19860504_20200917_02_T1_SR_stac.json",
+    "LC08_L2SR_232122_20191218_20201023_02_T2_SR_stac.json",
+]
+
 
 class LandsatTest(CliTestCase):
     def create_subcommand_functions(self):
         return [create_landsat_command]
 
-    test_folder = Path(TestData.get_path("data-files/landsat"))
-    landsat_stac_file = test_folder / "LC08_L2SR_081119_20200101_20200823_02_T2.json"
-    landsat_mtl_file = test_folder / "LC08_L2SR_081119_20200101_20200823_02_T2_MTL.json"
+    landsat_stac_files = [str(TEST_FOLDER / f) for f in ALL_EXAMPLES]
+    landsat_mtl_file = TEST_FOLDER / "LC08_L2SR_081119_20200101_20200823_02_T2_MTL.json"
     landsat_stac_api = (
         "https://landsatlook.usgs.gov/sat-api/collections/"
         "landsat-c2l2-sr/items/LC08_L2SR_081119_20200101_20200823_02_T2")
 
     @property
     def landsat_stac(self):
-        with open(self.landsat_stac_file) as f:
-            return json.load(f)
+        stac_file = pystac.Item.from_file(self.landsat_stac_files[0])
+        return stac_file
 
     @property
     def landsat_mtl(self):
@@ -34,12 +42,13 @@ class LandsatTest(CliTestCase):
 
     def test_load_json(self):
         """Super lazy simple check that we are loading JSON"""
-        json.dumps(self.landsat_stac, indent=2)
+        assert self.landsat_stac.STAC_OBJECT_TYPE == pystac.STACObjectType.ITEM
 
     def test_transform_static_stac(self):
-        """Load a STAC 0.7.0 file as a dict and convert to a STAC 1.0.0.beta.2 item"""
-        item = transform_stac_to_stac(Item.from_dict(self.landsat_stac))
-        item.validate()
+        """Load a range of STAC 0.7.0 files and convert them to STAC 1.0.0.beta.2 items"""
+        for stac_file in self.landsat_stac_files:
+            item = transform_stac_to_stac(pystac.Item.from_file(stac_file))
+            item.validate()
 
     def test_transform_dynamic_stac(self):
         """Convert a URI of a STAC 0.7.0 document to a STAC 1.0.0.beta.2 document"""
@@ -51,7 +60,7 @@ class LandsatTest(CliTestCase):
         This is not fully implemented, so it fails"""
         item = transform_mtl_to_stac(self.landsat_mtl)
         # We expect failure until it is fully implemented
-        with self.assertRaises(validation.STACValidationError):
+        with self.assertRaises(pystac.validation.STACValidationError):
             item.validate()
 
     def test_date_parse(self):
@@ -68,10 +77,9 @@ class LandsatTest(CliTestCase):
         """Test the actual CLI application"""
 
         with TemporaryDirectory() as tmp_dir:
-
             # Expected success
             result = self.run_command([
-                'landsat-convert', '--stac', self.landsat_stac_file,
+                'landsat', 'convert', '--stac', self.landsat_stac_files[0],
                 '--enable-proj', '--dst', tmp_dir
             ])
 
@@ -85,7 +93,7 @@ class LandsatTest(CliTestCase):
 
             # Expected failure, return code 1
             result = self.run_command([
-                'landsat-convert', '--mtl', self.landsat_mtl_file,
+                'landsat', 'convert', '--mtl', self.landsat_mtl_file,
                 '--enable-proj', '--dst', tmp_dir
             ])
 
