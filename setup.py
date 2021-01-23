@@ -17,7 +17,7 @@ class Subpackage:
     def version(self):
         version_file = 'stactools_{}/stactools/{}/version.py'.format(self.name, self.name)
         return load_source('stactools.{}.version'.format(self.name),
-                          os.path.join(
+                           os.path.join(
                               os.path.dirname(__file__),
                               version_file
                           )).__version__
@@ -34,6 +34,7 @@ subpackages = [
     Subpackage('landsat', is_extra=True),
     Subpackage('planet', is_extra=True),
     Subpackage('browse', is_extra=True),
+    Subpackage('sentinel', is_extra=True)
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -42,12 +43,12 @@ with open(os.path.join(here, 'README.md')) as readme_file:
     readme = readme_file.read()
 
 # These subpackages will be installed by default
-default_subpackages=[
+default_subpackages = [
     p.requirement_name for p in subpackages if not p.is_extra
 ]
 
 # List subpackages as extras
-extras_require={
+extras_require = {
     'all': []
 }
 
