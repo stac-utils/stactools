@@ -1,7 +1,6 @@
 # flake8: noqa
 
-from stactools.aster.stac import create_item
-from stactools.aster.cog import create_cogs
+from stactools.naip.stac import create_item
 
 import stactools.core
 

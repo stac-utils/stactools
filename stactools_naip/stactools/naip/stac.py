@@ -49,7 +49,7 @@ def create_collection(seasons: List[int]) -> pystac.Collection:
         extent=extent,
         stac_extensions=['item-assets'],
         extra_fields={
-            'item_assets':
+            'item_assets': {
                 'image': {
                     "eo:bands": [b.properties for b in constants.NAIP_BANDS],
                     "gsd": 1.0,
