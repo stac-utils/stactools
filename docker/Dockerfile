@@ -38,13 +38,26 @@ RUN conda install -y -c conda-forge gdal=3.2.0
 COPY stactools_core/requirements.txt /tmp/core/requirements.txt
 RUN pip install -r /tmp/core/requirements.txt
 
+# Install dependencies for building rasterio from source.
+# The rasterio wheels do not include the HDF-EOS driver
+# for GDAL that we need for reading aster and corine files,
+# so we build it from source. We disable pip's build isolation,
+# since rasterio's pyproject.toml doesn't currently pin
+# the NumPy version and so will use the newest available. If
+# we build rasterio against a newer version of NumPy, we'll
+# be unable to import it in *this* environment, which might
+# already have NumPy installed.
+#
+# Build dependencies for aster
+RUN pip install setuptools cython numpy
+
 # CLI
 COPY stactools_cli/requirements.txt /tmp/cli/requirements.txt
-RUN pip install -r /tmp/cli/requirements.txt
+RUN pip install --no-build-isolation -r /tmp/cli/requirements.txt
 
 # Aster
 COPY stactools_aster/requirements.txt /tmp/aster/requirements.txt
-RUN pip install -r /tmp/aster/requirements.txt
+RUN pip install --no-build-isolation -r /tmp/aster/requirements.txt
 
 # Corine
 COPY stactools_corine/requirements.txt /tmp/corine/requirements.txt
