@@ -54,6 +54,10 @@ RUN pip install -r /tmp/corine/requirements.txt
 COPY stactools_landsat/requirements.txt /tmp/landsat/requirements.txt
 RUN pip install -r /tmp/landsat/requirements.txt
 
+# MODIS
+COPY stactools_modis/requirements.txt /tmp/modis/requirements.txt
+RUN pip install -r /tmp/modis/requirements.txt
+
 # Planet
 COPY stactools_planet/requirements.txt /tmp/planet/requirements.txt
 RUN pip install -r /tmp/planet/requirements.txt

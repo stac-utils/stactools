@@ -6,6 +6,7 @@ STACTOOLS_SUBPACKAGE_DIRS=(
     "stactools_aster"
     "stactools_corine"
     "stactools_landsat"
+    "stactools_modis"
     "stactools_planet"
     "stactools_browse"
 );
@@ -16,6 +17,7 @@ STACTOOLS_COVERAGE_DIRS=(
     "stactools_aster/stactools/aster"
     "stactools_corine/stactools/corine"
     "stactools_landsat/stactools/landsat"
+    "stactools_modis/stactools/modis"
     "stactools_planet/stactools/planet"
     "stactools_browse/stactools/browse"
 );

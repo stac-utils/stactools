@@ -12,4 +12,7 @@ max-line-length = 100
 # E126: Continuation line over-indented for hanging indent
 # Conflicts with yapf formatting
 
-ignore = E127,W503,E126
+# E251: unexpected spaces around keyword / parameter equals
+# Conflicts with yapf formatting
+
+ignore = E127,W503,E126,E251
