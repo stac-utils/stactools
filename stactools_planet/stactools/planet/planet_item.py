@@ -65,15 +65,11 @@ class PlanetItem:
         item.ext.view.sun_azimuth = props.pop('sun_azimuth')
         item.ext.view.sun_elevation = props.pop('sun_elevation')
 
-        # proj
-        if 'epsg_code' in props:
-            item.ext.enable('projection')
-            item.ext.projection.epsg = props.pop('epsg_code')
-
         # Add all additional properties with Planet extension designation.
         for k, v in props.items():
             item.properties['{}:{}'.format(PLANET_EXTENSION_PREFIX, k)] = v
 
+        geotransform = None
         for planet_asset in self.item_assets:
             href = make_absolute_href(planet_asset['path'],
                                       start_href=self.base_dir,
@@ -87,7 +83,10 @@ class PlanetItem:
                 roles = ['visual']
                 thumbnail_path = f"{os.path.splitext(href)[0]}.thumbnail.png"
                 datafile = gdal.Open(href)
-                outsize = "256 0" if datafile.RasterXSize > datafile.RasterYSize else "0 256"
+                geotransform = datafile.GetGeoTransform()
+                width = datafile.RasterXSize
+                height = datafile.RasterYSize
+                outsize = "256 0" if width > height else "0 256"
                 gdal.Translate(thumbnail_path,
                                href,
                                options=f"-of PNG -outsize {outsize}")
@@ -108,6 +107,14 @@ class PlanetItem:
                 key = '{}:{}'.format(bundle_type, asset_type)
 
             item.add_asset(key, pystac.Asset(href=href, media_type=media_type, roles=roles))
+
+        # proj
+        if 'epsg_code' in props:
+            item.ext.enable('projection')
+            item.ext.projection.epsg = props.pop('epsg_code')
+            if geotransform is not None:
+                item.ext.projection.transform = geotransform
+                item.ext.projection.shape = [width, height]
 
         if self.metadata_href:
             item.add_asset(
