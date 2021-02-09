@@ -5,10 +5,12 @@ import logging
 import fsspec
 import pystac
 from pystac.utils import (str_to_datetime, make_absolute_href)
+from pystac.extensions.eo import Band
 from shapely.geometry import shape
 
 from stactools.planet import PLANET_PROVIDER
 from stactools.planet.constants import PLANET_EXTENSION_PREFIX
+
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +57,16 @@ class PlanetItem:
         item.ext.enable('eo')
         # STAC uses 0-100, planet 0-1
         item.ext.eo.cloud_cover = props.pop('cloud_cover') * 100
+        item_type = props.pop('item_type')
+        if item_type.startswith('SkySat'):
+            skysat_bands = [
+                            Band.create('PAN', center_wavelength= 655, full_width_half_max=440),
+                            Band.create('BLUE', center_wavelength= 470, full_width_half_max=70),
+                            Band.create('GREEN', center_wavelength= 560, full_width_half_max=80),
+                            Band.create('RED', center_wavelength= 645, full_width_half_max=90),
+                            Band.create('NIR', center_wavelength= 800, full_width_half_max=152)
+                            ]
+            item.ext.eo.bands = skysat_bands
 
         # view
         item.ext.enable('view')
