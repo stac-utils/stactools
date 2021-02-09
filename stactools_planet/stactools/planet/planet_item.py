@@ -1,3 +1,4 @@
+import os
 from copy import deepcopy
 import json
 import logging
@@ -9,6 +10,8 @@ from shapely.geometry import shape
 
 from stactools.planet import PLANET_PROVIDER
 from stactools.planet.constants import PLANET_EXTENSION_PREFIX
+
+from osgeo import gdal
 
 logger = logging.getLogger(__name__)
 
@@ -81,6 +84,19 @@ class PlanetItem:
             # Planet data is delivered as COGs
             if media_type == 'image/tiff':
                 media_type = pystac.MediaType.COG
+                roles = ['visual']
+                thumbnail_path = f"{os.path.splitext(href)[0]}.thumbnail.png"
+                datafile = gdal.Open(href)
+                outsize = "256 0" if datafile.RasterXSize > datafile.RasterYSize else "0 256"
+                gdal.Translate(thumbnail_path,
+                               href,
+                               options=f"-of PNG -outsize {outsize}")
+
+                item.add_asset('thumbnail', pystac.Asset(href=thumbnail_path,
+                                                         media_type="image/png",
+                                                         roles=['thumbnail']))
+            else:
+                roles = ['metadata']
 
             asset_type = planet_asset['annotations']['planet/asset_type']
             bundle_type = planet_asset['annotations']['planet/bundle_type']
@@ -91,13 +107,14 @@ class PlanetItem:
             if asset_type != bundle_type:
                 key = '{}:{}'.format(bundle_type, asset_type)
 
-            item.add_asset(key, pystac.Asset(href=href, media_type=media_type))
+            item.add_asset(key, pystac.Asset(href=href, media_type=media_type, roles=roles))
 
         if self.metadata_href:
             item.add_asset(
                 'metadata',
                 pystac.Asset(href=self.metadata_href,
-                             media_type=pystac.MediaType.JSON))
+                             media_type=pystac.MediaType.JSON,
+                             roles=['metadata']))
 
         return item
 
