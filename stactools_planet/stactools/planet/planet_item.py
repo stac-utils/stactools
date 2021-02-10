@@ -14,6 +14,13 @@ from stactools.planet.constants import PLANET_EXTENSION_PREFIX
 
 logger = logging.getLogger(__name__)
 
+SKYSAT_BANDS = {'PAN': Band.create('PAN', center_wavelength= 655, full_width_half_max=440),
+                'BLUE': Band.create('BLUE', center_wavelength= 470, full_width_half_max=70),
+                'GREEN': Band.create('GREEN', center_wavelength= 560, full_width_half_max=80),
+                'RED': Band.create('RED', center_wavelength= 645, full_width_half_max=90),
+                'NIR': Band.create('NIR', center_wavelength= 800, full_width_half_max=152)
+                }
+
 
 class PlanetItem:
     def __init__(self,
@@ -57,16 +64,6 @@ class PlanetItem:
         item.ext.enable('eo')
         # STAC uses 0-100, planet 0-1
         item.ext.eo.cloud_cover = props.pop('cloud_cover') * 100
-        item_type = props.pop('item_type')
-        if item_type.startswith('SkySat'):
-            skysat_bands = [
-                            Band.create('PAN', center_wavelength= 655, full_width_half_max=440),
-                            Band.create('BLUE', center_wavelength= 470, full_width_half_max=70),
-                            Band.create('GREEN', center_wavelength= 560, full_width_half_max=80),
-                            Band.create('RED', center_wavelength= 645, full_width_half_max=90),
-                            Band.create('NIR', center_wavelength= 800, full_width_half_max=152)
-                            ]
-            item.ext.eo.bands = skysat_bands
 
         # view
         item.ext.enable('view')
@@ -83,6 +80,7 @@ class PlanetItem:
         for k, v in props.items():
             item.properties['{}:{}'.format(PLANET_EXTENSION_PREFIX, k)] = v
 
+        item_type = props.pop('item_type')
         for planet_asset in self.item_assets:
             href = make_absolute_href(planet_asset['path'],
                                       start_href=self.base_dir,
@@ -103,7 +101,29 @@ class PlanetItem:
             if asset_type != bundle_type:
                 key = '{}:{}'.format(bundle_type, asset_type)
 
-            item.add_asset(key, pystac.Asset(href=href, media_type=media_type))
+            asset = pystac.Asset(href=href, media_type=media_type)
+
+            if media_type == pystac.MediaType.COG:
+                #add bands to asset
+                if True:#item_type.startswith('SkySat'):
+                    if "panchro" in asset_type:
+                        bands = [SKYSAT_BANDS['PAN']]
+                    elif "analytic" in asset_type:
+                        bands = [
+                                 SKYSAT_BANDS['BLUE'],
+                                 SKYSAT_BANDS['GREEN'],
+                                 SKYSAT_BANDS['RED'],
+                                 SKYSAT_BANDS['NIR']
+                                ]
+                    else:
+                        bands = [
+                                 SKYSAT_BANDS['RED'],
+                                 SKYSAT_BANDS['GREEN'],
+                                 SKYSAT_BANDS['BLUE']
+                                ]
+                    item.ext.eo.set_bands(bands, asset)
+
+            item.add_asset(key, asset)
 
         if self.metadata_href:
             item.add_asset(
