@@ -70,6 +70,7 @@ class PlanetItem:
         # view
         item.ext.enable('view')
         item.ext.view.off_nadir = props.pop('view_angle')
+        item.ext.view.azimuth = props.pop('satellite_azimuth')
         item.ext.view.sun_azimuth = props.pop('sun_azimuth')
         item.ext.view.sun_elevation = props.pop('sun_elevation')
 
