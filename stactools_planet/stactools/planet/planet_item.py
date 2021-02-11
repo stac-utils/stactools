@@ -6,6 +6,7 @@ import logging
 import fsspec
 import pystac
 from pystac.utils import (str_to_datetime, make_absolute_href)
+from pystac.extensions.eo import Band
 from shapely.geometry import shape
 
 from stactools.planet import PLANET_PROVIDER
@@ -14,6 +15,13 @@ from stactools.planet.constants import PLANET_EXTENSION_PREFIX
 from osgeo import gdal
 
 logger = logging.getLogger(__name__)
+
+SKYSAT_BANDS = {'PAN': Band.create('PAN', center_wavelength= 655, full_width_half_max=440),
+                'BLUE': Band.create('BLUE', center_wavelength= 470, full_width_half_max=70),
+                'GREEN': Band.create('GREEN', center_wavelength= 560, full_width_half_max=80),
+                'RED': Band.create('RED', center_wavelength= 645, full_width_half_max=90),
+                'NIR': Band.create('NIR', center_wavelength= 800, full_width_half_max=152)
+                }
 
 
 class PlanetItem:
@@ -70,6 +78,7 @@ class PlanetItem:
             item.properties['{}:{}'.format(PLANET_EXTENSION_PREFIX, k)] = v
 
         geotransform = None
+        item_type = props.pop('item_type')
         for planet_asset in self.item_assets:
             href = make_absolute_href(planet_asset['path'],
                                       start_href=self.base_dir,
@@ -107,6 +116,29 @@ class PlanetItem:
                 key = '{}:{}'.format(bundle_type, asset_type)
 
             item.add_asset(key, pystac.Asset(href=href, media_type=media_type, roles=roles))
+            asset = pystac.Asset(href=href, media_type=media_type)
+
+            if media_type == pystac.MediaType.COG:
+                #add bands to asset
+                if item_type.startswith('SkySat'):
+                    if "panchro" in asset_type:
+                        bands = [SKYSAT_BANDS['PAN']]
+                    elif "analytic" in asset_type:
+                        bands = [
+                                 SKYSAT_BANDS['BLUE'],
+                                 SKYSAT_BANDS['GREEN'],
+                                 SKYSAT_BANDS['RED'],
+                                 SKYSAT_BANDS['NIR']
+                                ]
+                    else:
+                        bands = [
+                                 SKYSAT_BANDS['RED'],
+                                 SKYSAT_BANDS['GREEN'],
+                                 SKYSAT_BANDS['BLUE']
+                                ]
+                    item.ext.eo.set_bands(bands, asset)
+
+            item.add_asset(key, asset)
 
         # proj
         if 'epsg_code' in props:
