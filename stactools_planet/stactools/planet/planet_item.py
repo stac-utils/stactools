@@ -75,8 +75,19 @@ class PlanetItem:
         item.ext.view.sun_elevation = props.pop('sun_elevation')
 
         # Add all additional properties with Planet extension designation.
-        for k, v in props.items():
-            item.properties['{}:{}'.format(PLANET_EXTENSION_PREFIX, k)] = v
+        whitelisted_props = [
+                            'anomalous_pixels',
+                            'ground_control',
+                            'item_type',
+                            'pixel_resolution',
+                            'quality_category',
+                            'strip_id',
+                            'publishing_stage',
+                            'clear_percent'
+                            ]
+        for name in whitelisted_props:
+            if name in props:
+                item.properties['{}:{}'.format(PLANET_EXTENSION_PREFIX, name)] = props[name]
 
         geotransform = None
         item_type = props.pop('item_type')
