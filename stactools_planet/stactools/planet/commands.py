@@ -16,7 +16,8 @@ def convert_order(manifest,
                   copy=False,
                   description=None,
                   title=None,
-                  skip_validation=False):
+                  skip_validation=False,
+                  catalog_type=None):
     manifest = OrderManifest.from_file(manifest)
     collection = manifest.to_stac(collection_id=collection_id,
                                   description=description,
@@ -28,7 +29,8 @@ def convert_order(manifest,
 
     logger.info('Saving STAC collection at {}...'.format(
         collection.get_self_href()))
-    collection.save(catalog_type=pystac.CatalogType.SELF_CONTAINED)
+    catalog_type = catalog_type or pystac.CatalogType.SELF_CONTAINED
+    collection.save(catalog_type=catalog_type)
 
     # Move assets after save to avoid moving without saving,
     # and so the directory structure is generated.
@@ -60,8 +62,16 @@ def create_planet_command(cli):
                   '--title',
                   help='Optional title for the STAC collection.')
     @click.option('--skip-validation', help='Skip validation on the STAC')
+    @click.option('-c',
+                  '--catalog-type',
+                  type=click.Choice([
+                                    pystac.CatalogType.ABSOLUTE_PUBLISHED,
+                                    pystac.CatalogType.RELATIVE_PUBLISHED,
+                                    pystac.CatalogType.SELF_CONTAINED
+                                    ],
+                                    case_sensitive=False))
     def convert_command(manifest, destination, id, assets, description, title,
-                        skip_validation):
+                        skip_validation, catalog_type):
         """Converts a planet order to a STAC Catalog.
 
         The Planet order is passed in via the manifest.json file located at
@@ -76,6 +86,7 @@ def create_planet_command(cli):
                       copy=(assets == 'copy'),
                       description=description,
                       title=title,
-                      skip_validation=skip_validation)
+                      skip_validation=skip_validation,
+                      catalog_type=catalog_type)
 
     return planet
