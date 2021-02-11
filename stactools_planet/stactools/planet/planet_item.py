@@ -5,6 +5,7 @@ import logging
 
 import fsspec
 import pystac
+from pystac.link import Link
 from pystac.utils import (str_to_datetime, make_absolute_href)
 from pystac.extensions.eo import Band
 from shapely.geometry import shape
@@ -39,12 +40,12 @@ class PlanetItem:
         props = deepcopy(self.item_metadata['properties'])
 
         # Core Item properties
-        id = self.item_metadata['id']
+        item_id = self.item_metadata['id']
         geom = self.item_metadata['geometry']
         bbox = list(shape(geom).bounds)
         datetime = str_to_datetime(props.pop('acquired'))
 
-        item = pystac.Item(id=id,
+        item = pystac.Item(id=item_id,
                            geometry=geom,
                            bbox=bbox,
                            datetime=datetime,
@@ -89,8 +90,12 @@ class PlanetItem:
             if name in props:
                 item.properties['{}:{}'.format(PLANET_EXTENSION_PREFIX, name)] = props[name]
 
-        geotransform = None
         item_type = props.pop('item_type')
+        planet_url = f'https://api.planet.com/data/v1/item-types/{item_type}/items/{item_id}'
+        via_link = Link('via', planet_url)
+        item.add_link(via_link)
+
+        geotransform = None
         for planet_asset in self.item_assets:
             href = make_absolute_href(planet_asset['path'],
                                       start_href=self.base_dir,
