@@ -163,7 +163,7 @@ class PlanetItem:
             item.ext.projection.epsg = props.pop('epsg_code')
             if geotransform is not None:
                 item.ext.projection.transform = geotransform
-                item.ext.projection.shape = [width, height]
+                item.ext.projection.shape = [height, width]
 
         if self.metadata_href:
             item.add_asset(
