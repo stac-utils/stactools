@@ -17,11 +17,11 @@ from osgeo import gdal
 
 logger = logging.getLogger(__name__)
 
-SKYSAT_BANDS = {'PAN': Band.create('PAN', center_wavelength= 655, full_width_half_max=440),
-                'BLUE': Band.create('BLUE', center_wavelength= 470, full_width_half_max=70),
-                'GREEN': Band.create('GREEN', center_wavelength= 560, full_width_half_max=80),
-                'RED': Band.create('RED', center_wavelength= 645, full_width_half_max=90),
-                'NIR': Band.create('NIR', center_wavelength= 800, full_width_half_max=152)
+SKYSAT_BANDS = {'PAN': Band.create('PAN', common_name='pan', center_wavelength= 655, full_width_half_max=440),
+                'BLUE': Band.create('BLUE', common_name='blue', center_wavelength= 470, full_width_half_max=70),
+                'GREEN': Band.create('GREEN', common_name='green', center_wavelength= 560, full_width_half_max=80),
+                'RED': Band.create('RED', common_name='red', center_wavelength= 645, full_width_half_max=90),
+                'NIR': Band.create('NIR', common_name='nir', center_wavelength= 800, full_width_half_max=152)
                 }
 
 
