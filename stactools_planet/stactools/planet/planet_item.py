@@ -13,7 +13,8 @@ from shapely.geometry import shape
 from stactools.planet import PLANET_PROVIDER
 from stactools.planet.constants import PLANET_EXTENSION_PREFIX
 
-from osgeo import gdal
+import rasterio
+from rasterio.enums import Resampling
 
 logger = logging.getLogger(__name__)
 
@@ -108,14 +109,20 @@ class PlanetItem:
                 media_type = pystac.MediaType.COG
                 roles = ['visual']
                 thumbnail_path = f"{os.path.splitext(href)[0]}.thumbnail.png"
-                datafile = gdal.Open(href)
-                geotransform = datafile.GetGeoTransform()
-                width = datafile.RasterXSize
-                height = datafile.RasterYSize
-                outsize = "256 0" if width > height else "0 256"
-                gdal.Translate(thumbnail_path,
-                               href,
-                               options=f"-of PNG -outsize {outsize}")
+                with rasterio.open(href) as dataset:
+                    height, width = dataset.shape
+                    geotransform = dataset.transform
+                    width, height = 256, int(height / width * 256) if width > height else int(width / height * 256), 256
+
+                    profile = dataset.profile
+                    profile.update(driver='PNG')
+
+                    data = dataset.read(
+                            out_shape=(int(dataset.count), height, width),
+                            resampling=Resampling.cubic)
+
+                    with rasterio.open(thumbnail_path,'w', **profile) as dst:
+                        dst.write(data)
 
                 item.add_asset('thumbnail', pystac.Asset(href=thumbnail_path,
                                                          media_type="image/png",
