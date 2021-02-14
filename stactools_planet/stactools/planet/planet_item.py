@@ -125,7 +125,7 @@ class PlanetItem:
                         dst.write(data)
 
                 item.add_asset('thumbnail', pystac.Asset(href=thumbnail_path,
-                                                         media_type="image/png",
+                                                         media_type=pystac.MediaType.PNG,
                                                          roles=['thumbnail']))
             else:
                 roles = ['metadata']
