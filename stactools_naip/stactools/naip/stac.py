@@ -3,10 +3,10 @@ from typing import List
 
 import pystac
 from pystac.utils import str_to_datetime
-from shapely.geometry import box, mapping, shape
-import utm_zone as utm
+from shapely.geometry import shape, box, mapping
+import rasterio as rio
 
-from stactools.core.projection import epsg_from_utm_zone_number
+from stactools.core.projection import reproject_geom
 from stactools.naip import constants
 from stactools.naip.utils import parse_fgdc_metadata
 
@@ -74,7 +74,8 @@ def create_item(state,
         state (str): The 2-letter state code for the state this item belongs to.
         fgdc_metadata_href (str): The href to the FGDC metadata
             for this NAIP scene.
-        cog_href (str): The href to the image as a COG.
+        cog_href (str): The href to the image as a COG. This needs
+            to be an HREF that rasterio is able to open.
         thumbnail_href (str): Optional href for a thumbnail for this scene.
         additional_providers(List[pystac.Provider]): Optional list of additional
             providers to the USDA that will be included on this Item.
@@ -88,6 +89,16 @@ def create_item(state,
     fgdc_metadata_text = pystac.STAC_IO.read_text(fgdc_metadata_href)
     fgdc = parse_fgdc_metadata(fgdc_metadata_text)
 
+    with rio.open(cog_href) as ds:
+        epsg = int(ds.crs.to_authority()[1])
+        image_shape = list(ds.shape)
+        original_bbox = list(ds.bounds)
+        transform = list(ds.transform)
+        geom = reproject_geom(ds.crs,
+                              'epsg:4326',
+                              mapping(box(*ds.bounds)),
+                              precision=6)
+
     if 'Distribution_Information' in fgdc:
         resource_desc = fgdc['Distribution_Information'][
             'Resource_Description']
@@ -95,14 +106,6 @@ def create_item(state,
         resource_desc = os.path.basename(cog_href)
     item_id = naip_item_id(state, resource_desc)
 
-    bbox_md = fgdc['Identification_Information']['Spatial_Domain'][
-        'Bounding_Coordinates']
-
-    xmin, xmax = float(bbox_md['West_Bounding_Coordinate']), float(
-        bbox_md['East_Bounding_Coordinate'])
-    ymin, ymax = float(bbox_md['South_Bounding_Coordinate']), float(
-        bbox_md['North_Bounding_Coordinate'])
-    geom = mapping(box(xmin, ymin, xmax, ymax))
     bounds = list(shape(geom).bounds)
 
     dt = str_to_datetime(
@@ -126,16 +129,10 @@ def create_item(state,
 
     # proj
     item.ext.enable('projection')
-    # Some don't specify their UTM zone, some do.
-    if 'Spatial_Reference_Information' in fgdc:
-        utm_zone = fgdc['Spatial_Reference_Information'][
-            'Horizontal_Coordinate_System_Definition']['Planar'][
-                'Grid_Coordinate_System']['Universal_Transverse_Mercator'][
-                    'UTM_Zone_Number']
-        epsg = epsg_from_utm_zone_number(utm_zone, south=False)
-    else:
-        epsg = utm.epsg(geom)
     item.ext.projection.epsg = epsg
+    item.ext.projection.shape = image_shape
+    item.ext.projection.bbox = original_bbox
+    item.ext.projection.transform = transform
 
     # COG
     item.add_asset(
