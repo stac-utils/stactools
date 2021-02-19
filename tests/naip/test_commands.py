@@ -18,7 +18,10 @@ class CreateItemTest(CliTestCase):
             'data-files/naip/m_3008501_ne_16_1_20110815-downsampled.tif')
 
         with TemporaryDirectory() as tmp_dir:
-            cmd = ['naip', 'create-item', 'al', fgdc_href, cog_href, tmp_dir]
+            cmd = [
+                'naip', 'create-item', 'al', '2011', fgdc_href, cog_href,
+                tmp_dir
+            ]
             self.run_command(cmd)
 
             jsons = [p for p in os.listdir(tmp_dir) if p.endswith('.json')]
@@ -39,7 +42,10 @@ class CreateItemTest(CliTestCase):
         )
 
         with TemporaryDirectory() as tmp_dir:
-            cmd = ['naip', 'create-item', 'al', fgdc_href, cog_href, tmp_dir]
+            cmd = [
+                'naip', 'create-item', 'al', '2016', fgdc_href, cog_href,
+                tmp_dir
+            ]
             self.run_command(cmd)
 
             jsons = [p for p in os.listdir(tmp_dir) if p.endswith('.json')]

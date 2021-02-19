@@ -64,6 +64,7 @@ def create_collection(seasons: List[int]) -> pystac.Collection:
 
 
 def create_item(state,
+                year,
                 fgdc_metadata_href,
                 cog_href,
                 thumbnail_href=None,
@@ -72,6 +73,7 @@ def create_item(state,
 
     Args:
         state (str): The 2-letter state code for the state this item belongs to.
+        year (str): The NAIP year.
         fgdc_metadata_href (str): The href to the FGDC metadata
             for this NAIP scene.
         cog_href (str): The href to the image as a COG. This needs
@@ -112,11 +114,13 @@ def create_item(state,
         fgdc['Identification_Information']['Time_Period_of_Content']
         ['Time_Period_Information']['Single_Date/Time']['Calendar_Date'])
 
+    properties = {'naip:state': state, 'naip:year': year}
+
     item = pystac.Item(id=item_id,
                        geometry=geom,
                        bbox=bounds,
                        datetime=dt,
-                       properties={'naip:state': state})
+                       properties=properties)
 
     # Common metadata
     item.common_metadata.providers = [constants.USDA_PROVIDER]

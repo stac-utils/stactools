@@ -23,6 +23,7 @@ def create_naip_command(cli):
     @naip.command('create-item',
                   short_help='Create a STAC Item from NAIP imagery data')
     @click.argument('state')
+    @click.argument('year')
     @click.argument('fgdc_href')
     @click.argument('cog_href')
     @click.argument('dst')
@@ -33,7 +34,7 @@ def create_naip_command(cli):
         '-p',
         '--providers',
         help='Path to JSON file containing array of additional providers')
-    def create_item_command(state, fgdc_href, cog_href, dst, thumbnail,
+    def create_item_command(state, year, fgdc_href, cog_href, dst, thumbnail,
                             providers):
         """Creates a STAC Item based on metadata from a NAIP tile.
 
@@ -51,6 +52,7 @@ def create_naip_command(cli):
                 ]
 
         item = create_item(state,
+                           year,
                            fgdc_href,
                            cog_href,
                            thumbnail,
