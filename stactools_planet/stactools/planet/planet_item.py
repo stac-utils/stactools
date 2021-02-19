@@ -18,11 +18,11 @@ from rasterio.enums import Resampling
 
 logger = logging.getLogger(__name__)
 
-SKYSAT_BANDS = {'PAN': Band.create('PAN', common_name='pan', center_wavelength= 655, full_width_half_max=440),
-                'BLUE': Band.create('BLUE', common_name='blue', center_wavelength= 470, full_width_half_max=70),
-                'GREEN': Band.create('GREEN', common_name='green', center_wavelength= 560, full_width_half_max=80),
-                'RED': Band.create('RED', common_name='red', center_wavelength= 645, full_width_half_max=90),
-                'NIR': Band.create('NIR', common_name='nir', center_wavelength= 800, full_width_half_max=152)
+SKYSAT_BANDS = {'PAN': Band.create('PAN', common_name='pan', center_wavelength=655, full_width_half_max=440),
+                'BLUE': Band.create('BLUE', common_name='blue', center_wavelength=470, full_width_half_max=70),
+                'GREEN': Band.create('GREEN', common_name='green', center_wavelength=560, full_width_half_max=80),
+                'RED': Band.create('RED', common_name='red', center_wavelength=645, full_width_half_max=90),
+                'NIR': Band.create('NIR', common_name='nir', center_wavelength=800, full_width_half_max=152)
                 }
 
 
@@ -86,7 +86,7 @@ class PlanetItem:
                             'strip_id',
                             'publishing_stage',
                             'clear_percent'
-                            ]
+            ]
         for name in whitelisted_props:
             if name in props:
                 item.properties['{}:{}'.format(PLANET_EXTENSION_PREFIX, name)] = props[name]
@@ -112,7 +112,10 @@ class PlanetItem:
                 with rasterio.open(href) as dataset:
                     height, width = dataset.shape
                     geotransform = dataset.transform
-                    width, height = (256, int(height / width * 256)) if width > height else (int(width / height * 256), 256)
+                    if width > height:
+                        width, height = 256, int(height / width * 256)
+                    else:
+                        width, height = int(width / height * 256), 256
 
                     profile = dataset.profile
                     profile.update(driver='PNG')
@@ -121,7 +124,7 @@ class PlanetItem:
                             out_shape=(int(dataset.count), height, width),
                             resampling=Resampling.cubic)
 
-                    with rasterio.open(thumbnail_path,'w', **profile) as dst:
+                    with rasterio.open(thumbnail_path, 'w', **profile) as dst:
                         dst.write(data)
 
                 item.add_asset('thumbnail', pystac.Asset(href=thumbnail_path,
@@ -143,7 +146,7 @@ class PlanetItem:
             asset = pystac.Asset(href=href, media_type=media_type)
 
             if media_type == pystac.MediaType.COG:
-                #add bands to asset
+                # add bands to asset
                 if item_type.startswith('SkySat'):
                     if "panchro" in asset_type:
                         bands = [SKYSAT_BANDS['PAN']]
