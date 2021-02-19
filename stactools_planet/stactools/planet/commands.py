@@ -68,7 +68,8 @@ def create_planet_command(cli):
                       pystac.CatalogType.RELATIVE_PUBLISHED,
                       pystac.CatalogType.SELF_CONTAINED
                   ],
-                                    case_sensitive=False))
+                                    case_sensitive=False),
+                  default=pystac.CatalogType.SELF_CONTAINED)
     def convert_command(manifest, destination, id, assets, description, title,
                         skip_validation, catalog_type):
         """Converts a planet order to a STAC Catalog.
