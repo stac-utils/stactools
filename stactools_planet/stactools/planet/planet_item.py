@@ -112,7 +112,7 @@ class PlanetItem:
                 with rasterio.open(href) as dataset:
                     height, width = dataset.shape
                     geotransform = dataset.transform
-                    width, height = 256, int(height / width * 256) if width > height else int(width / height * 256), 256
+                    width, height = (256, int(height / width * 256)) if width > height else (int(width / height * 256), 256)
 
                     profile = dataset.profile
                     profile.update(driver='PNG')
