@@ -19,8 +19,8 @@ class CreateItemTest(CliTestCase):
 
         with TemporaryDirectory() as tmp_dir:
             cmd = [
-                'naip', 'create-item', 'al', '2011', fgdc_href, cog_href,
-                tmp_dir
+                'naip', 'create-item', 'al', '2011', cog_href, '--fgdc',
+                fgdc_href, tmp_dir
             ]
             self.run_command(cmd)
 
@@ -43,9 +43,28 @@ class CreateItemTest(CliTestCase):
 
         with TemporaryDirectory() as tmp_dir:
             cmd = [
-                'naip', 'create-item', 'al', '2016', fgdc_href, cog_href,
-                tmp_dir
+                'naip', 'create-item', 'al', '2016', cog_href, '--fgdc',
+                fgdc_href, tmp_dir
             ]
+            self.run_command(cmd)
+
+            jsons = [p for p in os.listdir(tmp_dir) if p.endswith('.json')]
+            self.assertEqual(len(jsons), 1)
+
+            item_path = os.path.join(tmp_dir, jsons[0])
+
+            item = pystac.read_file(item_path)
+
+        item.validate()
+
+    def test_create_item_no_fgdc(self):
+        cog_href = (
+            'https://naipeuwest.blob.core.windows.net/'
+            'naip/v002/ar/2010/ar_100cm_2010/33093/m_3309302_sw_15_1_20100623.tif'
+        )
+
+        with TemporaryDirectory() as tmp_dir:
+            cmd = ['naip', 'create-item', 'al', '2016', cog_href, tmp_dir]
             self.run_command(cmd)
 
             jsons = [p for p in os.listdir(tmp_dir) if p.endswith('.json')]

@@ -1,6 +1,7 @@
 import os
-from typing import List
+from typing import List, Optional
 
+import dateutil.parser
 import pystac
 from pystac.utils import str_to_datetime
 from shapely.geometry import shape, box, mapping
@@ -64,8 +65,8 @@ def create_collection(seasons: List[int]) -> pystac.Collection:
 
 def create_item(state,
                 year,
-                fgdc_metadata_href,
                 cog_href,
+                fgdc_metadata_href: Optional[str],
                 thumbnail_href=None,
                 additional_providers=None):
     """Creates a STAC Item from NAIP data.
@@ -74,7 +75,8 @@ def create_item(state,
         state (str): The 2-letter state code for the state this item belongs to.
         year (str): The NAIP year.
         fgdc_metadata_href (str): The href to the FGDC metadata
-            for this NAIP scene.
+            for this NAIP scene. Optional, a some NAIP scenes to not have this
+            (e.g. 2010)
         cog_href (str): The href to the image as a COG. This needs
             to be an HREF that rasterio is able to open.
         thumbnail_href (str): Optional href for a thumbnail for this scene.
@@ -87,8 +89,6 @@ def create_item(state,
     Returns:
         pystac.Item: A STAC Item representing this NAIP scene.
     """
-    fgdc_metadata_text = pystac.STAC_IO.read_text(fgdc_metadata_href)
-    fgdc = parse_fgdc_metadata(fgdc_metadata_text)
 
     with rio.open(cog_href) as ds:
         gsd = ds.res[0]
@@ -101,6 +101,12 @@ def create_item(state,
                               mapping(box(*ds.bounds)),
                               precision=6)
 
+    if fgdc_metadata_href is not None:
+        fgdc_metadata_text = pystac.STAC_IO.read_text(fgdc_metadata_href)
+        fgdc = parse_fgdc_metadata(fgdc_metadata_text)
+    else:
+        fgdc = {}
+
     if 'Distribution_Information' in fgdc:
         resource_desc = fgdc['Distribution_Information'][
             'Resource_Description']
@@ -110,9 +116,14 @@ def create_item(state,
 
     bounds = list(shape(geom).bounds)
 
-    dt = str_to_datetime(
-        fgdc['Identification_Information']['Time_Period_of_Content']
-        ['Time_Period_Information']['Single_Date/Time']['Calendar_Date'])
+    if any(fgdc):
+        dt = str_to_datetime(
+            fgdc['Identification_Information']['Time_Period_of_Content']
+            ['Time_Period_Information']['Single_Date/Time']['Calendar_Date'])
+    else:
+        fname = os.path.splitext(os.path.basename(cog_href))[0]
+        fname_date = fname.split('_')[5]
+        dt = dateutil.parser.isoparse(fname_date)
 
     properties = {'naip:state': state, 'naip:year': year}
 
@@ -147,12 +158,13 @@ def create_item(state,
                      title="RGBIR COG tile"))
 
     # Metadata
-    item.add_asset(
-        'metadata',
-        pystac.Asset(href=fgdc_metadata_href,
-                     media_type=pystac.MediaType.TEXT,
-                     roles=['metadata'],
-                     title='FGDC Metdata'))
+    if any(fgdc):
+        item.add_asset(
+            'metadata',
+            pystac.Asset(href=fgdc_metadata_href,
+                         media_type=pystac.MediaType.TEXT,
+                         roles=['metadata'],
+                         title='FGDC Metdata'))
 
     if thumbnail_href is not None:
         media_type = pystac.MediaType.JPEG

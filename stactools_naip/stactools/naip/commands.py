@@ -24,9 +24,9 @@ def create_naip_command(cli):
                   short_help='Create a STAC Item from NAIP imagery data')
     @click.argument('state')
     @click.argument('year')
-    @click.argument('fgdc_href')
     @click.argument('cog_href')
     @click.argument('dst')
+    @click.option('-f', '--fgdc', help='HREF to FGDC metadata.')
     @click.option('-t',
                   '--thumbnail',
                   help='HREF to the thumbnail for this NAIP tile')
@@ -34,7 +34,7 @@ def create_naip_command(cli):
         '-p',
         '--providers',
         help='Path to JSON file containing array of additional providers')
-    def create_item_command(state, year, fgdc_href, cog_href, dst, thumbnail,
+    def create_item_command(state, year, cog_href, dst, fgdc, thumbnail,
                             providers):
         """Creates a STAC Item based on metadata from a NAIP tile.
 
@@ -53,9 +53,9 @@ def create_naip_command(cli):
 
         item = create_item(state,
                            year,
-                           fgdc_href,
                            cog_href,
-                           thumbnail,
+                           fgdc_metadata_href=fgdc,
+                           thumbnail_href=thumbnail,
                            additional_providers=additional_providers)
 
         item_path = os.path.join(dst, '{}.json'.format(item.id))
