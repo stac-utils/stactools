@@ -8,6 +8,29 @@ from stactools.modis.constants import (ITEM_TIF_IMAGE_NAME, ITEM_METADATA_NAME,
                                        MODIS_CATALOG_ELEMENTS, MODIS_BAND_DATA,
                                        ADDITIONAL_MODIS_PROPERTIES)
 
+def create_collection(catalog_id) -> pystac.Collection:
+    """Creates a STAC Collection for MODIS data.
+    """
+
+    collection = pystac.Collection(
+        id=catalog_id,
+        description=MODIS_CATALOG_ELEMENTS[catalog_id].description,
+        extent=MODIS_CATALOG_ELEMENTS[catalog_id].extent,
+        title=MODIS_CATALOG_ELEMENTS[catalog_id].title,
+        providers=MODIS_CATALOG_ELEMENTS[catalog_id].provider,
+        stac_extensions=['item-assets'],
+        extra_fields={
+            'item_assets': {
+                'image': {
+                    "eo:bands": MODIS_BAND_DATA[catalog_id],
+                    "roles": ["data"],
+                    "title": "RGBIR COG tile",
+                    "type": pystac.MediaType.COG
+                },
+            }
+        })
+
+    return collection
 
 def create_item(metadata_href):
     """Creates a STAC Item from modis data.

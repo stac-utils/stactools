@@ -34,6 +34,10 @@ RUN python -m pip install --upgrade pip
 # Install GDAL
 RUN conda install -y -c conda-forge gdal=3.2.0
 
+# Core
+COPY stactools_core/requirements.txt /tmp/core/requirements.txt
+RUN pip install -r /tmp/core/requirements.txt
+
 # Install dependencies for building rasterio from source.
 # The rasterio wheels do not include the HDF-EOS driver
 # for GDAL that we need for reading aster and corine files,
@@ -43,7 +47,8 @@ RUN conda install -y -c conda-forge gdal=3.2.0
 # we build rasterio against a newer version of NumPy, we'll
 # be unable to import it in *this* environment, which might
 # already have NumPy installed.
-
+#
+# Build dependencies for aster
 RUN pip install setuptools cython numpy
 
 # Core
