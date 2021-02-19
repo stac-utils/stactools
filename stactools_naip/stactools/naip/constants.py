@@ -30,8 +30,8 @@ USDA_PROVIDER = pystac.Provider(
     roles=['producer', 'licensor'])
 
 NAIP_BANDS = [
-    Band.create(name="Red"),
-    Band.create(name="Green"),
-    Band.create(name="Blue"),
-    Band.create(name="NIR", description="near-infrared")
+    Band.create(name="Red", common_name='red'),
+    Band.create(name="Green", common_name='green'),
+    Band.create(name="Blue", common_name='blue'),
+    Band.create(name="NIR", common_name='nir', description="near-infrared")
 ]
