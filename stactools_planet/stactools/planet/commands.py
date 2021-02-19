@@ -17,7 +17,7 @@ def convert_order(manifest,
                   description=None,
                   title=None,
                   skip_validation=False,
-                  catalog_type=None):
+                  catalog_type=pystac.CatalogType.SELF_CONTAINED):
     manifest = OrderManifest.from_file(manifest)
     collection = manifest.to_stac(collection_id=collection_id,
                                   description=description,
@@ -29,7 +29,6 @@ def convert_order(manifest,
 
     logger.info('Saving STAC collection at {}...'.format(
         collection.get_self_href()))
-    catalog_type = catalog_type or pystac.CatalogType.SELF_CONTAINED
     collection.save(catalog_type=catalog_type)
 
     # Move assets after save to avoid moving without saving,
@@ -65,10 +64,10 @@ def create_planet_command(cli):
     @click.option('-c',
                   '--catalog-type',
                   type=click.Choice([
-                                    pystac.CatalogType.ABSOLUTE_PUBLISHED,
-                                    pystac.CatalogType.RELATIVE_PUBLISHED,
-                                    pystac.CatalogType.SELF_CONTAINED
-                                    ],
+                      pystac.CatalogType.ABSOLUTE_PUBLISHED,
+                      pystac.CatalogType.RELATIVE_PUBLISHED,
+                      pystac.CatalogType.SELF_CONTAINED
+                  ],
                                     case_sensitive=False))
     def convert_command(manifest, destination, id, assets, description, title,
                         skip_validation, catalog_type):
