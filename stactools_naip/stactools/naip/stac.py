@@ -92,6 +92,7 @@ def create_item(state,
     fgdc = parse_fgdc_metadata(fgdc_metadata_text)
 
     with rio.open(cog_href) as ds:
+        gsd = ds.res[0]
         epsg = int(ds.crs.to_authority()[1])
         image_shape = list(ds.shape)
         original_bbox = list(ds.bounds)
@@ -126,7 +127,7 @@ def create_item(state,
     item.common_metadata.providers = [constants.USDA_PROVIDER]
     if additional_providers is not None:
         item.common_metadata.providers.extend(additional_providers)
-    item.common_metadata.gsd = 1.0
+    item.common_metadata.gsd = gsd
 
     # eo, for asset bands
     item.ext.enable('eo')
