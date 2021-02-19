@@ -52,7 +52,6 @@ def create_collection(seasons: List[int]) -> pystac.Collection:
             'item_assets': {
                 'image': {
                     "eo:bands": [b.properties for b in constants.NAIP_BANDS],
-                    "gsd": 1.0,
                     "roles": ["data"],
                     "title": "RGBIR COG tile",
                     "type": pystac.MediaType.COG
