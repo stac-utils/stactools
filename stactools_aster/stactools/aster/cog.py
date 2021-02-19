@@ -10,7 +10,7 @@ import rasterio as rio
 from shapely.geometry import shape
 
 from stactools.aster.constants import (HDF_ASSET_KEY, ASTER_BANDS)
-from stactools.aster.utils import reproject_geom
+from stactools.core.projection import reproject_geom
 
 logger = logging.getLogger(__name__)
 

@@ -3,6 +3,7 @@ import json
 import os
 
 import click
+import pystac
 
 from stactools.aster.stac import create_item
 from stactools.aster.cog import create_cogs
@@ -21,7 +22,7 @@ def create_aster_command(cli):
         pass
 
     @aster.command('create-item',
-                   short_help='Create an ASTER  HDF file into a STAC Item')
+                   short_help='Create a STAC Item from a ASTER HDF file')
     @click.argument('src')
     @click.argument('dst')
     @click.option('-c',
@@ -44,7 +45,9 @@ def create_aster_command(cli):
         additional_providers = None
         if providers is not None:
             with open(providers) as f:
-                additional_providers = json.load(f)
+                additional_providers = [
+                    pystac.Provider.from_dict(d) for d in json.load(f)
+                ]
 
         item = create_item(src, additional_providers=additional_providers)
 

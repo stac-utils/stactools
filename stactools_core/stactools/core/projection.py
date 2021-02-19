@@ -1,7 +1,9 @@
 from collections import abc
 from copy import deepcopy
+from typing import Any, Optional, Union, Dict
 
 import pyproj
+import rasterio as rio
 
 
 def epsg_from_utm_zone_number(utm_zone_number, south):
@@ -23,17 +25,20 @@ def epsg_from_utm_zone_number(utm_zone_number, south):
     return int(crs.to_authority()[1])
 
 
-def reproject_geom(src_crs, dest_crs, geom):
+def reproject_geom(src_crs: Union[pyproj.CRS, rio.crs.CRS, ],
+                   dest_crs: Any,
+                   geom: Dict[str, Any],
+                   precision: Optional[int] = None):
     """Reprojects a geometry represented as GeoJSON
     from the src_crs to the dest crs.
 
     Args:
-        src_crs (str): String that can be passed into
-            pyproj.Transformer.from_crs, e.g. "epsg:4326"
-            representing the current CRS of the geometry.
-        dest_crs (str): Similar to src_crs, representing the
-            desired CRS of the returned geometry.
+        src_crs: pyproj.crs.CRS, rasterio.crs.CRS or str used to create one
+            Projection of input data.
+        dest_crs: pyproj.crs.CRS, rasterio.crs.CRS or str used to create one
+            Projection of output data.
         geom (dict): The GeoJSON geometry
+        precision
 
     Returns:
         dict: The reprojected geometry
@@ -51,7 +56,12 @@ def reproject_geom(src_crs, dest_crs, geom):
                 coords[i] = fn(coord)
             else:
                 x, y = coord
-                coords[i] = transformer.transform(x, y)
+                reprojected_coords = transformer.transform(x, y)
+                if precision is not None:
+                    reprojected_coords = [
+                        round(n, precision) for n in reprojected_coords
+                    ]
+                coords[i] = reprojected_coords
         return coords
 
     result['coordinates'] = fn(result['coordinates'])
