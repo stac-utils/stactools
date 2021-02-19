@@ -18,11 +18,26 @@ from rasterio.enums import Resampling
 
 logger = logging.getLogger(__name__)
 
-SKYSAT_BANDS = {'PAN': Band.create('PAN', common_name='pan', center_wavelength=655, full_width_half_max=440),
-                'BLUE': Band.create('BLUE', common_name='blue', center_wavelength=470, full_width_half_max=70),
-                'GREEN': Band.create('GREEN', common_name='green', center_wavelength=560, full_width_half_max=80),
-                'RED': Band.create('RED', common_name='red', center_wavelength=645, full_width_half_max=90),
-                'NIR': Band.create('NIR', common_name='nir', center_wavelength=800, full_width_half_max=152)
+SKYSAT_BANDS = {'PAN': Band.create('PAN',
+                                   common_name='pan',
+                                   center_wavelength=655,
+                                   full_width_half_max=440),
+                'BLUE': Band.create('BLUE',
+                                    common_name='blue',
+                                    center_wavelength=470,
+                                    full_width_half_max=70),
+                'GREEN': Band.create('GREEN',
+                                     common_name='green',
+                                     center_wavelength=560,
+                                     full_width_half_max=80),
+                'RED': Band.create('RED',
+                                   common_name='red',
+                                   center_wavelength=645,
+                                   full_width_half_max=90),
+                'NIR': Band.create('NIR',
+                                   common_name='nir',
+                                   center_wavelength=800,
+                                   full_width_half_max=152)
                 }
 
 
@@ -104,8 +119,11 @@ class PlanetItem:
 
             media_type = planet_asset['media_type']
 
+            asset_type = planet_asset['annotations']['planet/asset_type']
+            bundle_type = planet_asset['annotations']['planet/bundle_type']
+
             # Planet data is delivered as COGs
-            if media_type == 'image/tiff':
+            if media_type == 'image/tiff' and asset_type not in ["udm", "udm2"]:
                 media_type = pystac.MediaType.COG
                 roles = ['visual']
                 thumbnail_path = f"{os.path.splitext(href)[0]}.thumbnail.png"
@@ -119,10 +137,19 @@ class PlanetItem:
 
                     profile = dataset.profile
                     profile.update(driver='PNG')
+                    profile.update(width=width)
+                    profile.update(height=height)
 
-                    data = dataset.read(
-                            out_shape=(int(dataset.count), height, width),
-                            resampling=Resampling.cubic)
+                    if "analytic" in asset_type:
+                        data = dataset.read(
+                                indexes=[3, 2, 1],
+                                out_shape=(3, height, width),
+                                resampling=Resampling.cubic)
+                        profile.update(count=3)
+                    else:
+                        data = dataset.read(
+                                out_shape=(int(dataset.count), height, width),
+                                resampling=Resampling.cubic)
 
                     with rasterio.open(thumbnail_path, 'w', **profile) as dst:
                         dst.write(data)
@@ -133,8 +160,6 @@ class PlanetItem:
             else:
                 roles = ['metadata']
 
-            asset_type = planet_asset['annotations']['planet/asset_type']
-            bundle_type = planet_asset['annotations']['planet/bundle_type']
             # Use the asset type as the key if it's the same as the bundle
             # type, as this appears to be the 'main' asset of the bundle type.
             # If not, use a key that combines the bundle type and asset type.
@@ -189,3 +214,4 @@ class PlanetItem:
         logger.debug('Reading PlanetItem from {}'.format(uri))
         with fsspec.open(uri) as f:
             return cls(json.load(f), assets, base_dir, metadata_href=uri)
+
