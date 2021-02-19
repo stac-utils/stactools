@@ -1,10 +1,7 @@
-from collections import abc
-from copy import deepcopy
 import re
 
-import pyproj
-
 from stactools.aster.constants import ASTER_FILE_NAME_REGEX
+from stactools.core.projection import epsg_from_utm_zone_number
 
 
 class AsterSceneId:
@@ -43,32 +40,4 @@ def epsg_from_aster_utm_zone_number(utm_zone_number):
         south = True
         utm_zone_number *= -1
 
-    crs = pyproj.CRS.from_dict({
-        'proj': 'utm',
-        'zone': utm_zone_number,
-        'south': south
-    })
-
-    return int(crs.to_authority()[1])
-
-
-def reproject_geom(src_crs, dest_crs, geom):
-    transformer = pyproj.Transformer.from_crs(src_crs,
-                                              dest_crs,
-                                              always_xy=True)
-    result = deepcopy(geom)
-
-    def fn(coords):
-        coords = list(coords)
-        for i in range(0, len(coords)):
-            coord = coords[i]
-            if isinstance(coord[0], abc.Sequence):
-                coords[i] = fn(coord)
-            else:
-                x, y = coord
-                coords[i] = transformer.transform(x, y)
-        return coords
-
-    result['coordinates'] = fn(result['coordinates'])
-
-    return result
+    return epsg_from_utm_zone_number(utm_zone_number, south)

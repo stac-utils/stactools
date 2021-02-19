@@ -8,7 +8,6 @@ from stactools.aster.commands import create_aster_command
 from tests.utils import (TestData, CliTestCase)
 
 EXTERNAL_DATA_PATH = 'aster/AST_L1T_00301012006003619_20150512141939_7778.hdf'
-# EXTERNAL_DATA_PATH = 'aster/AST_L1T_00303192000000533_20150409094424_34035.hdf'
 
 
 class CreateItemTest(CliTestCase):

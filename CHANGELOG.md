@@ -1,5 +1,11 @@
 # Changelog
 
+## [unreleased]
+
+### Added
+
+- Add NAIP subpackage for deriving NAIP STAC items and collection ([#18](https://github.com/stac-utils/stactools/pull/18))
+
 ## stactools 0.1.3
 
 ### Added
