@@ -18,27 +18,33 @@ from rasterio.enums import Resampling
 
 logger = logging.getLogger(__name__)
 
-SKYSAT_BANDS = {'PAN': Band.create('PAN',
-                                   common_name='pan',
-                                   center_wavelength=655,
-                                   full_width_half_max=440),
-                'BLUE': Band.create('BLUE',
-                                    common_name='blue',
-                                    center_wavelength=470,
-                                    full_width_half_max=70),
-                'GREEN': Band.create('GREEN',
-                                     common_name='green',
-                                     center_wavelength=560,
-                                     full_width_half_max=80),
-                'RED': Band.create('RED',
-                                   common_name='red',
-                                   center_wavelength=645,
-                                   full_width_half_max=90),
-                'NIR': Band.create('NIR',
-                                   common_name='nir',
-                                   center_wavelength=800,
-                                   full_width_half_max=152)
-                }
+SKYSAT_BANDS = {
+    'PAN':
+    Band.create('PAN',
+                common_name='pan',
+                center_wavelength=655,
+                full_width_half_max=440),
+    'BLUE':
+    Band.create('BLUE',
+                common_name='blue',
+                center_wavelength=470,
+                full_width_half_max=70),
+    'GREEN':
+    Band.create('GREEN',
+                common_name='green',
+                center_wavelength=560,
+                full_width_half_max=80),
+    'RED':
+    Band.create('RED',
+                common_name='red',
+                center_wavelength=645,
+                full_width_half_max=90),
+    'NIR':
+    Band.create('NIR',
+                common_name='nir',
+                center_wavelength=800,
+                full_width_half_max=152)
+}
 
 
 class PlanetItem:
@@ -93,18 +99,14 @@ class PlanetItem:
 
         # Add all additional properties with Planet extension designation.
         whitelisted_props = [
-                            'anomalous_pixels',
-                            'ground_control',
-                            'item_type',
-                            'pixel_resolution',
-                            'quality_category',
-                            'strip_id',
-                            'publishing_stage',
-                            'clear_percent'
-            ]
+            'anomalous_pixels', 'ground_control', 'item_type',
+            'pixel_resolution', 'quality_category', 'strip_id',
+            'publishing_stage', 'clear_percent'
+        ]
         for name in whitelisted_props:
             if name in props:
-                item.properties['{}:{}'.format(PLANET_EXTENSION_PREFIX, name)] = props[name]
+                item.properties['{}:{}'.format(PLANET_EXTENSION_PREFIX,
+                                               name)] = props[name]
 
         item_type = props.pop('item_type')
         planet_url = f'https://api.planet.com/data/v1/item-types/{item_type}/items/{item_id}'
@@ -123,7 +125,9 @@ class PlanetItem:
             bundle_type = planet_asset['annotations']['planet/bundle_type']
 
             # Planet data is delivered as COGs
-            if media_type == 'image/tiff' and asset_type not in ["udm", "udm2"]:
+            if media_type == 'image/tiff' and asset_type not in [
+                    "udm", "udm2"
+            ]:
                 media_type = pystac.MediaType.COG
                 roles = ['visual']
                 thumbnail_path = f"{os.path.splitext(href)[0]}.thumbnail.png"
@@ -141,22 +145,23 @@ class PlanetItem:
                     profile.update(height=height)
 
                     if "analytic" in asset_type:
-                        data = dataset.read(
-                                indexes=[3, 2, 1],
-                                out_shape=(3, height, width),
-                                resampling=Resampling.cubic)
+                        data = dataset.read(indexes=[3, 2, 1],
+                                            out_shape=(3, height, width),
+                                            resampling=Resampling.cubic)
                         profile.update(count=3)
                     else:
-                        data = dataset.read(
-                                out_shape=(int(dataset.count), height, width),
-                                resampling=Resampling.cubic)
+                        data = dataset.read(out_shape=(int(dataset.count),
+                                                       height, width),
+                                            resampling=Resampling.cubic)
 
                     with rasterio.open(thumbnail_path, 'w', **profile) as dst:
                         dst.write(data)
 
-                item.add_asset('thumbnail', pystac.Asset(href=thumbnail_path,
-                                                         media_type=pystac.MediaType.PNG,
-                                                         roles=['thumbnail']))
+                item.add_asset(
+                    'thumbnail',
+                    pystac.Asset(href=thumbnail_path,
+                                 media_type=pystac.MediaType.PNG,
+                                 roles=['thumbnail']))
             else:
                 roles = ['metadata']
 
@@ -167,7 +172,10 @@ class PlanetItem:
             if asset_type != bundle_type:
                 key = '{}:{}'.format(bundle_type, asset_type)
 
-            item.add_asset(key, pystac.Asset(href=href, media_type=media_type, roles=roles))
+            item.add_asset(
+                key, pystac.Asset(href=href,
+                                  media_type=media_type,
+                                  roles=roles))
             asset = pystac.Asset(href=href, media_type=media_type)
 
             if media_type == pystac.MediaType.COG:
@@ -177,17 +185,14 @@ class PlanetItem:
                         bands = [SKYSAT_BANDS['PAN']]
                     elif "analytic" in asset_type:
                         bands = [
-                                 SKYSAT_BANDS['BLUE'],
-                                 SKYSAT_BANDS['GREEN'],
-                                 SKYSAT_BANDS['RED'],
-                                 SKYSAT_BANDS['NIR']
-                                ]
+                            SKYSAT_BANDS['BLUE'], SKYSAT_BANDS['GREEN'],
+                            SKYSAT_BANDS['RED'], SKYSAT_BANDS['NIR']
+                        ]
                     else:
                         bands = [
-                                 SKYSAT_BANDS['RED'],
-                                 SKYSAT_BANDS['GREEN'],
-                                 SKYSAT_BANDS['BLUE']
-                                ]
+                            SKYSAT_BANDS['RED'], SKYSAT_BANDS['GREEN'],
+                            SKYSAT_BANDS['BLUE']
+                        ]
                     item.ext.eo.set_bands(bands, asset)
 
             item.add_asset(key, asset)
@@ -214,4 +219,3 @@ class PlanetItem:
         logger.debug('Reading PlanetItem from {}'.format(uri))
         with fsspec.open(uri) as f:
             return cls(json.load(f), assets, base_dir, metadata_href=uri)
-
