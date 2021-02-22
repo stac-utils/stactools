@@ -20,3 +20,5 @@ docs/_build/
 .ipynb_checkpoints/
 
 coverage.xml
+
+.vscode

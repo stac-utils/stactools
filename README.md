@@ -76,7 +76,7 @@ See the [documentation page](https://stactools.readthedocs.io/en/latest/) for th
 | `stactools_aster`             | Methods and commands for working with ASTER data                 |
 | `stactools_corine`            | Methods and commands for working with CORINE Land Cover data                 |
 | `stactools_planet`            | Methods and commands for working with planet data                |
-| `stactools_landsat`           | Methods and commands for working with landsat data (TODO)        |
+| `stactools_landsat`           | Methods and commands for working with landsat data        |
 | `stactools_browse`            | Contains a command for launching stac-browser against a local STAC |
 
 Subpackages are symlinked to the `stactools` directory in this repo to allow them to be importable for python running at the top level directory of the repository clone.
@@ -197,6 +197,9 @@ stactools is happy to take contributions of new subpackages for working with spe
 - Create a `setup.py`, `requirements.txt`, and `README.md` in the subpackage directory.
 - The code should exist in the `stactools/{pkg}/` directory in that package subdirectory. Note that the `stactools` does not have an __init__.py (look at the other subpackages for examples).
 - Add the subpackage to the appropriate variables in `scripts/env`
+- Add the subpackage requirements install section to
+`docker/Dockerfile`
 - Add the subpackage to the appropriate tables in the README.
 - Add documentation for the subpackage.
 - Add subpackage to .readthedocs.yml install
+- Add the subpackage to the `subpackages` list in the top-level `setup.py`, with `is_extra=True`. This will allow for an install of that specific subpackage with the pip extras syntax, e.g. `pip install stactools[aster]`.

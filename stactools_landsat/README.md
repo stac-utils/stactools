@@ -1,5 +1,4 @@
 # stactools landsat
 
-A subpackage of stactools for working with Planet data.
-
-__WORK IN PROGRESS__. There is no functionality in this libary yet.
+One command is available, `stac landsat-convert`, which will convert
+USGS' Landsat metadata to STAC 1.0.0.beta.2

@@ -19,7 +19,8 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 # get the dependencies and installs
 with io.open(os.path.join(here, 'requirements.txt'), encoding='utf-8') as f:
-    install_requires = f.read().split('\n')
+    # Remove flags like "--no-binary=rasterio"
+    install_requires = [line.split(' ')[0] for line in f.read().split('\n')]
 
 with open(os.path.join(here, 'README.md')) as readme_file:
     readme = readme_file.read()

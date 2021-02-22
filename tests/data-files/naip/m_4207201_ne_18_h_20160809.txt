@@ -1,0 +1,163 @@
+Metadata:
+  Identification_Information:
+    Citation:
+      Citation_Information:
+        Originator: USDA-FSA-APFO Aerial Photography Field Office
+        Publication_Date: 20161102
+        Title: NAIP Digital Georectified Image
+        Geospatial_Data_Presentation_Form: remote-sensing image
+        Publication_Information:
+          Publication_Place: Salt Lake City, Utah
+          Publisher:  USDA-FSA-APFO Aerial Photography Field Office
+    Description:
+      Abstract:
+        This data set contains imagery from the National Agriculture
+        Imagery Program (NAIP).  The NAIP program is administered by
+        USDA FSA and has been established to support two main FSA
+        strategic goals centered on agricultural production.
+        These are, increase stewardship of America's natural resources
+        while enhancing the environment, and to ensure commodities
+        are procured and distributed effectively and efficiently to
+        increase food security.  The NAIP program supports these goals by
+        acquiring and providing ortho imagery that has been collected
+        during the agricultural growing season in the U.S. The NAIP
+        ortho imagery is tailored to meet FSA requirements and is a
+        fundamental tool used to support FSA farm and conservation
+        programs.  Ortho imagery provides an effective, intuitive
+        means of communication about farm program administration
+        between FSA and stakeholders.
+        New technology and innovation is identified by fostering and
+        maintaining a relationship with vendors and government
+        partners, and by keeping pace with the broader geospatial
+        community.  As a result of these efforts the NAIP program
+        provides three main products: DOQQ tiles,
+        Compressed County Mosaics (CCM), and Seamline shape files
+        The Contract specifications for NAIP imagery have changed
+        over time reflecting agency requirements and improving
+        technologies.  These changes include image resolution,
+        horizontal accuracy, coverage area, and number of bands.
+        In general, flying seasons are established by FSA and are
+        targeted for peak crop growing conditions.  The NAIP
+        acquisition cycle is based on a minimum 3 year refresh of base
+        ortho imagery.  The tiling format of the NAIP imagery is based
+        on a 3.75' x 3.75' quarter quadrangle with a 300 pixel buffer
+        on all four sides.  NAIP quarter quads are formatted to the UTM
+        coordinate system using the North American Datum of 1983.
+        NAIP imagery may contain as much as 10% cloud cover per tile.
+      Purpose:
+        NAIP imagery is available for distribution within 60 days
+        of the end of a flying season and is intended to provide current
+        information of agricultural conditions in support of USDA farm
+        programs. For USDA Farm Service Agency, the 1 meter and 1/2 meter
+        GSD product provides an ortho image base for Common Land Unit
+        boundaries and other data sets.  The 1 meter and 1/2 meter NAIP
+        imagery is generally acquired in projects covering full states in
+        cooperation with state government and other federal agencies that
+        use the imagery for a variety of purposes including land use
+        planning and natural resource assessment.  The NAIP is also used
+        for disaster response.  While suitable for a variety of uses,
+        prior to 2007 the 2 meter GSD NAIP imagery was primarily intended
+        to assess "crop condition and compliance" to USDA farm program
+        conditions. The 2 meter imagery was generally acquired only
+        for agricultural areas within state projects.
+    Time_Period_of_Content:
+      Time_Period_Information:
+           Single_Date/Time:
+             Calendar_Date: 20160809
+      Currentness_Reference: Ground Condition
+    Status:
+      Progress: Complete
+      Maintenance_and_Update_Frequency: Irregular
+    Spatial_Domain:
+      Bounding_Coordinates:
+        West_Bounding_Coordinate:  -72.9375
+        East_Bounding_Coordinate:  -72.8750
+        North_Bounding_Coordinate:  43.0000
+        South_Bounding_Coordinate:  42.9375
+    Keywords:
+      Theme:
+        Theme_Keyword_Thesaurus: None
+        Theme_Keyword: farming
+        Theme_Keyword: Digital Ortho rectified Image
+        Theme_Keyword: Ortho Rectification
+        Theme_Keyword: Quarter Quadrangle
+        Theme_Keyword: NAIP
+        Theme_Keyword: Aerial Compliance
+        Theme_Keyword: Compliance
+      Place:
+        Place_Keyword_Thesaurus: Geographic Names Information System
+        Place_Keyword: VT
+        Place_Keyword: Windham
+        Place_Keyword: 50025
+        Place_Keyword: VT025
+        Place_Keyword: WINDHAM CO VT FSA
+        Place_Keyword: 4207201
+        Place_Keyword: MOUNT SNOW, NE
+        Place_Keyword: MOUNT SNOW
+    Access_Constraints: There are no limitations for access.
+    Use_Constraints:
+      None.  The USDA-FSA Aerial Photography Field office
+      asks to be credited in derived products.
+    Point_of_Contact:
+      Contact_Information:
+        Contact_Organization_Primary:
+          Contact_Organization: Aerial Photography Field Office (APFO)
+        Contact_Address:
+          Address_Type: mailing and physical address
+          Address: 2222 West 2300 South
+          City: Salt Lake City
+          State_or_Province: Utah
+          Postal_Code: 84119-2020
+          Country: USA
+        Contact_Voice_Telephone: 801-844-2922
+        Contact_Facsimile_Telephone: 801-956-3653
+        Contact_Electronic_Mail_Address: apfo.sales@slc.usda.gov
+    Browse_Graphic:
+      Browse_Graphic_File_Name: None
+      Browse_Graphic_File_Description: None
+      Browse_Graphic_File_Type: None
+    Native_Data_Set_Environment:
+  Data_Quality_Information:
+    Logical_Consistency_Report:
+      NAIP 3.75 minute tile file names are based
+      on the USGS quadrangle naming convention.
+    Completeness_Report: None
+    Positional_Accuracy:
+      Horizontal_Positional_Accuracy:
+        Horizontal_Positional_Accuracy_Report:
+          NAIP horizontal accuracy specifications have evolved over
+          the life of the program.  From 2003 to 2004 the
+          specifications were as follows: 1-meter GSD imagery was
+          to match within 3-meters, and 2-meter GSD to match within 10
+          meters of reference imagery.  For 2005 the 1-meter GSD
+          specification was changed to 5 meters matching the reference
+          imagery.  In 2006 a pilot project was performed using true
+          ground specifications rather than reference imagery.  All
+          states used the same specifications as 2005 except Utah,
+          which required a match of +/- 6 meters to true ground.
+          In 2007 all specifications were the same as 2006 except
+          Arizona used true ground specifications and all other states
+          used reference imagery.  In 2008 and subsequent years
+          no 2-meter GSD imagery was acquired and all specifications
+          were the same as 2007 except approximately half of the
+          states acquired used true ground specifications and the
+          other half used reference imagery.  The 2008 states that
+          used absolute ground control where; Indiana, Minnesota,
+          New Hampshire, North Carolina, Texas, Vermont, and Virginia.
+          From 2009 to present all NAIP imagery acquisitions used
+          the +/- 6 meters to ground specification.
+    Lineage:
+      Source_Information:
+        Source_Citation:
+          Citation_Information:
+            Originator: USDA-FSA-APFO Aerial Photography Field Office
+            Publication_Date: 20161102
+            Title: MOUNT SNOW, NE
+            Geospatial_Data_Presentation_Form: remote-sensing image
+        Type_of_Source_Media: UnKnown
+        Source_Time_Period_of_Content:
+          Time_Period_Information:
+            Single_Date/Time:
+              Calendar_Date: 20160809
+          Source_Currentness_Reference:
+            Aerial

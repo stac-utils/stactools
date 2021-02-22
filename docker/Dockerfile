@@ -34,17 +34,29 @@ RUN python -m pip install --upgrade pip
 # Install GDAL
 RUN conda install -y -c conda-forge gdal=3.2.0
 
+# Install dependencies for building rasterio from source.
+# The rasterio wheels do not include the HDF-EOS driver
+# for GDAL that we need for reading aster and corine files,
+# so we build it from source. We disable pip's build isolation,
+# since rasterio's pyproject.toml doesn't currently pin
+# the NumPy version and so will use the newest available. If
+# we build rasterio against a newer version of NumPy, we'll
+# be unable to import it in *this* environment, which might
+# already have NumPy installed.
+
+RUN pip install setuptools cython numpy
+
 # Core
 COPY stactools_core/requirements.txt /tmp/core/requirements.txt
-RUN pip install -r /tmp/core/requirements.txt
+RUN pip install --no-build-isolation -r /tmp/core/requirements.txt
 
 # CLI
 COPY stactools_cli/requirements.txt /tmp/cli/requirements.txt
-RUN pip install -r /tmp/cli/requirements.txt
+RUN pip install --no-build-isolation -r /tmp/cli/requirements.txt
 
 # Aster
 COPY stactools_aster/requirements.txt /tmp/aster/requirements.txt
-RUN pip install -r /tmp/aster/requirements.txt
+RUN pip install --no-build-isolation -r /tmp/aster/requirements.txt
 
 # Corine
 COPY stactools_corine/requirements.txt /tmp/corine/requirements.txt
@@ -53,6 +65,10 @@ RUN pip install -r /tmp/corine/requirements.txt
 # Landsat
 COPY stactools_landsat/requirements.txt /tmp/landsat/requirements.txt
 RUN pip install -r /tmp/landsat/requirements.txt
+
+# NAIP
+COPY stactools_naip/requirements.txt /tmp/naip/requirements.txt
+RUN pip install -r /tmp/naip/requirements.txt
 
 # Planet
 COPY stactools_planet/requirements.txt /tmp/planet/requirements.txt

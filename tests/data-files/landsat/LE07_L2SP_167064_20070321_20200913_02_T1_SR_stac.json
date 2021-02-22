@@ -1,0 +1,235 @@
+{
+    "stac_version": "0.7.0",
+    "stac_extensions": [
+        "eo",
+        "https://landsat.usgs.gov/stac/landsat-extension/schema.json"
+    ],
+    "id": "LE07_L2SP_167064_20070321_20200913_02_T1",
+    "type": "Feature",
+    "bbox": [
+        36.66258286874059,
+        -6.726754288515996,
+        38.6670466301442,
+        -4.8370707698584186
+    ],
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+            [
+                [
+                    37.01822751555848,
+                    -4.8370707698584186
+                ],
+                [
+                    38.6670466301442,
+                    -5.080344843109492
+                ],
+                [
+                    38.319423341977576,
+                    -6.726754288515996
+                ],
+                [
+                    36.66258286874059,
+                    -6.4813951715432
+                ],
+                [
+                    37.01822751555848,
+                    -4.8370707698584186
+                ]
+            ]
+        ]
+    },
+    "description": "Landsat Collection 2 Level-2 Surface Reflectance Product",
+    "properties": {
+        "datetime": "2007-03-21",
+        "eo:cloud_cover": 39.0,
+        "eo:sun_azimuth": 80.58317119,
+        "eo:sun_elevation": 57.42184096,
+        "eo:platform": "LANDSAT_7",
+        "eo:instrument": "ETM",
+        "eo:off_nadir": 0,
+        "landsat:cloud_cover_land": 39.0,
+        "landsat:wrs_type": "2",
+        "landsat:wrs_path": "167",
+        "landsat:wrs_row": "064",
+        "landsat:scene_id": "LE71670642007080ASN00",
+        "landsat:collection_category": "T1",
+        "landsat:collection_number": "02",
+        "eo:bands": [
+            {
+                "name": "SR_B1",
+                "common_name": "blue",
+                "gsd": 30,
+                "center_wavelength": 0.48
+            },
+            {
+                "name": "SR_B2",
+                "common_name": "green",
+                "gsd": 30,
+                "center_wavelength": 0.56
+            },
+            {
+                "name": "SR_B3",
+                "common_name": "red",
+                "gsd": 30,
+                "center_wavelength": 0.65
+            },
+            {
+                "name": "SR_B4",
+                "common_name": "nir08",
+                "gsd": 30,
+                "center_wavelength": 0.86
+            },
+            {
+                "name": "SR_B5",
+                "common_name": "swir16",
+                "gsd": 30,
+                "center_wavelength": 1.6
+            },
+            {
+                "name": "SR_B7",
+                "common_name": "swir22",
+                "gsd": 30,
+                "center_wavelength": 2.2
+            }
+        ]
+    },
+    "assets": {
+        "thumbnail": {
+            "href": "https://landsatlook.usgs.gov/data/collection02/level-2/standard/etm/2007/167/064/LE07_L2SP_167064_20070321_20200913_02_T1/LE07_L2SP_167064_20070321_20200913_02_T1_thumb_small.jpeg",
+            "title": "Thumbnail image",
+            "type": "image/jpeg"
+        },
+        "reduced_resolution_browse": {
+            "href": "https://landsatlook.usgs.gov/data/collection02/level-2/standard/etm/2007/167/064/LE07_L2SP_167064_20070321_20200913_02_T1/LE07_L2SP_167064_20070321_20200913_02_T1_thumb_large.jpeg",
+            "title": "Reduced resolution browse image",
+            "type": "image/jpeg"
+        },
+        "index": {
+            "href": "https://landsatlook.usgs.gov/stac-browser/collection02/level-2/standard/etm/2007/167/064/LE07_L2SP_167064_20070321_20200913_02_T1",
+            "title": "HTML index page",
+            "type": "text/html"
+        },
+        "SR_B1.TIF": {
+            "title": "BLue Band (B1)",
+            "description": "Collection 2 Level-2 Blue Band (B1) Surface Reflectance",
+            "type": "image/vnd.stac.geotiff; cloud-optimized=true",
+            "eo:bands": [
+                0
+            ],
+            "href": "https://landsatlook.usgs.gov/data/collection02/level-2/standard/etm/2007/167/064/LE07_L2SP_167064_20070321_20200913_02_T1/LE07_L2SP_167064_20070321_20200913_02_T1_SR_B1.TIF"
+        },
+        "SR_B2.TIF": {
+            "title": "Green Band (B2)",
+            "description": "Collection 2 Level-2 Green Band (B2) Surface Reflectance",
+            "type": "image/vnd.stac.geotiff; cloud-optimized=true",
+            "eo:bands": [
+                1
+            ],
+            "href": "https://landsatlook.usgs.gov/data/collection02/level-2/standard/etm/2007/167/064/LE07_L2SP_167064_20070321_20200913_02_T1/LE07_L2SP_167064_20070321_20200913_02_T1_SR_B2.TIF"
+        },
+        "SR_B3.TIF": {
+            "title": "Red Band (B3)",
+            "description": "Collection 2 Level-2 Red Band (B3) Surface Reflectance",
+            "type": "image/vnd.stac.geotiff; cloud-optimized=true",
+            "eo:bands": [
+                2
+            ],
+            "href": "https://landsatlook.usgs.gov/data/collection02/level-2/standard/etm/2007/167/064/LE07_L2SP_167064_20070321_20200913_02_T1/LE07_L2SP_167064_20070321_20200913_02_T1_SR_B3.TIF"
+        },
+        "SR_B4.TIF": {
+            "title": "Near Infrared Band 0.8 (B4)",
+            "description": "Collection 2 Level-2 Near Infrared Band 0.8 (B4) Surface Reflectance",
+            "type": "image/vnd.stac.geotiff; cloud-optimized=true",
+            "eo:bands": [
+                3
+            ],
+            "href": "https://landsatlook.usgs.gov/data/collection02/level-2/standard/etm/2007/167/064/LE07_L2SP_167064_20070321_20200913_02_T1/LE07_L2SP_167064_20070321_20200913_02_T1_SR_B4.TIF"
+        },
+        "SR_B5.TIF": {
+            "title": "Short-wave Infrared Band 1.6 (B5)",
+            "description": "Collection 2 Level-2 Short-wave Infrared Band 1.6 (B6) Surface Reflectance",
+            "type": "image/vnd.stac.geotiff; cloud-optimized=true",
+            "eo:bands": [
+                4
+            ],
+            "href": "https://landsatlook.usgs.gov/data/collection02/level-2/standard/etm/2007/167/064/LE07_L2SP_167064_20070321_20200913_02_T1/LE07_L2SP_167064_20070321_20200913_02_T1_SR_B5.TIF"
+        },
+        "SR_B7.TIF": {
+            "title": "Short-wave Infrared Band 2.2 (B7)",
+            "description": "Collection 2 Level-2 Short-wave Infrared Band 2.2 (B7) Surface Reflectance",
+            "type": "image/vnd.stac.geotiff; cloud-optimized=true",
+            "eo:bands": [
+                5
+            ],
+            "href": "https://landsatlook.usgs.gov/data/collection02/level-2/standard/etm/2007/167/064/LE07_L2SP_167064_20070321_20200913_02_T1/LE07_L2SP_167064_20070321_20200913_02_T1_SR_B7.TIF"
+        },
+        "SR_ATMOS_OPACITY.TIF": {
+            "title": "Atmospheric Opacity Band",
+            "description": "Collection 2 Level-2 Atmospheric Opacity Band Surface Reflectance",
+            "type": "image/vnd.stac.geotiff; cloud-optimized=true",
+            "href": "https://landsatlook.usgs.gov/data/collection02/level-2/standard/etm/2007/167/064/LE07_L2SP_167064_20070321_20200913_02_T1/LE07_L2SP_167064_20070321_20200913_02_T1_SR_ATMOS_OPACITY.TIF"
+        },
+        "SR_CLOUD_QA.TIF": {
+            "title": "Cloud Quality Analysis Band",
+            "description": "Collection 2 Level-2 Cloud Quality Opacity Band Surface Reflectance",
+            "type": "image/vnd.stac.geotiff; cloud-optimized=true",
+            "href": "https://landsatlook.usgs.gov/data/collection02/level-2/standard/etm/2007/167/064/LE07_L2SP_167064_20070321_20200913_02_T1/LE07_L2SP_167064_20070321_20200913_02_T1_SR_CLOUD_QA.TIF"
+        },
+        "ANG.txt": {
+            "title": "Angle Coefficients File",
+            "description": "Collection 2 Level-2 Angle Coefficients File (ANG) Surface Reflectance",
+            "type": "text/plain",
+            "href": "https://landsatlook.usgs.gov/data/collection02/level-2/standard/etm/2007/167/064/LE07_L2SP_167064_20070321_20200913_02_T1/LE07_L2SP_167064_20070321_20200913_02_T1_ANG.txt"
+        },
+        "MTL.txt": {
+            "title": "Product Metadata File",
+            "description": "Collection 2 Level-2 Product Metadata File (MTL) Surface Reflectance",
+            "type": "text/plain",
+            "href": "https://landsatlook.usgs.gov/data/collection02/level-2/standard/etm/2007/167/064/LE07_L2SP_167064_20070321_20200913_02_T1/LE07_L2SP_167064_20070321_20200913_02_T1_MTL.txt"
+        },
+        "MTL.xml": {
+            "title": "Product Metadata File (xml)",
+            "description": "Collection 2 Level-1 Product Metadata File (xml) Surface Reflectance",
+            "type": "application/xml",
+            "href": "https://landsatlook.usgs.gov/data/collection02/level-2/standard/etm/2007/167/064/LE07_L2SP_167064_20070321_20200913_02_T1/LE07_L2SP_167064_20070321_20200913_02_T1_MTL.xml"
+        },
+        "MTL.json": {
+            "title": "Product Metadata File (json)",
+            "description": "Collection 2 Level-2 Product Metadata File (json) Surface Reflectance",
+            "type": "application/json",
+            "href": "https://landsatlook.usgs.gov/data/collection02/level-2/standard/etm/2007/167/064/LE07_L2SP_167064_20070321_20200913_02_T1/LE07_L2SP_167064_20070321_20200913_02_T1_MTL.json"
+        },
+        "QA_PIXEL.TIF": {
+            "title": "Pixel Quality Assessment Band",
+            "description": "Collection 2 Level-2 Pixel Quality Assessment Band Surface Reflectance",
+            "type": "image/vnd.stac.geotiff; cloud-optimized=true",
+            "href": "https://landsatlook.usgs.gov/data/collection02/level-2/standard/etm/2007/167/064/LE07_L2SP_167064_20070321_20200913_02_T1/LE07_L2SP_167064_20070321_20200913_02_T1_QA_PIXEL.TIF"
+        },
+        "QA_RADSAT.TIF": {
+            "title": "Radiometric Saturation Quality Assessment Band",
+            "description": "Collection 2 Level-2 Radiometric Saturation Quality Assessment Band Surface Reflectance",
+            "type": "image/vnd.stac.geotiff; cloud-optimized=true",
+            "href": "https://landsatlook.usgs.gov/data/collection02/level-2/standard/etm/2007/167/064/LE07_L2SP_167064_20070321_20200913_02_T1/LE07_L2SP_167064_20070321_20200913_02_T1_QA_RADSAT.TIF"
+        }
+    },
+    "links": [
+        {
+            "rel": "root",
+            "href": "https://landsatlook.usgs.gov/data/catalog.json"
+        },
+        {
+            "rel": "parent",
+            "href": "https://landsatlook.usgs.gov/data/collection02/level-2/standard/etm/2007/167/064/LE07_L2SP_167064_20070321_20200913_02_T1/catalog.json"
+        },
+        {
+            "rel": "collection",
+            "href": "https://landsatlook.usgs.gov/data/collection02/landsat-c2l2-sr.json"
+        },
+        {
+            "rel": "self",
+            "href": "https://landsatlook.usgs.gov/data/collection02/level-2/standard/etm/2007/167/064/LE07_L2SP_167064_20070321_20200913_02_T1/LE07_L2SP_167064_20070321_20200913_02_T1_SR_stac.json"
+        }
+    ],
+    "collection": "landsat-c2l2-sr"
+}
