@@ -4,7 +4,16 @@
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## stactools 0.1.4
+
+### Added
+- Implementation of Landsat STAC handling ([#23](https://github.com/stac-utils/stactools/pull/23))
 - Add NAIP subpackage for deriving NAIP STAC items and collection ([#18](https://github.com/stac-utils/stactools/pull/18))
+- Add catalog type option for `planet convert` ([#61](https://github.com/stac-utils/stactools/pull/61))
 
 ## stactools 0.1.3
 
