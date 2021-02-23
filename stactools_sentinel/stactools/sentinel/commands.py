@@ -1,6 +1,7 @@
 import os
 import logging
 import click
+import json
 
 from stactools.sentinel.stac import create_item
 from stactools.sentinel.cog import create_cogs

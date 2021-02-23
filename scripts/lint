@@ -1,0 +1,32 @@
+#!/bin/bash
+
+set -e
+
+if [[ -n "${CI}" ]]; then
+    set -x
+fi
+
+# Import shared variables
+source ./scripts/env
+
+function usage() {
+    echo -n \
+        "Usage: $(basename "$0")
+Execute project linters.
+"
+}
+
+DIRS_TO_CHECK=("tests")
+DIRS_TO_CHECK+=("${STACTOOLS_COVERAGE_DIRS[@]}")
+
+if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
+    if [ "${1:-}" = "--help" ]; then
+        usage
+    else
+        # Code formatting
+        yapf -dpr ${DIRS_TO_CHECK[@]}
+        # Lint
+        flake8 ${DIRS_TO_CHECK[@]}
+
+    fi
+fi

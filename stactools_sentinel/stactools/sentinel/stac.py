@@ -1,15 +1,13 @@
 import os
-import json
 import re
-from shapely.geometry import box, mapping, shape, Polygon
+from shapely.geometry import mapping, Polygon
 import pystac
 from pystac.utils import (str_to_datetime, make_absolute_href)
 
 from stactools.sentinel.utils import (mtd_asset_key_from_path, clean_path,
-                                      open_xml_file_root, get_xml_node,
-                                      get_xml_node_attr, get_xml_node_text,
-                                      list_xml_node, band_index_to_name,
-                                      mgrs_from_path)
+                                      open_xml_file_root, get_xml_node_attr,
+                                      get_xml_node_text, list_xml_node,
+                                      band_index_to_name, mgrs_from_path)
 from stactools.sentinel.constants import (SENTINEL_PROVIDER, SENTINEL_LICENSE,
                                           SENTINEL_BANDS, SENTINEL_INSTRUMENTS,
                                           SENTINEL_CONSTELLATION)
@@ -22,8 +20,8 @@ def create_item(item_path, additional_providers=None):
 
     thumbnail_path = thumbnail_path_from_safe_manifest(safe_manifest_root)
 
-    l2a_mtd_path, inspire_mtd_path, datastrip_mtd_path, granule_mtd_path = mtd_paths_from_safe_manifest(
-        safe_manifest_root)
+    (l2a_mtd_path, inspire_mtd_path, datastrip_mtd_path,
+     granule_mtd_path) = mtd_paths_from_safe_manifest(safe_manifest_root)
 
     safe_manifest_asset = xml_asset_from_path(safe_manifest_path, item_path)
     l2a_mtd_asset = xml_asset_from_path(l2a_mtd_path, item_path)
@@ -82,11 +80,11 @@ def create_item(item_path, additional_providers=None):
         get_xml_node_text(
             l2a_mtd_root,
             'n1:Quality_Indicators_Info/Cloud_Coverage_Assessment'))
-    degraded_msi_data_percentage = float(
-        get_xml_node_text(
-            l2a_mtd_root,
-            'n1:Quality_Indicators_Info/Technical_Quality_Assessment/DEGRADED_MSI_DATA_PERCENTAGE'
-        ))
+    # degraded_msi_data_percentage = float(
+    #     get_xml_node_text(
+    #         l2a_mtd_root,
+    #         'n1:Quality_Indicators_Info/Technical_Quality_Assessment/DEGRADED_MSI_DATA_PERCENTAGE'
+    #     ))
     irradiance_props = solar_irradiance_values_from_l2a_mtd(l2a_mtd_root)
     granule_mtd_root = open_xml_file_root(
         os.path.join(item_path, clean_path(granule_mtd_path, 'xml')))
@@ -172,34 +170,34 @@ def create_item(item_path, additional_providers=None):
 def thumbnail_path_from_safe_manifest(safe_manifest_root):
     # ESA manifest differs from sen2cor manifest for preview images
     thumbnail_element = safe_manifest_root.find(
-        'dataObjectSection/dataObject[@ID="Preview_4_Tile1_Data"]/byteStream/fileLocation',
-        safe_manifest_root.nsmap)
+        'dataObjectSection/dataObject[@ID="Preview_4_Tile1_Data"]/' +
+        'byteStream/fileLocation', safe_manifest_root.nsmap)
     if thumbnail_element is None:
         thumbnail_element = safe_manifest_root.find(
-            'dataObjectSection/dataObject[@ID="S2_Level-1C_Preview_Tile1_Data"]/byteStream/fileLocation',
-            safe_manifest_root.nsmap)
+            'dataObjectSection/dataObject[@ID="S2_Level-1C_Preview_Tile1_Data"]/'
+            + 'byteStream/fileLocation', safe_manifest_root.nsmap)
     return thumbnail_element.get('href')
 
 
 def mtd_paths_from_safe_manifest(safe_manifest_root):
     l2a_mtd_path = safe_manifest_root.find(
-        'dataObjectSection/dataObject[@ID="S2_Level-2A_Product_Metadata"]/byteStream/fileLocation',
-        safe_manifest_root.nsmap).get('href')
+        'dataObjectSection/dataObject[@ID="S2_Level-2A_Product_Metadata"]/' +
+        'byteStream/fileLocation', safe_manifest_root.nsmap).get('href')
 
     inspire_mtd_path = safe_manifest_root.find(
-        'dataObjectSection/dataObject[@ID="INSPIRE_Metadata"]/byteStream/fileLocation',
-        safe_manifest_root.nsmap).get('href')
+        'dataObjectSection/dataObject[@ID="INSPIRE_Metadata"]/' +
+        'byteStream/fileLocation', safe_manifest_root.nsmap).get('href')
 
     granule_mtd_element = safe_manifest_root.find(
-        'dataObjectSection/dataObject[@ID="S2_Level-2A_Tile1_Metadata"]/byteStream/fileLocation',
-        safe_manifest_root.nsmap)
+        'dataObjectSection/dataObject[@ID="S2_Level-2A_Tile1_Metadata"]/' +
+        'byteStream/fileLocation', safe_manifest_root.nsmap)
     datastrip_mtd_path = safe_manifest_root.find(
-        'dataObjectSection/dataObject[@ID="S2_Level-2A_Datastrip1_Metadata"]/byteStream/fileLocation',
-        safe_manifest_root.nsmap).get('href')
+        'dataObjectSection/dataObject[@ID="S2_Level-2A_Datastrip1_Metadata"]/'
+        + 'byteStream/fileLocation', safe_manifest_root.nsmap).get('href')
     if granule_mtd_element is None:
         granule_mtd_element = safe_manifest_root.find(
-            'dataObjectSection/dataObject[@ID="S2_Level-2A_Tile1_Data"]/byteStream/fileLocation',
-            safe_manifest_root.nsmap)
+            'dataObjectSection/dataObject[@ID="S2_Level-2A_Tile1_Data"]/' +
+            'byteStream/fileLocation', safe_manifest_root.nsmap)
     granule_mtd_path = granule_mtd_element.get('href')
 
     return (l2a_mtd_path, inspire_mtd_path, datastrip_mtd_path,
@@ -225,8 +223,8 @@ def geometry_from_l2a_mtd(l2a_mtd_root):
 def mean_incidence_angles_from_granule_mtd(granule_mtd_root):
     angle_nodes = list_xml_node(
         granule_mtd_root,
-        'n1:Geometric_Info/Tile_Angles/Mean_Viewing_Incidence_Angle_List/Mean_Viewing_Incidence_Angle'
-    )
+        'n1:Geometric_Info/Tile_Angles/Mean_Viewing_Incidence_Angle_List/' +
+        'Mean_Viewing_Incidence_Angle')
     all_angles = {}
     for node in angle_nodes:
         all_angles.update(mean_incidence_angles_from_node(node))
@@ -244,9 +242,8 @@ def mean_incidence_angles_from_node(node):
 
 def solar_irradiance_values_from_l2a_mtd(l2a_mtd_root):
     irradiance_nodes = list_xml_node(
-        l2a_mtd_root,
-        'n1:General_Info/Product_Image_Characteristics/Reflectance_Conversion/Solar_Irradiance_List/SOLAR_IRRADIANCE'
-    )
+        l2a_mtd_root, 'n1:General_Info/Product_Image_Characteristics/' +
+        'Reflectance_Conversion/Solar_Irradiance_List/SOLAR_IRRADIANCE')
     all_values = {}
     for node in irradiance_nodes:
         all_values.update(solar_irradiance_from_node(node))
