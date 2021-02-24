@@ -19,7 +19,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 # get the dependencies and installs
 with io.open(os.path.join(here, 'requirements.txt'), encoding='utf-8') as f:
-    install_requires = f.read().split('\n')
+    install_requires = [line.split(' ')[0] for line in f.read().split('\n')]
 
 # Add stactools subpackage dependencies
 install_requires.extend(['stactools_core=={}'.format(__version__)])

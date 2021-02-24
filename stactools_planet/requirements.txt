@@ -1,1 +1,2 @@
+rasterio==1.1.8 --no-binary=rasterio
 planet==1.4.6
