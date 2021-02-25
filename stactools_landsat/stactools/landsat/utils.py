@@ -1,3 +1,4 @@
+
 import datetime
 
 import dateutil
@@ -76,7 +77,6 @@ def transform_stac_to_stac(item: Item,
     item.ext.enable("eo")
 
     # Add and update links
-    item.links = []
     if self_link:
         item.links.append(Link(rel="self", target=self_link))
     if source_link:
@@ -100,17 +100,22 @@ def transform_stac_to_stac(item: Item,
     if enable_proj:
         try:
             # If we can load the blue band, use it to add proj information
-            blue_asset = item.assets["SR_B2.TIF"]
-            blue = rasterio.open(blue_asset.href)
-            shape = [blue.height, blue.width]
-            transform = blue.transform
-            crs = blue.crs.to_epsg()
+            if item.assets.get("SR_B2.TIF"):
+                asset = item.assets["SR_B2.TIF"]
+            # SR_B10 is a fallback for SR_B2
+            elif item.assets.get("SR_B10.TIF"):
+                asset = item.assets["SR_B10.TIF"]
+            else:
+                raise ValueError('Asset SR_B2.TIF or SR_B2.TIF required')
+
+            opened_asset = rasterio.open(asset.href)
+            shape = [opened_asset.height, opened_asset.width]
+            transform = opened_asset.transform
+            crs = opened_asset.crs.to_epsg()
 
             # Now we have the info, we can make the fields
             item.ext.enable("projection")
             item.ext.projection.epsg = crs
-
-            new_assets = {}
 
             for name, asset in item.assets.items():
                 if asset.media_type == "image/vnd.stac.geotiff; cloud-optimized=true":
