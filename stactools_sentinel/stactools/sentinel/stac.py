@@ -14,7 +14,7 @@ from stactools.sentinel.constants import (SENTINEL_PROVIDER, SENTINEL_LICENSE,
                                           SENTINEL_CONSTELLATION)
 
 
-def create_item(item_path, additional_providers=None):
+def create_item(item_path, target_path, additional_providers=None):
     safe_manifest_path = 'manifest.safe'
     safe_manifest_root = open_xml_file_root(
         os.path.join(item_path, safe_manifest_path))
@@ -93,8 +93,17 @@ def create_item(item_path, additional_providers=None):
 
     item.links.append(SENTINEL_LICENSE)
 
+    item_path = make_absolute_href(os.path.join(target_path, f'{item.id}.json'))
+    extended_item_path = make_absolute_href(os.path.join(target_path, f'{item.id}.extended.json'))
+
     extended_item = item.clone()
     extended_item.properties.update(all_properties)
+
+    item.set_self_href(item_path)
+    extended_item.set_self_href(extended_item_path)
+
+    item.add_link(pystac.Link('extended-by', extended_item, pystac.MediaType.JSON))
+    extended_item.add_link(pystac.Link('extends', item, pystac.MediaType.JSON))
 
     return (item, extended_item)
 
