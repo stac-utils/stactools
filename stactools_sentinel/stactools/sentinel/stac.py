@@ -7,7 +7,8 @@ from pystac.utils import (str_to_datetime, make_absolute_href)
 from stactools.sentinel.utils import (mtd_asset_key_from_path, clean_path,
                                       open_xml_file_root, get_xml_node_attr,
                                       get_xml_node_text, list_xml_node,
-                                      band_index_to_name, mgrs_from_path)
+                                      band_index_to_name, mgrs_from_path,
+                                      get_xml_node)
 from stactools.sentinel.constants import (SENTINEL_PROVIDER, SENTINEL_LICENSE,
                                           SENTINEL_BANDS, SENTINEL_INSTRUMENTS,
                                           SENTINEL_CONSTELLATION)
@@ -29,112 +30,42 @@ def create_item(item_path, additional_providers=None):
     datastrip_mtd_asset = xml_asset_from_path(datastrip_mtd_path, item_path)
     granule_mtd_asset = xml_asset_from_path(granule_mtd_path, item_path)
 
-    l2a_mtd_root = open_xml_file_root(
-        os.path.join(item_path, clean_path(l2a_mtd_path, 'xml')))
-    bbox, geometry = geometry_from_l2a_mtd(l2a_mtd_root)
+    l2a_mtd = parse_l2a_mtd(item_path, l2a_mtd_path)
+    granule_mtd = parse_granule_mtd(item_path, granule_mtd_path)
+    mgrs_mtd = {'s2:mgrs_tile': mgrs_from_path(item_path)}
 
-    mgrs_pos = mgrs_from_path(item_path)
-    product_uri = get_xml_node_text(
-        l2a_mtd_root, 'n1:General_Info/Product_Info/PRODUCT_URI')
-    generation_time = get_xml_node_text(
-        l2a_mtd_root, 'n1:General_Info/Product_Info/GENERATION_TIME')
-    processing_baseline = get_xml_node_text(
-        l2a_mtd_root, 'n1:General_Info/Product_Info/PROCESSING_BASELINE')
-    product_type = get_xml_node_text(
-        l2a_mtd_root, 'n1:General_Info/Product_Info/PRODUCT_TYPE')
-    dt = str_to_datetime(
-        get_xml_node_text(l2a_mtd_root,
-                          'n1:General_Info/Product_Info/PRODUCT_START_TIME'))
-    datatake_id = get_xml_node_attr(l2a_mtd_root,
-                                    'n1:General_Info/Product_Info/Datatake',
-                                    'datatakeIdentifier')
-    orbit_number = int(
-        get_xml_node_text(
-            l2a_mtd_root,
-            'n1:General_Info/Product_Info/Datatake/SENSING_ORBIT_NUMBER'))
-    orbit_direction = get_xml_node_text(
-        l2a_mtd_root,
-        'n1:General_Info/Product_Info/Datatake/SENSING_ORBIT_DIRECTION')
-    platform = get_xml_node_text(
-        l2a_mtd_root, 'n1:General_Info/Product_Info/Datatake/SPACECRAFT_NAME')
-    datatake_type = get_xml_node_text(
-        l2a_mtd_root, 'n1:General_Info/Product_Info/Datatake/DATATAKE_TYPE')
-    datastrip_id = get_xml_node_attr(
-        l2a_mtd_root,
-        'n1:General_Info/Product_Info/Product_Organisation/Granule_List/Granule',
-        'datastripIdentifier')
-    granule_id = get_xml_node_attr(
-        l2a_mtd_root,
-        'n1:General_Info/Product_Info/Product_Organisation/Granule_List/Granule',
-        'granuleIdentifier')
-    image_paths = list_xml_node(
-        l2a_mtd_root,
-        'n1:General_Info/Product_Info/Product_Organisation/Granule_List/Granule/IMAGE_FILE'
-    )
-    reflectance_conversion_factor = float(
-        get_xml_node_text(
-            l2a_mtd_root,
-            'n1:General_Info/Product_Image_Characteristics/Reflectance_Conversion/U'
-        ))
-    cloud_coverage_assessment = float(
-        get_xml_node_text(
-            l2a_mtd_root,
-            'n1:Quality_Indicators_Info/Cloud_Coverage_Assessment'))
-    # degraded_msi_data_percentage = float(
-    #     get_xml_node_text(
-    #         l2a_mtd_root,
-    #         'n1:Quality_Indicators_Info/Technical_Quality_Assessment/DEGRADED_MSI_DATA_PERCENTAGE'
-    #     ))
-    irradiance_props = solar_irradiance_values_from_l2a_mtd(l2a_mtd_root)
-    granule_mtd_root = open_xml_file_root(
-        os.path.join(item_path, clean_path(granule_mtd_path, 'xml')))
-    cloudy_percentage = float(
-        get_xml_node_text(
-            granule_mtd_root,
-            'n1:Quality_Indicators_Info/Image_Content_QI/CLOUDY_PIXEL_PERCENTAGE'
-        ))
-    mean_solar_zenith = float(
-        get_xml_node_text(
-            granule_mtd_root,
-            'n1:Geometric_Info/Tile_Angles/Mean_Sun_Angle/ZENITH_ANGLE'))
-    mean_solar_azimuth = float(
-        get_xml_node_text(
-            granule_mtd_root,
-            'n1:Geometric_Info/Tile_Angles/Mean_Sun_Angle/AZIMUTH_ANGLE'))
-    incidence_angle_props = mean_incidence_angles_from_granule_mtd(
-        granule_mtd_root)
-
-    properties = {
+    constant_properties = {
         'constellation': SENTINEL_CONSTELLATION,
-        'platform': platform,
         'instruments': SENTINEL_INSTRUMENTS,
-        's2:generationTime': generation_time,
-        's2:datatakeIdentifier': datatake_id,
-        's2:datastripIdentifier': datastrip_id,
-        's2:granuleIdentifier': granule_id,
-        's2:datatakeType': datatake_type,
-        's2:mgrsTile': mgrs_pos,
-        's2:processingBaseline': processing_baseline,
-        's2:productURI': product_uri,
-        's2:productType': product_type,
-        's2:cloudCoverageAssessment': cloud_coverage_assessment,
-        's2:meanSolarZenith': mean_solar_zenith,
-        's2:meanSolarAzimuth': mean_solar_azimuth,
-        's2:reflectanceConversionFactor': reflectance_conversion_factor
     }
 
-    properties.update(incidence_angle_props)
-    properties.update(irradiance_props)
+    all_metadata = {
+        **constant_properties,
+        **l2a_mtd,
+        **granule_mtd,
+        **mgrs_mtd
+    }
 
-    item = pystac.Item(id=product_uri,
-                       geometry=geometry,
-                       bbox=bbox,
-                       datetime=dt,
-                       properties=properties)
+    # metadata that should not be included in the item properies is prepended with 'x:'
+    all_properties = {
+        k: all_metadata[k]
+        for k in all_metadata if not k.startswith('x:')
+    }
+    short_properties = {
+        k: all_properties[k]
+        for k in all_properties if not k.startswith('s2:')
+    }
+
+    item = pystac.Item(id=l2a_mtd['s2:product_uri'],
+                       geometry=l2a_mtd['x:geometry'],
+                       bbox=l2a_mtd['x:bbox'],
+                       datetime=l2a_mtd['x:dt'],
+                       properties=short_properties)
 
     item.ext.enable('eo')
 
     item.common_metadata.providers = [SENTINEL_PROVIDER]
+
     if additional_providers is not None:
         item.common_metadata.providers.extend(additional_providers)
 
@@ -142,7 +73,7 @@ def create_item(item_path, additional_providers=None):
 
     image_assets = [
         image_asset_from_path(image_path.text, item_path, item)
-        for image_path in image_paths
+        for image_path in l2a_mtd['x:image_paths']
     ]
 
     item.add_asset(*safe_manifest_asset)
@@ -155,27 +86,124 @@ def create_item(item_path, additional_providers=None):
     for asset in image_assets:
         item.add_asset(*asset)
 
-    item.ext.eo.cloud_cover = cloudy_percentage
+    item.ext.eo.cloud_cover = granule_mtd['x:cloudy_percentage']
 
     # TODO: when pystac SAT extension support is fixed, do this addition through the extension
-    item.properties['sat:relative_orbit'] = orbit_number
-    item.properties['sat:orbit_state'] = orbit_direction
     item.stac_extensions.append('sat')
 
     item.links.append(SENTINEL_LICENSE)
 
-    return item
+    extended_item = item.clone()
+    extended_item.properties.update(all_properties)
+
+    return (item, extended_item)
+
+
+def parse_l2a_mtd(item_path, mtd_path):
+    root = open_xml_file_root(
+        os.path.join(item_path, clean_path(mtd_path, 'xml')))
+    product_info_node = get_xml_node(root, 'n1:General_Info/Product_Info')
+    datatake_node = get_xml_node(product_info_node, 'Datatake')
+    granule_node = get_xml_node(product_info_node,
+                                'Product_Organisation/Granule_List/Granule')
+    reflectance_conversion_node = get_xml_node(
+        root,
+        'n1:General_Info/Product_Image_Characteristics/Reflectance_Conversion')
+    qa_node = get_xml_node(root, 'n1:Quality_Indicators_Info')
+    bbox, geometry = geometry_from_l2a_mtd(root)
+    metadata = {
+        'x:bbox':
+        bbox,
+        'x:geometry':
+        geometry,
+        's2:product_uri':
+        get_xml_node_text(product_info_node, 'PRODUCT_URI'),
+        's2:generation_time':
+        get_xml_node_text(product_info_node, 'GENERATION_TIME'),
+        's2:processing_baseline':
+        get_xml_node_text(product_info_node, 'PROCESSING_BASELINE'),
+        's2:product_type':
+        get_xml_node_text(product_info_node, 'PRODUCT_TYPE'),
+        'x:dt':
+        str_to_datetime(
+            get_xml_node_text(product_info_node, 'PRODUCT_START_TIME')),
+        's2:datatake_id':
+        get_xml_node_attr(datatake_node, 'datatakeIdentifier'),
+        's2:datatake_type':
+        get_xml_node_text(datatake_node, 'DATATAKE_TYPE'),
+        'sat:relative_orbit':
+        int(get_xml_node_text(datatake_node, 'SENSING_ORBIT_NUMBER')),
+        'sat:orbit_state':
+        get_xml_node_text(datatake_node, 'SENSING_ORBIT_DIRECTION'),
+        'platform':
+        get_xml_node_text(datatake_node, 'SPACECRAFT_NAME'),
+        's2:datastrip_id':
+        get_xml_node_attr(granule_node, 'datastripIdentifier'),
+        's2:granule_id':
+        get_xml_node_attr(granule_node, 'granuleIdentifier'),
+        'x:image_paths':
+        list_xml_node(granule_node, 'IMAGE_FILE'),
+        's2:reflectance_conversion_factor':
+        float(get_xml_node_text(reflectance_conversion_node, 'U')),
+        's2:cloud_coverage_assessment':
+        float(get_xml_node_text(qa_node, 'Cloud_Coverage_Assessment')),
+        's2:degraded_msi_data_percentage':
+        float(
+            get_xml_node_text(
+                root,
+                'n1:Quality_Indicators_Info/Technical_Quality_Assessment/' +
+                'DEGRADED_MSI_DATA_PERCENTAGE')),
+    }
+
+    irradiance_nodes = list_xml_node(reflectance_conversion_node,
+                                     'Solar_Irradiance_List/SOLAR_IRRADIANCE')
+
+    for node in irradiance_nodes:
+        metadata.update(solar_irradiance_from_node(node))
+
+    return metadata
+
+
+def parse_granule_mtd(item_path, mtd_path):
+    root = open_xml_file_root(
+        os.path.join(item_path, clean_path(mtd_path, 'xml')))
+    tile_angles_node = get_xml_node(root, 'n1:Geometric_Info/Tile_Angles')
+    viewing_angle_nodes = list_xml_node(
+        tile_angles_node,
+        'Mean_Viewing_Incidence_Angle_List/Mean_Viewing_Incidence_Angle')
+
+    metadata = {
+        'x:cloudy_percentage':
+        float(
+            get_xml_node_text(
+                root,
+                'n1:Quality_Indicators_Info/Image_Content_QI/CLOUDY_PIXEL_PERCENTAGE'
+            )),
+        's2:mean_solar_zenith':
+        float(
+            get_xml_node_text(tile_angles_node,
+                              'Mean_Sun_Angle/ZENITH_ANGLE')),
+        's2:mean_solar_azimuth':
+        float(
+            get_xml_node_text(tile_angles_node,
+                              'Mean_Sun_Angle/AZIMUTH_ANGLE'))
+    }
+
+    for node in viewing_angle_nodes:
+        metadata.update(mean_incidence_angles_from_node(node))
+
+    return metadata
 
 
 def thumbnail_path_from_safe_manifest(safe_manifest_root):
     # ESA manifest differs from sen2cor manifest for preview images
     thumbnail_element = safe_manifest_root.find(
-        'dataObjectSection/dataObject[@ID="Preview_4_Tile1_Data"]/' +
+        'dataObjectSection/dataObject[@ID="S2_Level-1C_Preview_Tile1_Data"]/' +
         'byteStream/fileLocation', safe_manifest_root.nsmap)
     if thumbnail_element is None:
         thumbnail_element = safe_manifest_root.find(
-            'dataObjectSection/dataObject[@ID="S2_Level-1C_Preview_Tile1_Data"]/'
-            + 'byteStream/fileLocation', safe_manifest_root.nsmap)
+            'dataObjectSection/dataObject[@ID="Preview_4_Tile1_Data"]/' +
+            'byteStream/fileLocation', safe_manifest_root.nsmap)
     return thumbnail_element.get('href')
 
 
@@ -188,15 +216,15 @@ def mtd_paths_from_safe_manifest(safe_manifest_root):
         'dataObjectSection/dataObject[@ID="INSPIRE_Metadata"]/' +
         'byteStream/fileLocation', safe_manifest_root.nsmap).get('href')
 
-    granule_mtd_element = safe_manifest_root.find(
-        'dataObjectSection/dataObject[@ID="S2_Level-2A_Tile1_Metadata"]/' +
-        'byteStream/fileLocation', safe_manifest_root.nsmap)
     datastrip_mtd_path = safe_manifest_root.find(
         'dataObjectSection/dataObject[@ID="S2_Level-2A_Datastrip1_Metadata"]/'
         + 'byteStream/fileLocation', safe_manifest_root.nsmap).get('href')
+    granule_mtd_element = safe_manifest_root.find(
+        'dataObjectSection/dataObject[@ID="S2_Level-2A_Tile1_Data"]/' +
+        'byteStream/fileLocation', safe_manifest_root.nsmap)
     if granule_mtd_element is None:
         granule_mtd_element = safe_manifest_root.find(
-            'dataObjectSection/dataObject[@ID="S2_Level-2A_Tile1_Data"]/' +
+            'dataObjectSection/dataObject[@ID="S2_Level-2A_Tile1_Metadata"]/' +
             'byteStream/fileLocation', safe_manifest_root.nsmap)
     granule_mtd_path = granule_mtd_element.get('href')
 
@@ -238,16 +266,6 @@ def mean_incidence_angles_from_node(node):
     zenith = float(node.find('ZENITH_ANGLE').text)
     azimuth = float(node.find('AZIMUTH_ANGLE').text)
     return {zenith_key: zenith, azimuth_key: azimuth}
-
-
-def solar_irradiance_values_from_l2a_mtd(l2a_mtd_root):
-    irradiance_nodes = list_xml_node(
-        l2a_mtd_root, 'n1:General_Info/Product_Image_Characteristics/' +
-        'Reflectance_Conversion/Solar_Irradiance_List/SOLAR_IRRADIANCE')
-    all_values = {}
-    for node in irradiance_nodes:
-        all_values.update(solar_irradiance_from_node(node))
-    return all_values
 
 
 def solar_irradiance_from_node(node):

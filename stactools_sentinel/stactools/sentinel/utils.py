@@ -65,8 +65,12 @@ def get_xml_node_text(root, xpath):
     return None
 
 
-def get_xml_node_attr(root, xpath, attr):
-    node = root.find(xpath, root.nsmap)
+def get_xml_node_attr(root, attr, xpath=None):
+    node = root
+    if xpath is not None:
+        node = root.find(xpath, root.nsmap)
+
     if node is not None:
         return node.get(attr)
+
     return None
