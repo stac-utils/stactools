@@ -1,4 +1,3 @@
-import os
 import logging
 import click
 import json
@@ -43,7 +42,7 @@ def create_sentinel_command(cli):
 
         (item, extended_item) = create_item(
             src, dst, additional_providers=additional_providers)
-        
+
         if cogify:
             create_cogs(item)
         item.save_object()
