@@ -50,7 +50,7 @@ def create_sentinel_command(cli):
         extended_item.set_self_href(extended_item_path)
         if cogify:
             create_cogs(item)
-        # item.save_object()
-        # extended_item.save_object()
+        item.save_object()
+        extended_item.save_object()
 
     return sentinel
