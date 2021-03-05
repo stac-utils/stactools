@@ -2,12 +2,15 @@ import os
 from copy import deepcopy
 import json
 import logging
+import hashlib
 
+from multihash import Multihash
 import fsspec
 import pystac
 from pystac.link import Link
 from pystac.utils import (str_to_datetime, make_absolute_href)
 from pystac.extensions.eo import Band
+from pystac.extensions.file import FileDataType
 from shapely.geometry import shape
 
 from stactools.planet import PLANET_PROVIDER
@@ -57,6 +60,19 @@ class PlanetItem:
         self.item_assets = item_assets
         self.base_dir = make_absolute_href(base_dir)
         self.metadata_href = metadata_href
+
+    def _file_checksum(self, path):
+        BUF_SIZE = 65536
+        sha1 = hashlib.sha1()
+
+        with open(path, 'rb') as f:
+            while True:
+                data = f.read(BUF_SIZE)
+                if not data:
+                    break
+                sha1.update(data)
+                mh = Multihash.from_hash(sha1)
+                return mh.encode('hex').decode('ascii')
 
     def to_stac(self):
         props = deepcopy(self.item_metadata['properties'])
@@ -125,25 +141,28 @@ class PlanetItem:
             asset_type = planet_asset['annotations']['planet/asset_type']
             bundle_type = planet_asset['annotations']['planet/bundle_type']
 
+            add_file_info = False
             # Planet data is delivered as COGs
-            if media_type == 'image/tiff' and asset_type not in [
-                    "udm", "udm2"
-            ]:
-                media_type = pystac.MediaType.COG
-                roles = ['visual']
-                thumbnail_path = f"{os.path.splitext(href)[0]}.thumbnail.png"
-                with rasterio.open(href) as dataset:
-                    height, width = dataset.shape
-                    geotransform = dataset.transform
-                    if width > height:
-                        width, height = 256, int(height / width * 256)
-                    else:
-                        width, height = int(width / height * 256), 256
+            if media_type == 'image/tiff':
+                add_file_info = True
+                if asset_type in ["udm", "udm2"]:
+                    roles = ['data']
+                else:
+                    media_type = pystac.MediaType.COG
+                    roles = ['visual']
+                    thumbnail_path = f"{os.path.splitext(href)[0]}.thumbnail.png"
+                    with rasterio.open(href) as dataset:
+                        height, width = dataset.shape
+                        geotransform = dataset.transform
+                        if width > height:
+                            width, height = 256, int(height / width * 256)
+                        else:
+                            width, height = int(width / height * 256), 256
 
                     profile = dataset.profile
-                    profile.update(driver='PNG')
-                    profile.update(width=width)
-                    profile.update(height=height)
+                    profile.update(driver='PNG',
+                                   width=width,
+                                   height=height)
 
                     if "analytic" in asset_type:
                         data = dataset.read(indexes=[3, 2, 1],
@@ -155,14 +174,15 @@ class PlanetItem:
                                                        height, width),
                                             resampling=Resampling.cubic)
 
-                    with rasterio.open(thumbnail_path, 'w', **profile) as dst:
+                    with rasterio.open(thumbnail_path, 'w',
+                                       **profile) as dst:
                         dst.write(data)
 
-                item.add_asset(
-                    'thumbnail',
-                    pystac.Asset(href=thumbnail_path,
-                                 media_type=pystac.MediaType.PNG,
-                                 roles=['thumbnail']))
+                    thumbnail_asset = pystac.Asset(
+                        href=thumbnail_path,
+                        media_type=pystac.MediaType.PNG,
+                        roles=['thumbnail'])
+                    item.add_asset('thumbnail', thumbnail_asset)
             else:
                 roles = ['metadata']
 
@@ -173,11 +193,7 @@ class PlanetItem:
             if asset_type != bundle_type:
                 key = '{}:{}'.format(bundle_type, asset_type)
 
-            item.add_asset(
-                key, pystac.Asset(href=href,
-                                  media_type=media_type,
-                                  roles=roles))
-            asset = pystac.Asset(href=href, media_type=media_type)
+            asset = pystac.Asset(href=href, media_type=media_type, roles=roles)
 
             if media_type == pystac.MediaType.COG:
                 # add bands to asset
@@ -195,6 +211,21 @@ class PlanetItem:
                             SKYSAT_BANDS['BLUE']
                         ]
                     item.ext.eo.set_bands(bands, asset)
+
+            if add_file_info:
+                item.ext.enable('file')
+                checksum = self._file_checksum(href)
+                with rasterio.open(href) as dataset:
+                    # we assume all bands in the image have the same data type
+                    data_type = FileDataType(dataset.dtypes[0])
+                try:
+                    size = os.path.getsize(href)
+                    item.ext.file.set_size(size, asset)
+                except OSError:
+                    pass  # do not add size value if size cannot be computed
+
+                item.ext.file.set_data_type(data_type, asset)
+                item.ext.file.set_checksum(checksum, asset)
 
             item.add_asset(key, asset)
 
