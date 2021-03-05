@@ -46,8 +46,7 @@ def clean_path(path, extension=None):
 
 
 def open_xml_file_root(path):
-    with open(path) as f:
-        return etree.parse(f).getroot()
+    return etree.parse(path).getroot()
 
 
 def get_xml_node(root, xpath):
