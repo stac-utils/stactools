@@ -16,11 +16,15 @@ from stactools.sentinel.constants import (SENTINEL_PROVIDER, SENTINEL_LICENSE,
 
 def create_item(item_path, target_path, additional_providers=None):
     paths = parse_safe_manifest(item_path)
-    safe_manifest_asset = xml_asset_from_path(paths['safe_manifest_path'], item_path)
+    safe_manifest_asset = xml_asset_from_path(paths['safe_manifest_path'],
+                                              item_path)
     l2a_mtd_asset = xml_asset_from_path(paths['l2a_mtd_path'], item_path)
-    inspire_mtd_asset = xml_asset_from_path(paths['inspire_mtd_path'], item_path)
-    datastrip_mtd_asset = xml_asset_from_path(paths['datastrip_mtd_path'], item_path)
-    granule_mtd_asset = xml_asset_from_path(paths['granule_mtd_path'], item_path)
+    inspire_mtd_asset = xml_asset_from_path(paths['inspire_mtd_path'],
+                                            item_path)
+    datastrip_mtd_asset = xml_asset_from_path(paths['datastrip_mtd_path'],
+                                              item_path)
+    granule_mtd_asset = xml_asset_from_path(paths['granule_mtd_path'],
+                                            item_path)
 
     l2a_mtd = parse_l2a_mtd(item_path, paths['l2a_mtd_path'])
     granule_mtd = parse_granule_mtd(item_path, paths['granule_mtd_path'])
@@ -61,7 +65,8 @@ def create_item(item_path, target_path, additional_providers=None):
     if additional_providers is not None:
         item.common_metadata.providers.extend(additional_providers)
 
-    thumbnail_asset = image_asset_from_path(paths['thumbnail_path'], item_path, item)
+    thumbnail_asset = image_asset_from_path(paths['thumbnail_path'], item_path,
+                                            item)
 
     image_assets = [
         image_asset_from_path(image_path.text, item_path, item)
@@ -201,44 +206,40 @@ def parse_granule_mtd(item_path, mtd_path):
 
 def parse_safe_manifest(item_path):
     path = 'manifest.safe'
-    root = open_xml_file_root(
-        os.path.join(item_path, path))
+    root = open_xml_file_root(os.path.join(item_path, path))
     do_section_node = get_xml_node(root, 'dataObjectSection')
 
     thumbnail_path = get_xml_node_attr(
-        do_section_node,
-        'href',
-        'dataObject[@ID="S2_Level-1C_Preview_Tile1_Data"]/byteStream/fileLocation')
+        do_section_node, 'href',
+        'dataObject[@ID="S2_Level-1C_Preview_Tile1_Data"]/byteStream/fileLocation'
+    )
     if thumbnail_path is None:
         thumbnail_path = get_xml_node_attr(
-            do_section_node,
-            'href',
+            do_section_node, 'href',
             'dataObject[@ID="Preview_4_Tile1_Data"]/byteStream/fileLocation')
 
     l2a_mtd_path = get_xml_node_attr(
-        do_section_node,
-        'href',
-        'dataObject[@ID="S2_Level-2A_Product_Metadata"]/byteStream/fileLocation')
+        do_section_node, 'href',
+        'dataObject[@ID="S2_Level-2A_Product_Metadata"]/byteStream/fileLocation'
+    )
 
     inspire_mtd_path = get_xml_node_attr(
-        do_section_node,
-        'href',
+        do_section_node, 'href',
         'dataObject[@ID="INSPIRE_Metadata"]/byteStream/fileLocation')
 
     datastrip_mtd_path = get_xml_node_attr(
-        do_section_node,
-        'href',
-        'dataObject[@ID="S2_Level-2A_Datastrip1_Metadata"]/byteStream/fileLocation')
+        do_section_node, 'href',
+        'dataObject[@ID="S2_Level-2A_Datastrip1_Metadata"]/byteStream/fileLocation'
+    )
 
     granule_mtd_path = get_xml_node_attr(
-        do_section_node,
-        'href',
+        do_section_node, 'href',
         'dataObject[@ID="S2_Level-2A_Tile1_Data"]/byteStream/fileLocation')
     if granule_mtd_path is None:
         granule_mtd_path = get_xml_node_attr(
-            do_section_node,
-            'href',
-            'dataObject[@ID="S2_Level-2A_Tile1_Metadata"]/byteStream/fileLocation')
+            do_section_node, 'href',
+            'dataObject[@ID="S2_Level-2A_Tile1_Metadata"]/byteStream/fileLocation'
+        )
 
     return {
         'safe_manifest_path': path,
