@@ -10,6 +10,7 @@ STACTOOLS_SUBPACKAGE_DIRS=(
     "stactools_planet"
     "stactools_naip"
     "stactools_threedep"
+    "stactools_pointcloud"
     "stactools_browse"
     "stactools_sentinel2"
 );
@@ -24,6 +25,7 @@ STACTOOLS_COVERAGE_DIRS=(
     "stactools_planet/stactools/planet"
     "stactools_naip/stactools/naip"
     "stactools_threedep/stactools/threedep"
+    "stactools_pointcloud/stactools/pointcloud"
     "stactools_browse/stactools/browse"
     "stactools_sentinel2/stactools/sentinel2"
 );

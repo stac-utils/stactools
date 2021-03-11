@@ -35,6 +35,7 @@ subpackages = [
     Subpackage('naip', is_extra=True),
     Subpackage('planet', is_extra=True),
     Subpackage('threedep', is_extra=True),
+    Subpackage('pointcloud', is_extra=True),
     Subpackage('browse', is_extra=True),
     Subpackage('sentinel2', is_extra=True)
 ]
@@ -81,6 +82,7 @@ setup(
         'psytac',
         'imagery',
         'raster',
+        'pointcloud',
         'catalog',
         'STAC'
     ],
