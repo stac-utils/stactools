@@ -32,7 +32,10 @@ RUN conda install -y python=3.8
 RUN python -m pip install --upgrade pip
 
 # Install GDAL
-RUN conda install -y -c conda-forge gdal=3.2.0
+RUN conda install -y -c conda-forge gdal=3.2.2
+
+# Install PDAL
+RUN conda install -y -c conda-forge pdal=2.2.0
 
 # Install dependencies for building rasterio from source.
 # The rasterio wheels do not include the HDF-EOS driver
@@ -85,6 +88,10 @@ RUN pip install -r /tmp/sentinel2/requirements.txt
 # 3DEP
 COPY stactools_threedep/requirements.txt /tmp/threedep/requirements.txt
 RUN pip install -r /tmp/threedep/requirements.txt
+
+# Pointcloud
+COPY stactools_pointcloud/requirements.txt /tmp/pointcloud/requirements.txt
+RUN pip install -r /tmp/pointcloud/requirements.txt
 
 # Jupyter
 RUN pip install jupyter==1.0.0
