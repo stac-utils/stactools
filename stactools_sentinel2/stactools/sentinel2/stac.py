@@ -171,7 +171,7 @@ def image_asset_from_href(
                                                shape[1], shape[0])[:6]
 
     def set_asset_properties(asset):
-        asset.properties['gsd'] = gsd
+        item.common_metadata.set_gsd(gsd, asset)
         item.ext.projection.set_shape(shape, asset)
         item.ext.projection.set_bbox(proj_bbox, asset)
         item.ext.projection.set_transform(transform, asset)
