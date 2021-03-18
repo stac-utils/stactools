@@ -3,8 +3,8 @@ from typing import Optional
 
 import pystac
 
-from stactools.sentinel.utils import read_xml, get_xml_node, get_xml_node_attr, ReadHrefModifier
-from stactools.sentinel.constants import SAFE_MANIFEST_ASSET_KEY
+from stactools.sentinel2.utils import read_xml, get_xml_node, get_xml_node_attr, ReadHrefModifier
+from stactools.sentinel2.constants import SAFE_MANIFEST_ASSET_KEY
 
 
 class SafeManifest:

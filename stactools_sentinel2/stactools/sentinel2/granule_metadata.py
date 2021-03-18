@@ -1,10 +1,9 @@
-from stactools_sentinel.stactools.sentinel.utils import get_xml_node_attr
 from typing import Dict, List, Optional, Tuple
 
 import pystac
 
-from stactools.sentinel.constants import GRANULE_METADATA_ASSET_KEY
-from stactools.sentinel.utils import ReadHrefModifier, band_index_to_name, get_xml_node, get_xml_node_text, list_xml_node, read_xml, convert
+from stactools.sentinel2.constants import GRANULE_METADATA_ASSET_KEY
+from stactools.sentinel2.utils import ReadHrefModifier, band_index_to_name, get_xml_node, get_xml_node_text, list_xml_node, read_xml, convert, get_xml_node_attr
 
 
 class GranuleMetadata:

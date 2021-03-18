@@ -3,19 +3,19 @@ import click
 import json
 import os
 
-from stactools.sentinel.stac import create_item
-from stactools.sentinel.cog import create_cogs
+from stactools.sentinel2.stac import create_item
+from stactools.sentinel2.cog import create_cogs
 
 logger = logging.getLogger(__name__)
 
 
-def create_sentinel_command(cli):
-    @cli.group('sentinel',
-               short_help=("Commands for working with sentinel data"))
-    def sentinel():
+def create_sentinel2_command(cli):
+    @cli.group('sentinel2',
+               short_help=("Commands for working with sentinel2 data"))
+    def sentinel2():
         pass
 
-    @sentinel.command(
+    @sentinel2.command(
         'create-item',
         short_help='Convert a Sentinel2 L2A granule into a STAC item')
     @click.argument('src')
@@ -54,4 +54,4 @@ def create_sentinel_command(cli):
         for i in [item, extended_item]:
             i.save_object()
 
-    return sentinel
+    return sentinel2

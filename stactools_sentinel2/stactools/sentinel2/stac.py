@@ -7,11 +7,11 @@ import pystac
 from pystac.extensions.sat import OrbitState
 import rasterio.transform
 
-from stactools.sentinel.safe_manifest import SafeManifest
-from stactools.sentinel.product_metadata import ProductMetadata
-from stactools.sentinel.granule_metadata import GranuleMetadata
-from stactools.sentinel.utils import ReadHrefModifier, extract_gsd
-from stactools.sentinel.constants import (DATASTRIP_METADATA_ASSET_KEY,
+from stactools.sentinel2.safe_manifest import SafeManifest
+from stactools.sentinel2.product_metadata import ProductMetadata
+from stactools.sentinel2.granule_metadata import GranuleMetadata
+from stactools.sentinel2.utils import ReadHrefModifier, extract_gsd
+from stactools.sentinel2.constants import (DATASTRIP_METADATA_ASSET_KEY,
                                           SENTINEL_PROVIDER, SENTINEL_LICENSE,
                                           SENTINEL_BANDS, SENTINEL_INSTRUMENTS,
                                           SENTINEL_CONSTELLATION,

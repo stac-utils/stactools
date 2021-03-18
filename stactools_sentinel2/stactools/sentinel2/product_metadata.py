@@ -6,8 +6,8 @@ from shapely.geometry import mapping, Polygon
 import pystac
 from pystac.utils import str_to_datetime
 
-from stactools.sentinel.constants import PRODUCT_METADATA_ASSET_KEY
-from stactools.sentinel.utils import ReadHrefModifier, band_index_to_name, get_xml_node, get_xml_node_attr, get_xml_node_text, list_xml_node, read_xml, convert
+from stactools.sentinel2.constants import PRODUCT_METADATA_ASSET_KEY
+from stactools.sentinel2.utils import ReadHrefModifier, band_index_to_name, get_xml_node, get_xml_node_attr, get_xml_node_text, list_xml_node, read_xml, convert
 
 
 class ProductMetadata:
