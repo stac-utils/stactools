@@ -3,7 +3,10 @@ from typing import Dict, List, Optional, Tuple
 import pystac
 
 from stactools.sentinel2.constants import GRANULE_METADATA_ASSET_KEY
-from stactools.sentinel2.utils import ReadHrefModifier, band_index_to_name, get_xml_node, get_xml_node_text, list_xml_node, read_xml, convert, get_xml_node_attr
+from stactools.sentinel2.utils import (ReadHrefModifier, band_index_to_name,
+                                       get_xml_node, get_xml_node_text,
+                                       list_xml_node, read_xml, convert,
+                                       get_xml_node_attr)
 
 
 class GranuleMetadata:
@@ -53,10 +56,10 @@ class GranuleMetadata:
         geoposition = get_xml_node(self._geocoding_node, 'Geoposition')
         ulx = convert(float, get_xml_node_text(geoposition, 'ULX'))
         if ulx is None:
-            raise ValueError(f'Could not get upper left X coordinate')
+            raise ValueError('Could not get upper left X coordinate')
         uly = convert(float, get_xml_node_text(geoposition, 'ULY'))
         if uly is None:
-            raise ValueError(f'Could not get upper left Y coordinate')
+            raise ValueError('Could not get upper left Y coordinate')
 
         return [ulx, uly - (10 * nrows), ulx + (10 * ncols), uly]
 

@@ -12,10 +12,11 @@ from stactools.sentinel2.product_metadata import ProductMetadata
 from stactools.sentinel2.granule_metadata import GranuleMetadata
 from stactools.sentinel2.utils import ReadHrefModifier, extract_gsd
 from stactools.sentinel2.constants import (DATASTRIP_METADATA_ASSET_KEY,
-                                          SENTINEL_PROVIDER, SENTINEL_LICENSE,
-                                          SENTINEL_BANDS, SENTINEL_INSTRUMENTS,
-                                          SENTINEL_CONSTELLATION,
-                                          INSPIRE_METADATA_ASSET_KEY)
+                                           SENTINEL_PROVIDER, SENTINEL_LICENSE,
+                                           SENTINEL_BANDS,
+                                           SENTINEL_INSTRUMENTS,
+                                           SENTINEL_CONSTELLATION,
+                                           INSPIRE_METADATA_ASSET_KEY)
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +41,7 @@ def create_item(
                        datetime=product_metadata.datetime,
                        properties={})
 
-    ## Common metadata
+    # --Common metadata--
 
     item.common_metadata.providers = [SENTINEL_PROVIDER]
 
@@ -50,7 +51,7 @@ def create_item(
     item.common_metadata.constellation = SENTINEL_CONSTELLATION
     item.common_metadata.instruments = SENTINEL_INSTRUMENTS
 
-    ## Extensions
+    # --Extensions--
 
     # eo
 
@@ -71,7 +72,7 @@ def create_item(
             f'Could not determine EPSG code for {granule_href}; which is required.'
         )
 
-    ## Assets
+    # --Assets--
 
     # Metadata
 
@@ -111,11 +112,11 @@ def create_item(
                          media_type=pystac.MediaType.COG,
                          roles=['thumbnail']))
 
-    ## Links
+    # --Links--
 
     item.links.append(SENTINEL_LICENSE)
 
-    ## Create extended metadata item
+    # Create extended metadata item
 
     extended_item = item.clone()
     extended_item.id = f'{item.id}-extended'

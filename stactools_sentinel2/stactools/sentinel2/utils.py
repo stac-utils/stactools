@@ -1,5 +1,3 @@
-import os
-import re
 from typing import Callable, Optional
 
 from lxml import etree
