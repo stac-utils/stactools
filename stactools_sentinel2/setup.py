@@ -4,14 +4,14 @@ from setuptools import setup, find_namespace_packages
 from glob import glob
 import io
 
-name = 'stactools_sentinel'
+name = 'stactools_sentinel2'
 description = ("Subpackage for working with sentinel data of stactools, "
                "a command line tool and Python library for working with STAC.")
 
 __version__ = load_source(
-    'stactools.sentinel.version',
+    'stactools.sentinel2.version',
     os.path.join(os.path.dirname(__file__),
-                 'stactools/sentinel/version.py')).__version__
+                 'stactools/sentinel2/version.py')).__version__
 
 from os.path import (basename, splitext)
 
