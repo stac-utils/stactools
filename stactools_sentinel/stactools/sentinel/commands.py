@@ -1,6 +1,7 @@
 import logging
 import click
 import json
+import os
 
 from stactools.sentinel.stac import create_item
 from stactools.sentinel.cog import create_cogs
@@ -41,11 +42,16 @@ def create_sentinel_command(cli):
                 additional_providers = json.load(f)
 
         (item, extended_item) = create_item(
-            src, dst, additional_providers=additional_providers)
+            src, additional_providers=additional_providers)
 
         if cogify:
             create_cogs(item)
-        item.save_object()
-        extended_item.save_object()
+
+        for i in [item, extended_item]:
+            item_path = os.path.join(dst, '{}.json'.format(i.id))
+            i.set_self_href(item_path)
+
+        for i in [item, extended_item]:
+            i.save_object()
 
     return sentinel

@@ -15,6 +15,12 @@ SENTINEL_PROVIDER = pystac.Provider(
     roles=['producer', 'processor', 'licensor'],
     url='https://earth.esa.int/web/guest/home')
 
+SAFE_MANIFEST_ASSET_KEY = "safe-manifest"
+INSPIRE_METADATA_ASSET_KEY = "inspire-metadata"
+PRODUCT_METADATA_ASSET_KEY = "product-metadata"
+GRANULE_METADATA_ASSET_KEY = "granule-metadata"
+DATASTRIP_METADATA_ASSET_KEY = "datastrip-metadata"
+
 SENTINEL_BANDS = {
     'B01':
     Band.create(name='B01',

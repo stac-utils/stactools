@@ -1,105 +1,128 @@
+import logging
 import os
 import re
-from shapely.geometry import mapping, Polygon
+from typing import Dict, List, Optional, Tuple
+
 import pystac
-from pystac.utils import (str_to_datetime, make_absolute_href)
+from pystac.extensions.sat import OrbitState
+import rasterio.transform
 
-from stactools.sentinel.utils import (mtd_asset_key_from_path, clean_path,
-                                      open_xml_file_root, get_xml_node_attr,
-                                      get_xml_node_text, list_xml_node,
-                                      band_index_to_name, mgrs_from_path,
-                                      get_xml_node)
-from stactools.sentinel.constants import (SENTINEL_PROVIDER, SENTINEL_LICENSE,
+from stactools.sentinel.safe_manifest import SafeManifest
+from stactools.sentinel.product_metadata import ProductMetadata
+from stactools.sentinel.granule_metadata import GranuleMetadata
+from stactools.sentinel.utils import ReadHrefModifier, extract_gsd
+from stactools.sentinel.constants import (DATASTRIP_METADATA_ASSET_KEY,
+                                          SENTINEL_PROVIDER, SENTINEL_LICENSE,
                                           SENTINEL_BANDS, SENTINEL_INSTRUMENTS,
-                                          SENTINEL_CONSTELLATION)
+                                          SENTINEL_CONSTELLATION,
+                                          INSPIRE_METADATA_ASSET_KEY)
+
+logger = logging.getLogger(__name__)
 
 
-def create_item(item_path, target_path, additional_providers=None):
-    paths = parse_safe_manifest(item_path)
-    safe_manifest_asset = xml_asset_from_path(paths['safe_manifest_path'],
-                                              item_path)
-    l2a_mtd_asset = xml_asset_from_path(paths['l2a_mtd_path'], item_path)
-    inspire_mtd_asset = xml_asset_from_path(paths['inspire_mtd_path'],
-                                            item_path)
-    datastrip_mtd_asset = xml_asset_from_path(paths['datastrip_mtd_path'],
-                                              item_path)
-    granule_mtd_asset = xml_asset_from_path(paths['granule_mtd_path'],
-                                            item_path)
+def create_item(
+    granule_href: str,
+    image_media_type: str = pystac.MediaType.JPEG2000,
+    additional_providers: Optional[List[pystac.Provider]] = None,
+    read_href_modifier: Optional[ReadHrefModifier] = None
+) -> Tuple[pystac.Item, pystac.Item]:
 
-    l2a_mtd = parse_l2a_mtd(item_path, paths['l2a_mtd_path'])
-    granule_mtd = parse_granule_mtd(item_path, paths['granule_mtd_path'])
-    mgrs_mtd = {'s2:mgrs_tile': mgrs_from_path(item_path)}
+    safe_manifest = SafeManifest(granule_href, read_href_modifier)
 
-    constant_properties = {
-        'constellation': SENTINEL_CONSTELLATION,
-        'instruments': SENTINEL_INSTRUMENTS,
-    }
+    product_metadata = ProductMetadata(safe_manifest.product_metadata_href,
+                                       read_href_modifier)
+    granule_metadata = GranuleMetadata(safe_manifest.granule_metadata_href,
+                                       read_href_modifier)
 
-    all_metadata = {
-        **constant_properties,
-        **l2a_mtd,
-        **granule_mtd,
-        **mgrs_mtd
-    }
+    item = pystac.Item(id=product_metadata.product_id,
+                       geometry=product_metadata.geometry,
+                       bbox=product_metadata.bbox,
+                       datetime=product_metadata.datetime,
+                       properties={})
 
-    # metadata that should not be included in the item properies is prepended with 'x:'
-    all_properties = {
-        k: all_metadata[k]
-        for k in all_metadata if not k.startswith('x:')
-    }
-    short_properties = {
-        k: all_properties[k]
-        for k in all_properties if not k.startswith('s2:')
-    }
-
-    item = pystac.Item(id=l2a_mtd['s2:product_uri'],
-                       geometry=l2a_mtd['x:geometry'],
-                       bbox=l2a_mtd['x:bbox'],
-                       datetime=l2a_mtd['x:dt'],
-                       properties=short_properties)
-
-    item.ext.enable('eo')
+    ## Common metadata
 
     item.common_metadata.providers = [SENTINEL_PROVIDER]
 
     if additional_providers is not None:
         item.common_metadata.providers.extend(additional_providers)
 
-    thumbnail_asset = image_asset_from_path(paths['thumbnail_path'], item_path,
-                                            item)
+    item.common_metadata.constellation = SENTINEL_CONSTELLATION
+    item.common_metadata.instruments = SENTINEL_INSTRUMENTS
 
-    image_assets = [
-        image_asset_from_path(image_path.text, item_path, item)
-        for image_path in l2a_mtd['x:image_paths']
-    ]
+    ## Extensions
 
-    item.add_asset(*safe_manifest_asset)
-    item.add_asset(*l2a_mtd_asset)
-    item.add_asset(*inspire_mtd_asset)
-    item.add_asset(*datastrip_mtd_asset)
-    item.add_asset(*granule_mtd_asset)
-    item.add_asset(*thumbnail_asset)
+    # eo
 
-    for asset in image_assets:
+    item.ext.enable('eo')
+    item.ext.eo.cloud_cover = granule_metadata.cloudiness_percentage
+
+    # sat
+
+    item.ext.enable('sat')
+    item.ext.sat.orbit_state = OrbitState(product_metadata.orbit_state.lower())
+    item.ext.sat.relative_orbit = product_metadata.relative_orbit
+
+    # proj
+    item.ext.enable('projection')
+    item.ext.projection.epsg = granule_metadata.epsg
+    if item.ext.projection.epsg is None:
+        raise ValueError(
+            f'Could not determine EPSG code for {granule_href}; which is required.'
+        )
+
+    ## Assets
+
+    # Metadata
+
+    item.add_asset(*safe_manifest.create_asset())
+    item.add_asset(*product_metadata.create_asset())
+    item.add_asset(*granule_metadata.create_asset())
+    item.add_asset(
+        INSPIRE_METADATA_ASSET_KEY,
+        pystac.Asset(href=safe_manifest.inspire_metadata_href,
+                     media_type=pystac.MediaType.XML,
+                     roles=['metadata']))
+    item.add_asset(
+        DATASTRIP_METADATA_ASSET_KEY,
+        pystac.Asset(href=safe_manifest.datastrip_metadata_href,
+                     media_type=pystac.MediaType.XML,
+                     roles=['metadata']))
+
+    # Image assets
+    proj_bbox = granule_metadata.proj_bbox
+
+    image_assets = dict([
+        image_asset_from_href(image_path, item,
+                              granule_metadata.resolution_to_shape, proj_bbox,
+                              image_media_type)
+        for image_path in product_metadata.image_paths
+    ])
+
+    for asset in image_assets.items():
         item.add_asset(*asset)
 
-    item.ext.eo.cloud_cover = granule_mtd['x:cloudy_percentage']
+    # Thumbnail
 
-    # TODO: when pystac SAT extension support is fixed, do this addition through the extension
-    item.stac_extensions.append('sat')
+    if safe_manifest.thumbnail_href is not None:
+        item.add_asset(
+            "preview",
+            pystac.Asset(href=safe_manifest.thumbnail_href,
+                         media_type=pystac.MediaType.COG,
+                         roles=['thumbnail']))
+
+    ## Links
 
     item.links.append(SENTINEL_LICENSE)
 
-    item_path = make_absolute_href(os.path.join(target_path,
-                                                f'{item.id}.json'))
-    extended_item_path = make_absolute_href(
-        os.path.join(target_path, f'{item.id}.extended.json'))
+    ## Create extended metadata item
 
     extended_item = item.clone()
-    extended_item.properties.update(all_properties)
-
-    item.set_self_href(item_path)
-    extended_item.set_self_href(extended_item_path)
+    extended_item.id = f'{item.id}-extended'
+    extended_item.properties.update({
+        **product_metadata.metadata_dict,
+        **granule_metadata.metadata_dict
+    })
 
     item.add_link(
         pystac.Link('extended-by', extended_item, pystac.MediaType.JSON))
@@ -108,276 +131,104 @@ def create_item(item_path, target_path, additional_providers=None):
     return (item, extended_item)
 
 
-def parse_l2a_mtd(item_path, mtd_path):
-    root = open_xml_file_root(
-        os.path.join(item_path, clean_path(mtd_path, 'xml')))
-    product_info_node = get_xml_node(root, 'n1:General_Info/Product_Info')
-    datatake_node = get_xml_node(product_info_node, 'Datatake')
-    granule_node = get_xml_node(product_info_node,
-                                'Product_Organisation/Granule_List/Granule')
-    reflectance_conversion_node = get_xml_node(
-        root,
-        'n1:General_Info/Product_Image_Characteristics/Reflectance_Conversion')
-    qa_node = get_xml_node(root, 'n1:Quality_Indicators_Info')
-    bbox, geometry = geometry_from_l2a_mtd(root)
-    metadata = {
-        'x:bbox':
-        bbox,
-        'x:geometry':
-        geometry,
-        's2:product_uri':
-        get_xml_node_text(product_info_node, 'PRODUCT_URI'),
-        's2:generation_time':
-        get_xml_node_text(product_info_node, 'GENERATION_TIME'),
-        's2:processing_baseline':
-        get_xml_node_text(product_info_node, 'PROCESSING_BASELINE'),
-        's2:product_type':
-        get_xml_node_text(product_info_node, 'PRODUCT_TYPE'),
-        'x:dt':
-        str_to_datetime(
-            get_xml_node_text(product_info_node, 'PRODUCT_START_TIME')),
-        's2:datatake_id':
-        get_xml_node_attr(datatake_node, 'datatakeIdentifier'),
-        's2:datatake_type':
-        get_xml_node_text(datatake_node, 'DATATAKE_TYPE'),
-        'sat:relative_orbit':
-        int(get_xml_node_text(datatake_node, 'SENSING_ORBIT_NUMBER')),
-        'sat:orbit_state':
-        get_xml_node_text(datatake_node, 'SENSING_ORBIT_DIRECTION'),
-        'platform':
-        get_xml_node_text(datatake_node, 'SPACECRAFT_NAME'),
-        's2:datastrip_id':
-        get_xml_node_attr(granule_node, 'datastripIdentifier'),
-        's2:granule_id':
-        get_xml_node_attr(granule_node, 'granuleIdentifier'),
-        'x:image_paths':
-        list_xml_node(granule_node, 'IMAGE_FILE'),
-        's2:reflectance_conversion_factor':
-        float(get_xml_node_text(reflectance_conversion_node, 'U')),
-        's2:cloud_coverage_assessment':
-        float(get_xml_node_text(qa_node, 'Cloud_Coverage_Assessment')),
-        's2:degraded_msi_data_percentage':
-        float(
-            get_xml_node_text(
-                root,
-                'n1:Quality_Indicators_Info/Technical_Quality_Assessment/' +
-                'DEGRADED_MSI_DATA_PERCENTAGE')),
-    }
+def image_asset_from_href(
+        asset_href: str,
+        item: pystac.Item,
+        resolution_to_shape: Dict[int, Tuple[int, int]],
+        proj_bbox: List[float],
+        media_type: Optional[str] = None) -> Tuple[str, pystac.Asset]:
+    logger.debug(f'Creating asset for image {asset_href}')
 
-    irradiance_nodes = list_xml_node(reflectance_conversion_node,
-                                     'Solar_Irradiance_List/SOLAR_IRRADIANCE')
-
-    for node in irradiance_nodes:
-        metadata.update(solar_irradiance_from_node(node))
-
-    return metadata
-
-
-def parse_granule_mtd(item_path, mtd_path):
-    root = open_xml_file_root(
-        os.path.join(item_path, clean_path(mtd_path, 'xml')))
-    tile_angles_node = get_xml_node(root, 'n1:Geometric_Info/Tile_Angles')
-    viewing_angle_nodes = list_xml_node(
-        tile_angles_node,
-        'Mean_Viewing_Incidence_Angle_List/Mean_Viewing_Incidence_Angle')
-
-    metadata = {
-        'x:cloudy_percentage':
-        float(
-            get_xml_node_text(
-                root,
-                'n1:Quality_Indicators_Info/Image_Content_QI/CLOUDY_PIXEL_PERCENTAGE'
-            )),
-        's2:mean_solar_zenith':
-        float(
-            get_xml_node_text(tile_angles_node,
-                              'Mean_Sun_Angle/ZENITH_ANGLE')),
-        's2:mean_solar_azimuth':
-        float(
-            get_xml_node_text(tile_angles_node,
-                              'Mean_Sun_Angle/AZIMUTH_ANGLE'))
-    }
-
-    for node in viewing_angle_nodes:
-        metadata.update(mean_incidence_angles_from_node(node))
-
-    return metadata
-
-
-def parse_safe_manifest(item_path):
-    path = 'manifest.safe'
-    root = open_xml_file_root(os.path.join(item_path, path))
-    do_section_node = get_xml_node(root, 'dataObjectSection')
-
-    thumbnail_path = get_xml_node_attr(
-        do_section_node, 'href',
-        'dataObject[@ID="S2_Level-1C_Preview_Tile1_Data"]/byteStream/fileLocation'
-    )
-    if thumbnail_path is None:
-        thumbnail_path = get_xml_node_attr(
-            do_section_node, 'href',
-            'dataObject[@ID="Preview_4_Tile1_Data"]/byteStream/fileLocation')
-
-    l2a_mtd_path = get_xml_node_attr(
-        do_section_node, 'href',
-        'dataObject[@ID="S2_Level-2A_Product_Metadata"]/byteStream/fileLocation'
-    )
-
-    inspire_mtd_path = get_xml_node_attr(
-        do_section_node, 'href',
-        'dataObject[@ID="INSPIRE_Metadata"]/byteStream/fileLocation')
-
-    datastrip_mtd_path = get_xml_node_attr(
-        do_section_node, 'href',
-        'dataObject[@ID="S2_Level-2A_Datastrip1_Metadata"]/byteStream/fileLocation'
-    )
-
-    granule_mtd_path = get_xml_node_attr(
-        do_section_node, 'href',
-        'dataObject[@ID="S2_Level-2A_Tile1_Data"]/byteStream/fileLocation')
-    if granule_mtd_path is None:
-        granule_mtd_path = get_xml_node_attr(
-            do_section_node, 'href',
-            'dataObject[@ID="S2_Level-2A_Tile1_Metadata"]/byteStream/fileLocation'
-        )
-
-    return {
-        'safe_manifest_path': path,
-        'thumbnail_path': thumbnail_path,
-        'l2a_mtd_path': l2a_mtd_path,
-        'inspire_mtd_path': inspire_mtd_path,
-        'datastrip_mtd_path': datastrip_mtd_path,
-        'granule_mtd_path': granule_mtd_path
-    }
-
-
-def geometry_from_l2a_mtd(l2a_mtd_root):
-    geometric_info = l2a_mtd_root.find('n1:Geometric_Info', l2a_mtd_root.nsmap)
-    footprint_coords = [
-        float(c) for c in geometric_info.find(
-            'Product_Footprint/Product_Footprint/Global_Footprint/EXT_POS_LIST'
-        ).text.split(' ') if c
-    ]
-    footprint_points = [
-        p[::-1] for p in list(zip(*[iter(footprint_coords)] * 2))
-    ]
-    footprint_polygon = Polygon(footprint_points)
-    geometry = mapping(footprint_polygon)
-    bbox = footprint_polygon.bounds
-    return (bbox, geometry)
-
-
-def mean_incidence_angles_from_granule_mtd(granule_mtd_root):
-    angle_nodes = list_xml_node(
-        granule_mtd_root,
-        'n1:Geometric_Info/Tile_Angles/Mean_Viewing_Incidence_Angle_List/' +
-        'Mean_Viewing_Incidence_Angle')
-    all_angles = {}
-    for node in angle_nodes:
-        all_angles.update(mean_incidence_angles_from_node(node))
-    return all_angles
-
-
-def mean_incidence_angles_from_node(node):
-    band_name = band_index_to_name(int(node.get('bandId')))
-    zenith_key = f's2:meanIncidenceZenithAngle{band_name}'
-    azimuth_key = f's2:meanIncidenceAzimuthAngle{band_name}'
-    zenith = float(node.find('ZENITH_ANGLE').text)
-    azimuth = float(node.find('AZIMUTH_ANGLE').text)
-    return {zenith_key: zenith, azimuth_key: azimuth}
-
-
-def solar_irradiance_from_node(node):
-    band_name = band_index_to_name(int(node.get('bandId')))
-    key = f's2:solarIrradiance{band_name}'
-    value = float(node.text)
-    return {key: value}
-
-
-def xml_asset_from_path(asset_path, base_path, add_extension=False):
-    if add_extension:
-        path = os.path.join(base_path, clean_path(asset_path, 'xml'))
+    _, ext = os.path.splitext(asset_href)
+    if media_type is not None:
+        asset_media_type = media_type
     else:
-        path = os.path.join(base_path, asset_path)
-    return (mtd_asset_key_from_path(asset_path),
-            pystac.Asset(href=make_absolute_href(path),
-                         media_type=pystac.MediaType.XML,
-                         roles=['metadata']))
+        if ext.lower() == '.jp2':
+            asset_media_type = pystac.MediaType.JPEG2000
+        elif ext.lower() in ['.tiff', '.tif']:
+            asset_media_type = pystac.MediaType.GEOTIFF
+        else:
+            raise Exception(
+                f'Must supply a media type for asset : {asset_href}')
 
+    # Handle preview image
 
-def image_asset_from_path(asset_path, base_path, item):
-    # test for jp2 or tif or tiff
-    jp2_path = os.path.join(base_path, clean_path(asset_path, 'jp2'))
-    tif_path_1 = os.path.join(base_path, clean_path(asset_path, 'tif'))
-    tif_path_2 = os.path.join(base_path, clean_path(asset_path, 'tiff'))
-
-    if os.path.exists(jp2_path):
-        path = jp2_path
-        media_type = pystac.MediaType.JPEG2000
-    elif os.path.exists(tif_path_1):
-        path = tif_path_1
-        media_type = pystac.MediaType.GEOTIFF
-    elif os.path.exists(tif_path_2):
-        path = tif_path_2
-        media_type = pystac.MediaType.GEOTIFF
-    else:
-        raise Exception(
-            f'No JP2 or TIFF asset exists at location: {os.path.join(base_path, asset_path)}'
-        )
-
-    band_id_search = re.search(r'_(B\w{2})_', path)
-
-    if band_id_search is not None:
-        band_id = band_id_search.group(1)
-        band = SENTINEL_BANDS[band_id]
-        asset = pystac.Asset(href=make_absolute_href(path),
-                             media_type=media_type,
-                             title=band.description,
-                             roles=['data'],
-                             properties={'gsd': float(path[-7:-5])})
-        item.ext.eo.set_bands([SENTINEL_BANDS[band_id]], asset)
-        return (asset_path[-7:].replace('_', '-'), asset)
-    elif '_PVI' in path:
-        asset = pystac.Asset(href=make_absolute_href(path),
-                             media_type=media_type,
+    if '_PVI' in asset_href:
+        asset = pystac.Asset(href=asset_href,
+                             media_type=asset_media_type,
                              title='True color preview',
                              roles=['data'])
         item.ext.eo.set_bands([
             SENTINEL_BANDS['B04'], SENTINEL_BANDS['B03'], SENTINEL_BANDS['B02']
         ], asset)
         return ('preview', asset)
-    elif '_TCI_' in path:
-        asset = pystac.Asset(href=make_absolute_href(path),
-                             media_type=media_type,
+
+    # Extract gsd and proj info
+    gsd = extract_gsd(asset_href)
+    shape = resolution_to_shape[int(gsd)]
+    transform = rasterio.transform.from_bounds(proj_bbox[0], proj_bbox[1],
+                                               proj_bbox[2], proj_bbox[3],
+                                               shape[1], shape[0])[:6]
+
+    def set_asset_properties(asset):
+        asset.properties['gsd'] = gsd
+        item.ext.projection.set_shape(shape, asset)
+        item.ext.projection.set_bbox(proj_bbox, asset)
+        item.ext.projection.set_transform(transform, asset)
+
+    # Handle band image
+
+    band_id_search = re.search(r'_(B\w{2})_', asset_href)
+    if band_id_search is not None:
+        band_id = band_id_search.group(1)
+        band = SENTINEL_BANDS[band_id]
+        asset = pystac.Asset(href=asset_href,
+                             media_type=asset_media_type,
+                             title=band.description,
+                             roles=['data'])
+        item.ext.eo.set_bands([SENTINEL_BANDS[band_id]], asset)
+        set_asset_properties(asset)
+        return (asset_href[-7:].replace('_', '-'), asset)
+
+    # Handle auxiliary images
+
+    if '_TCI_' in asset_href:
+        # True color
+        asset = pystac.Asset(href=asset_href,
+                             media_type=asset_media_type,
                              title='True color image',
-                             roles=['data'],
-                             properties={'gsd': float(path[-7:-5])})
+                             roles=['data'])
         item.ext.eo.set_bands([
             SENTINEL_BANDS['B04'], SENTINEL_BANDS['B03'], SENTINEL_BANDS['B02']
         ], asset)
-        return (f'visual-{path[-7:-4]}', asset)
-    elif '_AOT_' in path:
-        asset = pystac.Asset(href=make_absolute_href(path),
-                             media_type=media_type,
+        set_asset_properties(asset)
+        return (f'visual-{asset_href[-7:-4]}', asset)
+
+    if '_AOT_' in asset_href:
+        # Aerosol
+        asset = pystac.Asset(href=asset_href,
+                             media_type=asset_media_type,
                              title='Aerosol optical thickness (AOT)',
-                             roles=['data'],
-                             properties={'gsd': float(path[-7:-5])})
-        return (f'AOT-{path[-7:-4]}', asset)
-    elif '_WVP_' in path:
-        asset = pystac.Asset(href=make_absolute_href(path),
-                             media_type=media_type,
+                             roles=['data'])
+        set_asset_properties(asset)
+        return (f'AOT-{asset_href[-7:-4]}', asset)
+
+    if '_WVP_' in asset_href:
+        # Water vapor
+        asset = pystac.Asset(href=asset_href,
+                             media_type=asset_media_type,
                              title='Water vapour (WVP)',
-                             roles=['data'],
-                             properties={'gsd': float(path[-7:-5])})
-        return (f'WVP-{path[-7:-4]}', asset)
-    elif '_SCL_' in path:
-        asset = pystac.Asset(href=make_absolute_href(path),
-                             media_type=media_type,
+                             roles=['data'])
+        set_asset_properties(asset)
+        return (f'WVP-{asset_href[-7:-4]}', asset)
+
+    if '_SCL_' in asset_href:
+        # Classification map
+        asset = pystac.Asset(href=asset_href,
+                             media_type=asset_media_type,
                              title='Scene classfication map (SCL)',
-                             roles=['data'],
-                             properties={'gsd': float(path[-7:-5])})
-        return (f'SCL-{path[-7:-4]}', asset)
-    return (mtd_asset_key_from_path(asset_path),
-            pystac.Asset(href=make_absolute_href(path),
-                         media_type=media_type,
-                         roles=['data']))
+                             roles=['data'])
+        set_asset_properties(asset)
+        return (f'SCL-{asset_href[-7:-4]}', asset)
+
+    raise ValueError(f'Unexpected asset: {asset_href}')

@@ -1,21 +1,24 @@
 import os
 import re
+from typing import Callable, Optional
+
 from lxml import etree
+from pystac import STAC_IO
+
+# Type alias
+ReadHrefModifier = Callable[[str], str]
 
 
-def mtd_asset_key_from_path(path):
-    filename = os.path.split(path)[1]
-    mapping = {
-        'MTD_MSIL2A.xml': 'product-metadata',
-        'INSPIRE.xml': 'inspire-metadata',
-        'MTD_DS.xml': 'datastrip-metadata',
-        'MTD_TL.xml': 'granule-metadata',
-        'manifest.safe': 'safe-manifest'
-    }
-    key = mapping[filename]
-    if key is None:
-        raise ValueError(f'unexpected metadata file: {filename}')
-    return key
+def read_xml(href: str, read_href_modifier: Optional[ReadHrefModifier] = None):
+    if read_href_modifier is None:
+        text = STAC_IO.read_text(href)
+    else:
+        text = STAC_IO.read_text(read_href_modifier(href))
+    return etree.fromstring(bytes(text, encoding='utf-8'))
+
+
+def convert(typ: Callable, v: Optional[str]) -> Optional[int]:
+    return v if v is None else typ(v)
 
 
 def band_index_to_name(index):
@@ -29,24 +32,8 @@ def band_index_to_name(index):
     return f'B{band_id.rjust(2, "0")}'
 
 
-def mgrs_from_path(path):
-    results = re.search(r'_T(\d{2}[a-zA-Z]{3})_', path)
-    if results is not None:
-        return results.group(1)
-    return results
-
-
-def clean_path(path, extension=None):
-    # remove all superfluous dots and slashes
-    cleaned = os.path.normpath(path)
-    # if the path should have an extension, ensure it does
-    if extension is not None:
-        cleaned = f'{os.path.splitext(cleaned)[0]}.{extension}'
-    return cleaned
-
-
-def open_xml_file_root(path):
-    return etree.parse(path).getroot()
+def extract_gsd(image_path: str) -> float:
+    return float(image_path[-7:-5])
 
 
 def get_xml_node(root, xpath):
@@ -57,14 +44,16 @@ def list_xml_node(root, xpath):
     return root.findall(xpath, root.nsmap)
 
 
-def get_xml_node_text(root, xpath):
+def get_xml_node_text(root: etree.ElementTree, xpath: str) -> Optional[str]:
     node = root.find(xpath, root.nsmap)
     if node is not None:
         return node.text
     return None
 
 
-def get_xml_node_attr(root, attr, xpath=None):
+def get_xml_node_attr(root: etree.ElementTree,
+                      attr: str,
+                      xpath=None) -> Optional[str]:
     node = root
     if xpath is not None:
         node = root.find(xpath, root.nsmap)
