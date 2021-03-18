@@ -23,7 +23,6 @@ logger = logging.getLogger(__name__)
 
 def create_item(
     granule_href: str,
-    image_media_type: str = pystac.MediaType.JPEG2000,
     additional_providers: Optional[List[pystac.Provider]] = None,
     read_href_modifier: Optional[ReadHrefModifier] = None
 ) -> Tuple[pystac.Item, pystac.Item]:
@@ -96,7 +95,7 @@ def create_item(
     image_assets = dict([
         image_asset_from_href(image_path, item,
                               granule_metadata.resolution_to_shape, proj_bbox,
-                              image_media_type)
+                              product_metadata.image_media_type)
         for image_path in product_metadata.image_paths
     ])
 

@@ -71,10 +71,15 @@ class ProductMetadata:
             return str_to_datetime(time)
 
     @property
-    def image_paths(self) -> List[str]:
-        extension = '.jp2'
+    def image_media_type(self) -> str:
         if get_xml_node_attr(self.granule_node, 'imageFormat') == 'GeoTIFF':
-            extension = '.tif'
+            return pystac.MediaType.COG
+        else:
+            return pystac.MediaType.JPEG2000
+
+    @property
+    def image_paths(self) -> List[str]:
+        extension = '.tif' if self.image_media_type == pystac.MediaType.COG else '.jp2'
 
         return [
             f'{x.text}{extension}'
