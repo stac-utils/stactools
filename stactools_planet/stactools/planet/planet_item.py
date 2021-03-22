@@ -160,9 +160,9 @@ class PlanetItem:
                             width, height = int(width / height * 256), 256
 
                         profile = dataset.profile
-                        profile.update(driver='PNG')
-                        profile.update(width=width)
-                        profile.update(height=height)
+                        profile.update(driver='PNG',
+                                       width=width,
+                                       height=height)
 
                         if "analytic" in asset_type:
                             data = dataset.read(indexes=[3, 2, 1],
