@@ -11,6 +11,15 @@ class ConvertOrderTest(CliTestCase):
     def create_subcommand_functions(self):
         return [create_planet_command]
 
+    def tearDown(self):
+        thumbnail_path = TestData.get_path(
+            "data-files/planet-order/files/"
+            "20180119_XXXXXXX_XXXX_3B_Visual_file_format.thumbnail.png")
+        thumbnail_metadata_path = "{}.aux.xml".format(thumbnail_path)
+        for path in [thumbnail_path, thumbnail_metadata_path]:
+            if os.path.exists(path):
+                os.remove(path)
+
     def test_converts(self):
         test_order_manifest = TestData.get_path(
             'data-files/planet-order/manifest.json')
