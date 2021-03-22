@@ -98,7 +98,7 @@ class PlanetItem:
         item.ext.view.sun_azimuth = props.pop('sun_azimuth')
         item.ext.view.sun_elevation = props.pop('sun_elevation')
 
-        # Add all additional properties with Planet extension designation.
+        # Add additional properties with Planet extension designation.
         whitelisted_props = [
             'anomalous_pixels', 'ground_control', 'item_type',
             'pixel_resolution', 'quality_category', 'strip_id',
@@ -115,6 +115,7 @@ class PlanetItem:
         item.add_link(via_link)
 
         geotransform = None
+        crs = None
         for planet_asset in self.item_assets:
             href = make_absolute_href(planet_asset['path'],
                                       start_href=self.base_dir,
@@ -126,30 +127,40 @@ class PlanetItem:
             bundle_type = planet_asset['annotations']['planet/bundle_type']
 
             # Planet data is delivered as COGs
-            if media_type == 'image/tiff' and asset_type not in [
-                    "udm", "udm2"
-            ]:
+            if media_type == 'image/tiff' and "udm" not in asset_type:
                 media_type = pystac.MediaType.COG
                 roles = ['visual']
                 thumbnail_path = f"{os.path.splitext(href)[0]}.thumbnail.png"
                 with rasterio.open(href) as dataset:
                     height, width = dataset.shape
                     geotransform = dataset.transform
+                    crs = dataset.crs.to_epsg()
                     if width > height:
-                        width, height = 256, int(height / width * 256)
+                        thumbwidth, thumbheight = 256, int(height / width
+                                                           * 256)
                     else:
-                        width, height = int(width / height * 256), 256
+                        thumbwidth, thumbheight = int(width / height
+                                                      * 256), 256
 
                     profile = dataset.profile
                     profile.update(driver='PNG')
-                    profile.update(width=width)
-                    profile.update(height=height)
+                    profile.update(width=thumbwidth)
+                    profile.update(height=thumbheight)
 
                     if "analytic" in asset_type:
-                        data = dataset.read(indexes=[3, 2, 1],
-                                            out_shape=(3, height, width),
-                                            resampling=Resampling.cubic)
-                        profile.update(count=3)
+                        try:
+                            data = dataset.read(indexes=[3, 2, 1],
+                                                out_shape=(3, thumbheight,
+                                                           thumbwidth),
+                                                resampling=Resampling.cubic)
+                            profile.update(count=3)
+                        except IndexError:  # Analytic images might have a single band
+                            data = dataset.read(indexes=[1],
+                                                out_shape=(1, thumbheight,
+                                                           thumbwidth),
+                                                resampling=Resampling.cubic)
+                            profile.update(count=1)
+
                     else:
                         data = dataset.read(out_shape=(int(dataset.count),
                                                        height, width),
@@ -181,27 +192,32 @@ class PlanetItem:
 
             if media_type == pystac.MediaType.COG:
                 # add bands to asset
+                bands = None
                 if item_type.startswith('SkySat'):
                     if "panchro" in asset_type:
                         bands = [SKYSAT_BANDS['PAN']]
                     elif "analytic" in asset_type:
-                        bands = [
-                            SKYSAT_BANDS['BLUE'], SKYSAT_BANDS['GREEN'],
-                            SKYSAT_BANDS['RED'], SKYSAT_BANDS['NIR']
-                        ]
+                        if profile['count'] == 4:
+                            bands = [
+                                SKYSAT_BANDS['BLUE'], SKYSAT_BANDS['GREEN'],
+                                SKYSAT_BANDS['RED'], SKYSAT_BANDS['NIR']
+                            ]
                     else:
                         bands = [
                             SKYSAT_BANDS['RED'], SKYSAT_BANDS['GREEN'],
                             SKYSAT_BANDS['BLUE']
                         ]
-                    item.ext.eo.set_bands(bands, asset)
+                    if bands is not None:
+                        item.ext.eo.set_bands(bands, asset)
 
             item.add_asset(key, asset)
 
         # proj
-        if 'epsg_code' in props:
+        if 'epsg_code' in props or geotransform is not None:
             item.ext.enable('projection')
-            item.ext.projection.epsg = props.pop('epsg_code')
+            crs = crs or props.pop('epsg_code')
+            if crs is not None:
+                item.ext.projection.epsg = crs
             if geotransform is not None:
                 item.ext.projection.transform = geotransform
                 item.ext.projection.shape = [height, width]
