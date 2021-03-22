@@ -218,9 +218,13 @@ class PlanetItem:
                 with rasterio.open(href) as dataset:
                     # we assume all bands in the image have the same data type
                     data_type = FileDataType(dataset.dtypes[0])
-                size = os.path.getsize(href)
+                try:
+                    size = os.path.getsize(href)
+                    item.ext.file.set_size(size, asset)
+                except OSError:
+                    pass  # do not add size value if size cannot be computed
+
                 item.ext.file.set_data_type(data_type, asset)
-                item.ext.file.set_size(size, asset)
                 item.ext.file.set_checksum(checksum, asset)
 
             item.add_asset(key, asset)
