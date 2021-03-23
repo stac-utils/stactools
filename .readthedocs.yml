@@ -28,6 +28,8 @@ python:
     - method: pip
       path: stactools_landsat/
     - method: pip
+      path: stactools_modis/
+    - method: pip
       path: stactools_planet/
     - method: pip
       path: stactools_browse/
