@@ -26,6 +26,23 @@ def create_item(
     additional_providers: Optional[List[pystac.Provider]] = None,
     read_href_modifier: Optional[ReadHrefModifier] = None
 ) -> Tuple[pystac.Item, pystac.Item]:
+    """Create a STC Item from a Sentinel 2 granule.
+
+    Arguments:
+        granule_href: The HREF to the granule. This is expected to be a path
+            to a SAFE archive, e.g. : https://sentinel2l2a01.blob.core.windows.net/sentinel2-l2/01/C/CV/2016/03/27/S2A_MSIL2A_20160327T204522_N0212_R128_T01CCV_20210214T042702.SAFE
+        additional_providers: Optional list of additional providers to set into the Item
+        read_href_modifier: A function that takes an HREF and returns a modified HREF.
+            This can be used to modify a HREF to make it readable, e.g. appending
+            an Azure SAS token or creating a signed URL.
+
+    Returns:
+        Tuple[pystac.Item, pystac.Item]: A tuple with the first element
+            being the Item only populated with STAC core and common extension metadata,
+            and the second element being an "Extended Item" with additional metadata
+            from the Sentinel 2 granule metatadata files. These items are linked
+            together with the "extends" and "extended-by" rel types.
+    """ # noqa
 
     safe_manifest = SafeManifest(granule_href, read_href_modifier)
 
