@@ -110,7 +110,7 @@ def create_item(
     proj_bbox = granule_metadata.proj_bbox
 
     image_assets = dict([
-        image_asset_from_href(image_path, item,
+        image_asset_from_href(os.path.join(granule_href, image_path), item,
                               granule_metadata.resolution_to_shape, proj_bbox,
                               product_metadata.image_media_type)
         for image_path in product_metadata.image_paths

@@ -2,6 +2,7 @@ import os
 from tempfile import TemporaryDirectory
 
 import pystac
+from pystac.utils import is_absolute_href
 from shapely.geometry import box, shape, mapping
 
 from stactools.core.projection import reproject_geom
@@ -54,4 +55,8 @@ class CreateItemTest(CliTestCase):
                         item = pystac.read_file(os.path.join(tmp_dir, fname))
 
                         item.validate()
+
+                        for asset in item.assets.values():
+                            self.assertTrue(is_absolute_href(asset.href))
+
                         check_proj_bbox(item)
