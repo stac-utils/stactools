@@ -46,6 +46,34 @@ SKYSAT_BANDS = {
                 full_width_half_max=152)
 }
 
+PSB_BANDS = {
+    'BLUE':
+    Band.create('Blue',
+                common_name='blue',
+                center_wavelength=490,
+                full_width_half_max=50),
+    'GREEN':
+    Band.create('Green II',
+                common_name='green',
+                center_wavelength=565,
+                full_width_half_max=46),
+    'RED':
+    Band.create('Red',
+                common_name='red',
+                center_wavelength=665,
+                full_width_half_max=31),
+    'REDEDGE':
+    Band.create('Red edge I',
+                common_name='rededge',
+                center_wavelength=705,
+                full_width_half_max=15),
+    'NIR':
+    Band.create('NIR',
+                common_name='nir',
+                center_wavelength=865,
+                full_width_half_max=40)
+}
+
 
 class PlanetItem:
     def __init__(self,
@@ -179,8 +207,31 @@ class PlanetItem:
                             SKYSAT_BANDS['RED'], SKYSAT_BANDS['GREEN'],
                             SKYSAT_BANDS['BLUE']
                         ]
-                    if bands is not None:
-                        item.ext.eo.set_bands(bands, asset)
+                elif item_type.startswith("PS"):
+                    if "5b" in asset_type:
+                        bands = [
+                            PSB_BANDS['BLUE'], PSB_BANDS['GREEN'],
+                            PSB_BANDS['RED'], PSB_BANDS['REDEDGE'],
+                            PSB_BANDS['NIR']
+                        ]
+                    elif "analytic" in asset_type:
+                        if item_type == "PSScene3Band":
+                            bands = [
+                                PSB_BANDS['RED'], PSB_BANDS['GREEN'],
+                                PSB_BANDS['BLUE']
+                            ]
+                        else:
+                            bands = [
+                                PSB_BANDS['BLUE'], PSB_BANDS['GREEN'],
+                                PSB_BANDS['RED'], PSB_BANDS['NIR']
+                            ]
+                    elif "visual" in asset_type:
+                        bands = [
+                            PSB_BANDS['RED'], PSB_BANDS['GREEN'],
+                            PSB_BANDS['BLUE']
+                        ]
+                if bands is not None:
+                    item.ext.eo.set_bands(bands, asset)
 
             item.add_asset(key, asset)
 
