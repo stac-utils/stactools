@@ -7,6 +7,7 @@ from shapely.geometry import box, shape, mapping
 
 from stactools.core.projection import reproject_geom
 from stactools.sentinel2.commands import create_sentinel2_command
+from stactools.sentinel2.constants import SENTINEL_BANDS
 from tests.utils import (TestData, CliTestCase)
 
 
@@ -56,7 +57,15 @@ class CreateItemTest(CliTestCase):
 
                         item.validate()
 
+                        bands_seen = set()
+
                         for asset in item.assets.values():
                             self.assertTrue(is_absolute_href(asset.href))
+                            bands = item.ext.eo.get_bands(asset)
+                            if bands is not None:
+                                bands_seen |= set(b.name for b in bands)
+
+                        self.assertEqual(bands_seen,
+                                         set(SENTINEL_BANDS.keys()))
 
                         check_proj_bbox(item)

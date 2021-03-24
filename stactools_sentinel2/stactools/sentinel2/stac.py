@@ -116,8 +116,9 @@ def create_item(
         for image_path in product_metadata.image_paths
     ])
 
-    for asset in image_assets.items():
-        item.add_asset(*asset)
+    for key, asset in image_assets.items():
+        assert key not in item.assets
+        item.add_asset(key, asset)
 
     # Thumbnail
 
@@ -205,7 +206,7 @@ def image_asset_from_href(
                              roles=['data'])
         item.ext.eo.set_bands([SENTINEL_BANDS[band_id]], asset)
         set_asset_properties(asset)
-        return (asset_href[-7:].replace('_', '-'), asset)
+        return (band_id, asset)
 
     # Handle auxiliary images
 
