@@ -8,7 +8,9 @@ def merge(source_catalog,
           target_catalog,
           collection_id=None,
           move_assets=False,
-          ignore_conflicts=False):
+          ignore_conflicts=False,
+          as_child=False,
+          child_folder=None):
     source = pystac.read_file(source_catalog)
     target = pystac.read_file(target_catalog)
 
@@ -20,7 +22,8 @@ def merge(source_catalog,
                 'A collection with ID {} does not exist in {}'.format(
                     collection_id, target_catalog))
 
-    merge_all_items(source, target, move_assets, ignore_conflicts)
+    merge_all_items(source, target, move_assets, ignore_conflicts, as_child,
+                    child_folder)
 
     target.save()
 
@@ -43,12 +46,24 @@ def create_merge_command(cli):
         help=('If there are conflicts with an item in both catalogs having '
               'the same asset key, do not error, leave the original asset '
               'from the target catalog in place.'))
+    @click.option(
+        '-c',
+        '--as-child',
+        is_flag=True,
+        help='Merge as child catalog of destination catalog or collection')
+    @click.option('-f',
+                  '--child-folder',
+                  help=('The subfolder name to copy to if the option to merge '
+                        'as a child is used. If not provided, the catalog id '
+                        'will be used'))
     def merge_command(source_catalog, target_catalog, collection, move_assets,
-                      ignore_conflicts):
+                      ignore_conflicts, as_child, child_folder):
         merge(source_catalog,
               target_catalog,
               collection_id=collection,
               move_assets=move_assets,
-              ignore_conflicts=ignore_conflicts)
+              ignore_conflicts=ignore_conflicts,
+              as_child=as_child,
+              child_folder=child_folder)
 
     return merge_command

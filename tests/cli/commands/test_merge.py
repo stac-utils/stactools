@@ -56,6 +56,21 @@ class MergeTest(CliTestCase):
                         os.path.dirname(asset.get_absolute_href()),
                         os.path.dirname(item.get_self_href()))
 
+    def test_merge_as_child(self):
+        with TemporaryDirectory() as tmp_dir:
+            col_paths = copy_two_planet_disaster_subsets(tmp_dir)
+
+            cmd = ['merge', '-a', "-c", col_paths[0], col_paths[1]]
+
+            self.run_command(cmd)
+
+            target_col = pystac.read_file(col_paths[1])
+
+            links = list(target_col.get_child_links())
+            self.assertEqual(2, len(links))
+            for child in links:
+                self.assertTrue(os.path.exists(child.get_absolute_href()))
+
     def test_merge_updates_collection_extent(self):
         with TemporaryDirectory() as tmp_dir:
             col_paths = copy_two_planet_disaster_subsets(tmp_dir)
