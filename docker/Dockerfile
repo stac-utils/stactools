@@ -62,6 +62,10 @@ RUN pip install --no-build-isolation -r /tmp/aster/requirements.txt
 COPY stactools_corine/requirements.txt /tmp/corine/requirements.txt
 RUN pip install -r /tmp/corine/requirements.txt
 
+# Copernicus Global Land Cover Layers
+COPY stactools_cgls_lc100/requirements.txt /tmp/stactools_cgls_lc100/requirements.txt
+RUN pip install -r /tmp/stactools_cgls_lc100/requirements.txt
+
 # Landsat
 COPY stactools_landsat/requirements.txt /tmp/landsat/requirements.txt
 RUN pip install -r /tmp/landsat/requirements.txt

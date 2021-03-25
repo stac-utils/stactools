@@ -75,6 +75,7 @@ See the [documentation page](https://stactools.readthedocs.io/en/latest/) for th
 | `stactools_cli`               | Contains the command line interface (cli) for running the `stactools` command   |
 | `stactools_aster`             | Methods and commands for working with ASTER data                 |
 | `stactools_corine`            | Methods and commands for working with CORINE Land Cover data                 |
+| `stactools_cgls_lc100`        | Methods and commands for working with Copernicus Global Land Cover Layers                 |
 | `stactools_planet`            | Methods and commands for working with planet data                |
 | `stactools_landsat`           | Methods and commands for working with landsat data        |
 | `stactools_sentinel2`           | Methods and commands for working with Sentinel 2 data        |

@@ -26,6 +26,8 @@ python:
     - method: pip
       path: stactools_corine/
     - method: pip
+      path: stactools_cgls_lc100/
+    - method: pip
       path: stactools_landsat/
     - method: pip
       path: stactools_planet/
