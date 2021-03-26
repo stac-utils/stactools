@@ -1,8 +1,10 @@
 from pystac.extensions.eo import Band
 
+import re
+
 HDF_ASSET_KEY = 'L1T'
 
-ASTER_FILE_NAME_REGEX = (r'AST_L1T_(?P<start>[\d]+)_'
+ASTER_FILE_NAME_REGEX = re.compile(r'AST_L1T_(?P<start>[\d]+)_'
                          r'(?P<production>[\d]+)_'
                          r'(?P<processing>[\d]+)')
 

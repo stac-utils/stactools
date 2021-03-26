@@ -15,7 +15,7 @@ class AsterSceneId:
         """The ID used for STAC Items. Comprised of the start_datetime
         and production_datetime, which are sufficient for identifying
         the scene."""
-        return '{}_{}'.format(self.start_datetime, self.production_datetime)
+        return 'AST_L1T_{}_{}'.format(self.start_datetime, self.production_datetime)
 
     @staticmethod
     def from_path(path):
