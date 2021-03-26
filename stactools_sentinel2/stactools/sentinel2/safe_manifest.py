@@ -1,10 +1,14 @@
 import os
-from typing import Optional
+from typing import List, Optional
 
 import pystac
 
-from stactools.sentinel2.utils import read_xml, get_xml_node, get_xml_node_attr, ReadHrefModifier
+from stactools.core.io import ReadHrefModifier
+from stactools.core.io.xml import XmlElement
 from stactools.sentinel2.constants import SAFE_MANIFEST_ASSET_KEY
+
+class ManifestError(Exception):
+    pass
 
 
 class SafeManifest:
@@ -14,76 +18,54 @@ class SafeManifest:
         self.granule_href = granule_href
         self.href = os.path.join(granule_href, 'manifest.safe')
 
-        root = read_xml(self.href, read_href_modifier)
-        self._data_object_section = get_xml_node(root, 'dataObjectSection')
+        root = XmlElement.from_file(self.href, read_href_modifier)
+        self._data_object_section = root.find('dataObjectSection')
+        if self._data_object_section is None:
+            raise ManifestError(f"Manifest at {self.href} does not have a dataObjectSection")
+
+    def _find_href(self, xpaths: List[str]) -> Optional[str]:
+        file_path = None
+        for xpath in xpaths:
+            file_path = self._data_object_section.find_attr('href', xpath)
+            if file_path is not None:
+                break
+
+        if file_path is None:
+            return None
+        else:
+            return os.path.abspath(os.path.join(self.granule_href, file_path))
 
     @property
     def thumbnail_href(self) -> Optional[str]:
-        thumbnail_path = get_xml_node_attr(
-            self._data_object_section, 'href',
-            'dataObject[@ID="S2_Level-1C_Preview_Tile1_Data"]/byteStream/fileLocation'
-        )
-        if thumbnail_path is None:
-            thumbnail_path = get_xml_node_attr(
-                self._data_object_section, 'href',
-                'dataObject[@ID="Preview_4_Tile1_Data"]/byteStream/fileLocation'
-            )
-
-        if thumbnail_path is None:
-            return None
-        else:
-            return os.path.join(self.granule_href, thumbnail_path)
+        return self._find_href([
+            'dataObject[@ID="S2_Level-1C_Preview_Tile1_Data"]/byteStream/fileLocation',
+            'dataObject[@ID="Preview_4_Tile1_Data"]/byteStream/fileLocation'
+        ])
 
     @property
     def product_metadata_href(self) -> Optional[str]:
-        href = get_xml_node_attr(
-            self._data_object_section, 'href',
+        return self._find_href([
             'dataObject[@ID="S2_Level-2A_Product_Metadata"]/byteStream/fileLocation'
-        )
-
-        if href is None:
-            return None
-        else:
-            return os.path.join(self.granule_href, href)
+        ])
 
     @property
     def inspire_metadata_href(self) -> Optional[str]:
-        href = get_xml_node_attr(
-            self._data_object_section, 'href',
-            'dataObject[@ID="INSPIRE_Metadata"]/byteStream/fileLocation')
-
-        if href is None:
-            return None
-        else:
-            return os.path.join(self.granule_href, href)
+        return self._find_href([
+            'dataObject[@ID="INSPIRE_Metadata"]/byteStream/fileLocation'
+        ])
 
     @property
     def datastrip_metadata_href(self) -> Optional[str]:
-        href = get_xml_node_attr(
-            self._data_object_section, 'href',
+        return self._find_href([
             'dataObject[@ID="S2_Level-2A_Datastrip1_Metadata"]/byteStream/fileLocation'
-        )
-
-        if href is None:
-            return None
-        else:
-            return os.path.join(self.granule_href, href)
+        ])
 
     @property
     def granule_metadata_href(self) -> Optional[str]:
-        href = get_xml_node_attr(
-            self._data_object_section, 'href',
-            'dataObject[@ID="S2_Level-2A_Tile1_Data"]/byteStream/fileLocation')
-        if href is None:
-            href = get_xml_node_attr(
-                self._data_object_section, 'href',
-                'dataObject[@ID="S2_Level-2A_Tile1_Metadata"]/byteStream/fileLocation'
-            )
-
-        if href is None:
-            return None
-        else:
-            return os.path.join(self.granule_href, href)
+        return self._find_href([
+            'dataObject[@ID="S2_Level-2A_Tile1_Data"]/byteStream/fileLocation',
+            'dataObject[@ID="S2_Level-2A_Tile1_Metadata"]/byteStream/fileLocation'
+        ])
 
     def create_asset(self):
         asset = pystac.Asset(href=self.href,
