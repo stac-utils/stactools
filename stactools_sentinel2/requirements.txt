@@ -1,2 +1,1 @@
-pyproj==3.0.0.post1
 lxml==4.6.1
