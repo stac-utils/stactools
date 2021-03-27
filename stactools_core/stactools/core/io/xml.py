@@ -6,6 +6,7 @@ from lxml.etree import _Element as lxmlElement
 
 from stactools.core.io import ReadHrefModifier
 
+
 class XmlElement:
     """Thin wrapper around lxml etree.Element with some
     convenience functions
@@ -17,10 +18,11 @@ class XmlElement:
         node = self.element.find(xpath, self.element.nsmap)
         return None if node is None else XmlElement(node)
 
-
     def findall(self, xpath: str) -> List["XmlElement"]:
-        return [XmlElement(e) for e in self.element.findall(xpath, self.element.nsmap)]
-
+        return [
+            XmlElement(e)
+            for e in self.element.findall(xpath, self.element.nsmap)
+        ]
 
     def find_text(self, xpath: str) -> Optional[str]:
         node = self.find(xpath)
@@ -37,9 +39,11 @@ class XmlElement:
     def get_attr(self, attr: str) -> Optional[str]:
         return self.element.get(attr, None)
 
-
     @classmethod
-    def from_file(cls, href: str, read_href_modifier: Optional[ReadHrefModifier] = None) -> "XmlElement":
+    def from_file(cls,
+                  href: str,
+                  read_href_modifier: Optional[ReadHrefModifier] = None
+                  ) -> "XmlElement":
         if read_href_modifier is None:
             text = STAC_IO.read_text(href)
         else:

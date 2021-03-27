@@ -3,7 +3,6 @@ from typing import Callable
 import pystac
 import fsspec
 
-
 ReadHrefModifier = Callable[[str], str]
 """Type alias for a function parameter
 that allows users to manipulate HREFs for reading,
