@@ -9,9 +9,9 @@ from typing import Any, List, Tuple
 import rasterio as rio
 from shapely.geometry import shape
 
+from stactools.core.projection import reproject_geom
 from stactools.aster.utils import AsterSceneId
 from stactools.aster.xml_metadata import XmlMetadata
-from stactools.core.projection import reproject_geom
 
 logger = logging.getLogger(__name__)
 
@@ -51,26 +51,37 @@ def cogify(input_path, output_path):
     ])
 
 
+def set_band_names(href: str, band_names: List[str]) -> None:
+    with rio.open(href) as ds:
+        profile = ds.profile
+
+    with rio.open(href, 'w', **profile) as ds:
+        ds.descriptions = band_names
+
+
 def _create_cog_for_sensor(sensor: str, file_prefix: str, tmp_dir: str,
                            output_dir: str, bounds: List[float], crs: str,
                            subdataset_info: List[Tuple[Any, int]]) -> str:
-    output_path = os.path.join(output_dir, f'{file_prefix}-{sensor}.tif')
-    sensor_cog_href = os.path.join(output_path,
+    sensor_cog_href = os.path.join(output_dir,
                                    get_cog_filename(file_prefix, sensor))
 
     sensor_dir = os.path.join(tmp_dir, sensor)
     os.makedirs(sensor_dir)
 
     band_paths = []
+    band_names = []
     for subdataset, band_order in subdataset_info:
         band_path = os.path.join(sensor_dir, '{}.tif'.format(band_order))
         export_band(subdataset, bounds, crs, band_path)
         band_paths.append(band_path)
+        band_names.append(f"ImageData{band_order} {sensor}_Swath")
 
-    merged_path = os.path.join(tmp_dir, 'merged.tif')
+    merged_path = os.path.join(sensor_dir, 'merged.tif')
     merge_bands(band_paths, merged_path)
 
-    cogify(merged_path, output_path)
+    cogify(merged_path, sensor_cog_href)
+
+    set_band_names(sensor_cog_href, band_names)
 
     return sensor_cog_href
 

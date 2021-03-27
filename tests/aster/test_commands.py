@@ -3,6 +3,7 @@ from tempfile import TemporaryDirectory
 from typing import cast
 
 import pystac
+import rasterio as rio
 from shapely.geometry import box, shape
 
 from stactools.core.projection import reproject_geom
@@ -49,6 +50,13 @@ class CreateItemTest(CliTestCase):
                     'AST_L1T_00305032000040446_20150409135350_78838-SWIR.tif',
                     'AST_L1T_00305032000040446_20150409135350_78838-TIR.tif'
                 ]))
+
+            # Check band names
+            for cog in cogs:
+                sensor = os.path.splitext(cog)[0].split('-')[-1]
+                with rio.open(os.path.join(tmp_dir, cog)) as ds:
+                    for band_name in ds.descriptions:
+                        self.assertTrue(sensor in band_name)
 
             vnir_cog_fname = next(c for c in cogs if 'VNIR' in c)
             swir_cog_fname = next(c for c in cogs if 'SWIR' in c)
