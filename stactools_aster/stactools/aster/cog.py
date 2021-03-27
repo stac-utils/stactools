@@ -2,7 +2,6 @@ from collections import defaultdict
 import logging
 import os
 import re
-from subprocess import Popen, PIPE, STDOUT
 from tempfile import TemporaryDirectory
 from typing import Any, List, Tuple
 
@@ -10,6 +9,7 @@ import rasterio as rio
 from shapely.geometry import shape
 
 from stactools.core.projection import reproject_geom
+from stactools.core.utils.subprocess import call
 from stactools.aster.utils import AsterSceneId
 from stactools.aster.xml_metadata import XmlMetadata
 
@@ -18,17 +18,6 @@ logger = logging.getLogger(__name__)
 
 def get_cog_filename(item_id, sensor):
     return f'{item_id}-{sensor}.tif'
-
-
-def call(command):
-    def log_subprocess_output(pipe):
-        for line in iter(pipe.readline, b''):  # b'\n'-separated lines
-            logger.info(line.decode("utf-8").strip('\n'))
-
-    process = Popen(command, stdout=PIPE, stderr=STDOUT)
-    with process.stdout:
-        log_subprocess_output(process.stdout)
-    return process.wait()  # 0 means success
 
 
 def export_band(subdataset, bounds, crs, output_path):
