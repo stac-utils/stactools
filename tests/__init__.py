@@ -1,16 +1,25 @@
 import logging
 
 
-def setup_logging(level):
-    logger = logging.getLogger('stactools')
-    logger.setLevel(level)
+class Logging:
+    _logging_setup: bool = False
 
-    ch = logging.StreamHandler()
-    ch.setLevel(level)
-    formatter = logging.Formatter('%(message)s')
-    ch.setFormatter(formatter)
+    @classmethod
+    def setup_logging(cls, level):
+        if cls._logging_setup:
+            return
 
-    logger.addHandler(ch)
+        logger = logging.getLogger()
+        logger.setLevel(level)
+
+        ch = logging.StreamHandler()
+        ch.setLevel(level)
+        formatter = logging.Formatter('%(message)s')
+        ch.setFormatter(formatter)
+
+        logger.addHandler(ch)
+
+        cls._logging_setup = True
 
 
-setup_logging(logging.INFO)
+Logging.setup_logging(logging.INFO)
