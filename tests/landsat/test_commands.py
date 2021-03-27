@@ -90,13 +90,3 @@ class LandsatTest(CliTestCase):
             output_stac_file = Path(
                 tmp_dir) / "LC08_L2SR_081119_20200101_20200823_02_T2.json"
             assert output_stac_file.is_file()
-
-            # Expected failure, return code 1
-            result = self.run_command([
-                'landsat', 'convert', '--mtl', self.landsat_mtl_file,
-                '--enable-proj', '--dst', tmp_dir
-            ])
-
-            self.assertEqual(result.exit_code,
-                             1,
-                             msg='\n{}'.format(result.output))
