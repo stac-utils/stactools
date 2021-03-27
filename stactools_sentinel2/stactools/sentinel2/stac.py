@@ -5,9 +5,9 @@ from typing import Dict, List, Optional, Tuple
 
 import pystac
 from pystac.extensions.sat import OrbitState
-import rasterio.transform
 
 from stactools.core.io import ReadHrefModifier
+from stactools.core.projection import transform_from_bbox
 from stactools.sentinel2.safe_manifest import SafeManifest
 from stactools.sentinel2.product_metadata import ProductMetadata
 from stactools.sentinel2.granule_metadata import GranuleMetadata
@@ -172,10 +172,8 @@ def image_asset_from_href(
 
     # Extract gsd and proj info
     gsd = extract_gsd(asset_href)
-    shape = resolution_to_shape[int(gsd)]
-    transform = rasterio.transform.from_bounds(proj_bbox[0], proj_bbox[1],
-                                               proj_bbox[2], proj_bbox[3],
-                                               shape[1], shape[0])[:6]
+    shape = list(resolution_to_shape[int(gsd)])
+    transform = transform_from_bbox(proj_bbox, shape)
 
     def set_asset_properties(asset):
         item.common_metadata.set_gsd(gsd, asset)

@@ -1,9 +1,10 @@
 from collections import abc
 from copy import deepcopy
-from typing import Any, Optional, Union, Dict
+from typing import Any, List, Optional, Union, Dict
 
 import pyproj
-import rasterio as rio
+import rasterio.crs
+import rasterio.transform
 
 
 def epsg_from_utm_zone_number(utm_zone_number, south):
@@ -25,7 +26,7 @@ def epsg_from_utm_zone_number(utm_zone_number, south):
     return int(crs.to_authority()[1])
 
 
-def reproject_geom(src_crs: Union[pyproj.CRS, rio.crs.CRS, ],
+def reproject_geom(src_crs: Union[pyproj.CRS, rasterio.crs.CRS, str],
                    dest_crs: Any,
                    geom: Dict[str, Any],
                    precision: Optional[int] = None):
@@ -67,3 +68,14 @@ def reproject_geom(src_crs: Union[pyproj.CRS, rio.crs.CRS, ],
     result['coordinates'] = fn(result['coordinates'])
 
     return result
+
+
+def transform_from_bbox(bbox: List[float], shape: List[int]) -> List[float]:
+    """Calculate the affine transformation (proj:transform)
+    from the bbox (proj:bbox) and shape (proj:shape)
+
+    Only take the first 6 elements, as that is all that is necessary.
+    """
+    return list(
+        rasterio.transform.from_bounds(bbox[0], bbox[1], bbox[2], bbox[3],
+                                       shape[1], shape[0]))[:6]
