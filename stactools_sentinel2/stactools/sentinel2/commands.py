@@ -41,17 +41,13 @@ def create_sentinel2_command(cli):
             with open(providers) as f:
                 additional_providers = json.load(f)
 
-        (item, extended_item) = create_item(
-            src, additional_providers=additional_providers)
+        item = create_item(src, additional_providers=additional_providers)
 
         if cogify:
             create_cogs(item)
+        item_path = os.path.join(dst, '{}.json'.format(item.id))
+        item.set_self_href(item_path)
 
-        for i in [item, extended_item]:
-            item_path = os.path.join(dst, '{}.json'.format(i.id))
-            i.set_self_href(item_path)
-
-        for i in [item, extended_item]:
-            i.save_object()
+        item.save_object()
 
     return sentinel2
