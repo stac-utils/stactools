@@ -1,6 +1,10 @@
+from collections import defaultdict
 import re
+from typing import Dict
 
-from stactools.aster.constants import ASTER_FILE_NAME_REGEX
+from pystac.extensions.eo import Band
+
+from stactools.aster.constants import ASTER_FILE_NAME_REGEX, ASTER_BANDS
 from stactools.core.projection import epsg_from_utm_zone_number
 
 
@@ -15,7 +19,14 @@ class AsterSceneId:
         """The ID used for STAC Items. Comprised of the start_datetime
         and production_datetime, which are sufficient for identifying
         the scene."""
-        return 'AST_L1T_{}_{}'.format(self.start_datetime, self.production_datetime)
+        return 'AST_L1T_{}_{}'.format(self.start_datetime,
+                                      self.production_datetime)
+
+    @property
+    def file_prefix(self):
+        return 'AST_L1T_{}_{}_{}'.format(self.start_datetime,
+                                         self.production_datetime,
+                                         self.processing_number)
 
     @staticmethod
     def from_path(path):
@@ -41,3 +52,17 @@ def epsg_from_aster_utm_zone_number(utm_zone_number):
         utm_zone_number *= -1
 
     return epsg_from_utm_zone_number(utm_zone_number, south)
+
+
+def get_sensors_to_bands() -> Dict[str, Band]:
+    sensor_to_bands = defaultdict(list)
+
+    # Gather the bands for each sensor, sorted by band number
+    for band in ASTER_BANDS:
+        sensor_to_bands[band.name.split('_')[0]].append(band)
+    for sensor in sensor_to_bands:
+        sensor_to_bands[sensor] = sorted(
+            sensor_to_bands[sensor],
+            key=lambda b: re.search('([d]+)', b.name).group(1))
+
+    return dict(sensor_to_bands)

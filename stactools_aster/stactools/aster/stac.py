@@ -1,13 +1,17 @@
 import os
+from typing import Optional
 
 import pystac
-from pystac.utils import (str_to_datetime, make_absolute_href)
 import rasterio as rio
-from shapely.geometry import box, mapping, shape
 
-from stactools.aster.constants import (HDF_ASSET_KEY, ASTER_BANDS)
-from stactools.aster.utils import (AsterSceneId,
-                                   epsg_from_aster_utm_zone_number)
+from stactools.core.io import ReadHrefModifier
+from stactools.aster.constants import (
+    ASTER_INSTRUMENT, ASTER_PLATFORM, ASTER_SENSORS, HDF_ASSET_KEY,
+    ASTER_BANDS, QA_BROWSE_ASSET_KEY, QA_TXT_ASSET_KEY, SWIR_SENSOR,
+    TIR_BROWSE_ASSET_KEY, TIR_SENSOR, VNIR_SENSOR, VNIR_BROWSE_ASSET_KEY,
+    XML_ASSET_KEY)
+from stactools.aster.xml_metadata import XmlMetadata
+from stactools.aster.utils import (AsterSceneId, get_sensors_to_bands)
 
 ASTER_PROVIDER = pystac.Provider(
     name='NASA LP DAAC at the USGS EROS Center',
@@ -15,77 +19,188 @@ ASTER_PROVIDER = pystac.Provider(
     roles=['producer', 'processor', 'licensor'])
 
 
-# TODO: Integrate XML data; for instance, XML has most up-to-date
-# cloud cover information.
-def create_item(hdf_path, additional_providers=None):
-    file_name = os.path.basename(hdf_path)
+def _add_cog_assets(
+        item: pystac.Item,
+        xml_metadata: XmlMetadata,
+        vnir_cog_href: str,
+        swir_cog_href: str,
+        tir_cog_href: str,
+        read_href_modifier: Optional[ReadHrefModifier] = None) -> None:
+
+    pointing_angles = xml_metadata.pointing_angles
+
+    sensors_to_hrefs = {
+        VNIR_SENSOR: vnir_cog_href,
+        SWIR_SENSOR: swir_cog_href,
+        TIR_SENSOR: tir_cog_href
+    }
+
+    def title_for(sensor):
+        return f'{sensor} Swath data'
+
+    sensors_to_bands = get_sensors_to_bands()
+
+    for sensor in ASTER_SENSORS:
+        cog_href = sensors_to_hrefs[sensor]
+        sensor_asset = pystac.Asset(href=cog_href,
+                                    media_type=pystac.MediaType.COG,
+                                    roles=['data'],
+                                    title=title_for(sensor))
+
+        # Set bands
+        item.ext.eo.set_bands(sensors_to_bands[sensor], sensor_asset)
+
+        # Set view off_nadir
+        item.ext.view.off_nadir = pointing_angles[sensor]
+
+        # Open COG headers to get proj info
+        cog_read_href = cog_href
+        if read_href_modifier:
+            cog_read_href = read_href_modifier(cog_read_href)
+
+        with rio.open(cog_read_href) as ds:
+            image_shape = list(ds.shape)
+            proj_bbox = list(ds.bounds)
+            transform = list(ds.transform)
+
+            item.ext.projection.set_shape(image_shape, sensor_asset)
+            item.ext.projection.set_bbox(proj_bbox, sensor_asset)
+            item.ext.projection.set_transform(transform, sensor_asset)
+
+        item.add_asset(sensor, sensor_asset)
+
+
+def create_item(xml_href: str,
+                vnir_cog_href: str,
+                swir_cog_href: str,
+                tir_cog_href: str,
+                hdf_href: Optional[str] = None,
+                vnir_browse_href: Optional[str] = None,
+                tir_browse_href: Optional[str] = None,
+                qa_browse_href: Optional[str] = None,
+                qa_txt_href: Optional[str] = None,
+                additional_providers=None,
+                read_href_modifier: Optional[ReadHrefModifier] = None):
+    file_name = os.path.basename(xml_href)
     scene_id = AsterSceneId.from_path(file_name)
 
-    with rio.open(hdf_path) as f:
-        tags = f.tags()
+    xml_metadata = XmlMetadata.from_file(xml_href, read_href_modifier)
 
-    xmin, xmax = float(tags.pop('WESTBOUNDINGCOORDINATE')), float(
-        tags.pop('EASTBOUNDINGCOORDINATE'))
-    ymin, ymax = float(tags.pop('SOUTHBOUNDINGCOORDINATE')), float(
-        tags.pop('NORTHBOUNDINGCOORDINATE'))
-    geom = mapping(box(xmin, ymin, xmax, ymax))
-    bounds = shape(geom).bounds
-
-    dt = str_to_datetime(tags.pop('SETTINGTIMEOFPOINTING.1'))
+    geom, bounds = xml_metadata.geometries
+    datetime = xml_metadata.item_datetime
 
     item = pystac.Item(
         id=scene_id.item_id,
         geometry=geom,
         bbox=bounds,
-        datetime=dt,
+        datetime=datetime,
         properties={'aster:processing_number': scene_id.processing_number})
 
     # Common metadata
     item.common_metadata.providers = [ASTER_PROVIDER]
     if additional_providers is not None:
         item.common_metadata.providers.extend(additional_providers)
-    item.common_metadata.created = str_to_datetime(
-        tags.pop('PRODUCTIONDATETIME'))
-    item.common_metadata.platform = tags.pop('PLATFORMSHORTNAME')
-    item.common_metadata.instruments = [tags.pop('INSTRUMENTSHORTNAME')]
+    item.common_metadata.created = xml_metadata.created
+    item.common_metadata.platform = ASTER_PLATFORM
+    item.common_metadata.instruments = [ASTER_INSTRUMENT]
 
     # eo
     item.ext.enable('eo')
-    # STAC uses 0-100, planet 0-1
-    item.ext.eo.cloud_cover = int(tags.pop('SCENECLOUDCOVERAGE'))
+    item.ext.eo.cloud_cover = xml_metadata.cloud_cover
+
+    # sat
+    item.ext.enable('sat')
+    item.ext.sat.orbit_state = xml_metadata.orbit_state
 
     # view
     item.ext.enable('view')
-    # Don't pop, to keep the 3 values in properties.
-    item.ext.view.off_nadir = abs(float(tags['POINTINGANGLE.1']))
-    sun_azimuth, sun_elevation = [
-        float(x) for x in tags['SOLARDIRECTION'].split(', ')
-    ]
-    item.ext.view.sun_azimuth = float(sun_azimuth)
+    item.ext.view.sun_azimuth = xml_metadata.sun_azimuth
+    sun_elevation = xml_metadata.sun_elevation
     # Sun elevation can be negative; if so, will break validation; leave out.
     # See https://github.com/radiantearth/stac-spec/issues/853
-    sun_elevation = float(sun_elevation)
+    # This is fixed in 1.0.0-RC1; store as an aster property
+    #  to be updated once upgrade to 1.0.0-RC1 happens.
     if sun_elevation >= 0.0:
-        item.ext.view.sun_elevation = float(sun_elevation)
+        item.ext.view.sun_elevation = sun_elevation
+    else:
+        item.ext.view.sun_elevation = 0.0
+        item.properties['aster:sun_elevation'] = str(sun_elevation)
 
     # proj
     item.ext.enable('projection')
-    item.ext.projection.epsg = epsg_from_aster_utm_zone_number(
-        int(tags.pop('UTMZONENUMBER')))
+    item.ext.projection.epsg = xml_metadata.epsg
 
-    # Add all additional properties with Planet extension designation.
-    for k, v in tags.items():
-        item.properties['aster:{}'.format(k)] = v
+    # ASTER-specific properties
+    item.properties.update(xml_metadata.aster_properties)
 
-    hdf_href = make_absolute_href(hdf_path)
+    # -- ASSETS
 
-    asset = pystac.Asset(href=hdf_href,
-                         media_type=pystac.MediaType.HDF,
-                         roles=['data'],
-                         title="ASTER L1T 003 HDF-EOS")
+    # Create XML asset
+    item.add_asset(
+        XML_ASSET_KEY,
+        pystac.Asset(href=xml_href,
+                     media_type=pystac.MediaType.XML,
+                     roles=['metadata'],
+                     title='XML metadata'))
 
-    item.ext.eo.set_bands(ASTER_BANDS, asset)
+    # Create Assets for each of VIR, SWIR, and TIR
+    _add_cog_assets(item=item,
+                    xml_metadata=xml_metadata,
+                    vnir_cog_href=vnir_cog_href,
+                    swir_cog_href=swir_cog_href,
+                    tir_cog_href=tir_cog_href,
+                    read_href_modifier=read_href_modifier)
 
-    item.add_asset(HDF_ASSET_KEY, asset)
+    # Create HDF EOS asset, if available
+    if hdf_href is not None:
+        hdf_asset = pystac.Asset(href=hdf_href,
+                                 media_type=pystac.MediaType.HDF,
+                                 roles=['data'],
+                                 title="ASTER L1T 003 HDF-EOS")
+
+        item.ext.eo.set_bands(ASTER_BANDS, hdf_asset)
+
+        item.add_asset(HDF_ASSET_KEY, hdf_asset)
+
+    # Create assets for browse files, if available
+    if vnir_browse_href is not None:
+        item.add_asset(
+            VNIR_BROWSE_ASSET_KEY,
+            pystac.Asset(href=vnir_browse_href,
+                         media_type=pystac.MediaType.JPEG,
+                         roles=['thumbnail'],
+                         title="VNIR browse file",
+                         description='Standalone reduced resolution VNIR'))
+
+    if tir_browse_href is not None:
+        item.add_asset(
+            TIR_BROWSE_ASSET_KEY,
+            pystac.Asset(href=tir_browse_href,
+                         media_type=pystac.MediaType.JPEG,
+                         roles=['thumbnail'],
+                         title='Standalone reduced resolution TIR'))
+
+    if qa_browse_href is not None:
+        item.add_asset(
+            QA_BROWSE_ASSET_KEY,
+            pystac.Asset(
+                href=qa_browse_href,
+                media_type=pystac.MediaType.JPEG,
+                roles=['thumbnail'],
+                title='QA browse file',
+                description=(
+                    "Single-band black and white reduced resolution browse "
+                    "overlaid with red, green, and blue (RGB) markers for GCPs "
+                    "used during the geometric verification quality check.")))
+
+    # Create an asset for the QA text report, if available
+    if qa_txt_href:
+        item.add_asset(
+            QA_TXT_ASSET_KEY,
+            pystac.Asset(href=qa_txt_href,
+                         media_type=pystac.MediaType.TEXT,
+                         roles=['metadata'],
+                         title='QA browse file',
+                         description="Geometric quality assessment report."))
 
     return item
