@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 
 import pystac
 import fsspec
@@ -9,6 +9,14 @@ that allows users to manipulate HREFs for reading,
 e.g. appending an Azure SAS Token or translating
 to a signed URL
 """
+
+
+def read_text(href: str,
+              read_href_modifier: Optional[ReadHrefModifier]) -> str:
+    if read_href_modifier is None:
+        return pystac.STAC_IO.read_text(href)
+    else:
+        return pystac.STAC_IO.read_text(read_href_modifier(href))
 
 
 def use_fsspec():
