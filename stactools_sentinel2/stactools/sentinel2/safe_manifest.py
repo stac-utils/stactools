@@ -7,6 +7,7 @@ from stactools.core.io import ReadHrefModifier
 from stactools.core.io.xml import XmlElement
 from stactools.sentinel2.constants import SAFE_MANIFEST_ASSET_KEY
 
+
 class ManifestError(Exception):
     pass
 
@@ -21,7 +22,8 @@ class SafeManifest:
         root = XmlElement.from_file(self.href, read_href_modifier)
         self._data_object_section = root.find('dataObjectSection')
         if self._data_object_section is None:
-            raise ManifestError(f"Manifest at {self.href} does not have a dataObjectSection")
+            raise ManifestError(
+                f"Manifest at {self.href} does not have a dataObjectSection")
 
     def _find_href(self, xpaths: List[str]) -> Optional[str]:
         file_path = None
@@ -50,9 +52,8 @@ class SafeManifest:
 
     @property
     def inspire_metadata_href(self) -> Optional[str]:
-        return self._find_href([
-            'dataObject[@ID="INSPIRE_Metadata"]/byteStream/fileLocation'
-        ])
+        return self._find_href(
+            ['dataObject[@ID="INSPIRE_Metadata"]/byteStream/fileLocation'])
 
     @property
     def datastrip_metadata_href(self) -> Optional[str]:

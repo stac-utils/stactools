@@ -1,12 +1,3 @@
-from typing import Callable, Optional
-
-from lxml import etree
-
-
-def map_type(typ: Callable, v: Optional[str]) -> Optional[int]:
-    return v if v is None else typ(v)
-
-
 def band_index_to_name(index):
     raw_band_id = index + 1
     if raw_band_id == 9:

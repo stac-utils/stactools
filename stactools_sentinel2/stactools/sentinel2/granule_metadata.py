@@ -4,12 +4,14 @@ import pystac
 
 from stactools.core.io import ReadHrefModifier
 from stactools.core.io.xml import XmlElement
+from stactools.core.utils import map_opt
 from stactools.sentinel2.constants import GRANULE_METADATA_ASSET_KEY
-from stactools.sentinel2.utils import band_index_to_name, map_type
+from stactools.sentinel2.utils import band_index_to_name
 
 
 class GranuleMetadataError(Exception):
     pass
+
 
 class GranuleMetadata:
     def __init__(self,
@@ -22,31 +24,29 @@ class GranuleMetadata:
         geocoding_node = self._root.find('n1:Geometric_Info/Tile_Geocoding')
         if geocoding_node is None:
             raise GranuleMetadataError(
-                f"Cannot find geocoding node in {self.href}"
-            )
+                f"Cannot find geocoding node in {self.href}")
         self._geocoding_node = geocoding_node
 
         tile_angles_node = self._root.find('n1:Geometric_Info/Tile_Angles')
         if tile_angles_node is None:
             raise GranuleMetadataError(
-                f"Cannot find tile angles node in {self.href}"
-            )
+                f"Cannot find tile angles node in {self.href}")
         self._tile_angles_node = tile_angles_node
 
         self._viewing_angle_nodes = self._tile_angles_node.findall(
-            'Mean_Viewing_Incidence_Angle_List/Mean_Viewing_Incidence_Angle'
-        )
+            'Mean_Viewing_Incidence_Angle_List/Mean_Viewing_Incidence_Angle')
 
         self.resolution_to_shape: Dict[int, Tuple[int, int]] = {}
         for size_node in self._geocoding_node.findall("Size"):
             res = size_node.get_attr("resolution")
             if res is None:
-                raise GranuleMetadataError('Size element does not have resolution.')
-            nrows = map_type(int, size_node.find_text('NROWS'))
+                raise GranuleMetadataError(
+                    'Size element does not have resolution.')
+            nrows = map_opt(int, size_node.find_text('NROWS'))
             if nrows is None:
                 raise GranuleMetadataError(
                     f'Could not get rows from size for resolution {res}')
-            ncols = map_type(int, size_node.find_text('NCOLS'))
+            ncols = map_opt(int, size_node.find_text('NCOLS'))
             if ncols is None:
                 raise GranuleMetadataError(
                     f'Could not get columns from size for resolution {res}')
@@ -67,12 +67,11 @@ class GranuleMetadata:
         geoposition = self._geocoding_node.find('Geoposition')
         if geoposition is None:
             raise GranuleMetadataError(
-                f'Cannot find geoposition node in {self.href}'
-            )
-        ulx = map_type(float, geoposition.find_text('ULX'))
+                f'Cannot find geoposition node in {self.href}')
+        ulx = map_opt(float, geoposition.find_text('ULX'))
         if ulx is None:
             raise GranuleMetadataError('Could not get upper left X coordinate')
-        uly = map_type(float, geoposition.find_text('ULY'))
+        uly = map_opt(float, geoposition.find_text('ULY'))
         if uly is None:
             raise GranuleMetadataError('Could not get upper left Y coordinate')
 
@@ -80,30 +79,23 @@ class GranuleMetadata:
 
     @property
     def cloudiness_percentage(self) -> Optional[float]:
-        return map_type(
+        return map_opt(
             float,
             self._root.find_text(
                 'n1:Quality_Indicators_Info/Image_Content_QI/CLOUDY_PIXEL_PERCENTAGE'
-            )
-        )
+            ))
 
     @property
     def mean_solar_zenith(self) -> Optional[float]:
-        return map_type(
+        return map_opt(
             float,
-            self._tile_angles_node.find_text(
-                'Mean_Sun_Angle/ZENITH_ANGLE'
-            )
-        )
+            self._tile_angles_node.find_text('Mean_Sun_Angle/ZENITH_ANGLE'))
 
     @property
     def mean_solar_azimuth(self) -> Optional[float]:
-        return map_type(
+        return map_opt(
             float,
-            self._tile_angles_node.find_text(
-                'Mean_Sun_Angle/AZIMUTH_ANGLE'
-            )
-        )
+            self._tile_angles_node.find_text('Mean_Sun_Angle/AZIMUTH_ANGLE'))
 
     @property
     def metadata_dict(self):
@@ -121,8 +113,8 @@ class GranuleMetadata:
             band_name = band_index_to_name(int(band_text))
             zenith_key = f's2:meanIncidenceZenithAngle{band_name}'
             azimuth_key = f's2:meanIncidenceAzimuthAngle{band_name}'
-            result[zenith_key] = map_type(float, node.find('ZENITH_ANGLE').text)
-            result[azimuth_key] = map_type(float,
+            result[zenith_key] = map_opt(float, node.find('ZENITH_ANGLE').text)
+            result[azimuth_key] = map_opt(float,
                                           node.find('AZIMUTH_ANGLE').text)
 
         return result

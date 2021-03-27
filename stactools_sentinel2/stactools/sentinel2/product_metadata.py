@@ -8,8 +8,9 @@ from pystac.utils import str_to_datetime
 
 from stactools.core.io import ReadHrefModifier
 from stactools.core.io.xml import XmlElement
+from stactools.core.utils import map_opt
 from stactools.sentinel2.constants import PRODUCT_METADATA_ASSET_KEY
-from stactools.sentinel2.utils import band_index_to_name, map_type
+from stactools.sentinel2.utils import band_index_to_name
 
 
 class ProductMetadataError(Exception):
@@ -38,12 +39,10 @@ class ProductMetadata:
         self.datatake_node = datatake_node
 
         granule_node = self.product_info_node.find(
-            'Product_Organisation/Granule_List/Granule'
-        )
+            'Product_Organisation/Granule_List/Granule')
         if granule_node is None:
             raise ProductMetadataError(
-                f'Cannot find granule node in product metadata at {self.href}'
-            )
+                f'Cannot find granule node in product metadata at {self.href}')
         self.granule_node = granule_node
 
         reflectance_conversion_node = self._root.find(
@@ -58,8 +57,7 @@ class ProductMetadata:
         qa_node = self._root.find('n1:Quality_Indicators_Info')
         if qa_node is None:
             raise ProductMetadataError(
-                f"Could not find QA node in product metadata at {self.href}"
-            )
+                f"Could not find QA node in product metadata at {self.href}")
         self.qa_node = qa_node
 
         def _get_geometries():
@@ -123,9 +121,8 @@ class ProductMetadata:
 
     @property
     def relative_orbit(self) -> Optional[int]:
-        return map_type(
-            int, self.datatake_node.find_text('SENSING_ORBIT_NUMBER')
-        )
+        return map_opt(int,
+                       self.datatake_node.find_text('SENSING_ORBIT_NUMBER'))
 
     @property
     def orbit_state(self) -> Optional[str]:
@@ -162,25 +159,20 @@ class ProductMetadata:
             's2:mgrs_tile':
             self.mgrs_tile,
             's2:reflectance_conversion_factor':
-            map_type(float,
-                    self.reflectance_conversion_node.find_text('U')),
+            map_opt(float, self.reflectance_conversion_node.find_text('U')),
             's2:cloud_coverage_assessment':
-            map_type(
-                float,
-                self.qa_node.find_text('Cloud_Coverage_Assessment')),
+            map_opt(float,
+                    self.qa_node.find_text('Cloud_Coverage_Assessment')),
             's2:degraded_msi_data_percentage':
-            map_type(
+            map_opt(
                 float,
                 self._root.find_text(
                     'n1:Quality_Indicators_Info/Technical_Quality_Assessment/'
-                    'DEGRADED_MSI_DATA_PERCENTAGE'
-                )
-            ),
+                    'DEGRADED_MSI_DATA_PERCENTAGE')),
         }
 
         irradiance_nodes = self.reflectance_conversion_node.findall(
-            'Solar_Irradiance_List/SOLAR_IRRADIANCE'
-        )
+            'Solar_Irradiance_List/SOLAR_IRRADIANCE')
 
         for node in irradiance_nodes:
             band_text = node.get_attr('bandId')
@@ -192,7 +184,7 @@ class ProductMetadata:
             key = f's2:solarIrradiance{band_name}'
             result[key] = float(node.text)
 
-        return {k:v for k, v in result.items() if v is not None}
+        return {k: v for k, v in result.items() if v is not None}
 
     def create_asset(self):
         asset = pystac.Asset(href=self.href,
