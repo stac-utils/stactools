@@ -48,8 +48,13 @@ def create_stac_item(
     # view
     item.ext.enable('view')
     item.ext.view.off_nadir = mtl_metadata.off_nadir
-    item.ext.view.sun_azimuth = mtl_metadata.sun_azimuth
     item.ext.view.sun_elevation = mtl_metadata.sun_elevation
+    # Sun Azimuth in landsat metadata is -180 to 180 from north, west being negative.
+    # In STAC, it's 0 to 360 clockwise from north.
+    sun_azimuth = mtl_metadata.sun_azimuth
+    if sun_azimuth < 0.0:
+        sun_azimuth = 360 + sun_azimuth
+    item.ext.view.sun_azimuth = sun_azimuth
 
     # projection
     item.ext.enable('projection')
