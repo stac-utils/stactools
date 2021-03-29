@@ -77,10 +77,11 @@ def _create_cog_for_sensor(sensor: str, file_prefix: str, tmp_dir: str,
 
 def create_cogs(hdf_path: str, xml_metadata: XmlMetadata,
                 output_path: str) -> None:
-    """Create COGs from the HDF asset contained in the passed in STAC item.
+    """Create COGs from an HDF asset and an XmlMetadata
 
     Args:
         hdf_path: Path to the ASTER L1T 003 HDF EOS data
+        xml_metadata: The XmlMetadata representing this ASTER scene.
         output_path: The directory to which the cogs will be written.
     """
     logger.info(f'Creating COGs and writing to {output_path}...')
