@@ -1,4 +1,5 @@
 import os
+from os.path import (basename, splitext)
 from imp import load_source
 from setuptools import setup, find_namespace_packages
 from glob import glob
@@ -12,8 +13,6 @@ __version__ = load_source(
     'stactools.sentinel1.version',
     os.path.join(os.path.dirname(__file__),
                  'stactools/sentinel1/version.py')).__version__
-
-from os.path import (basename, splitext)
 
 here = os.path.abspath(os.path.dirname(__file__))
 

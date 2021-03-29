@@ -1,8 +1,7 @@
 from datetime import datetime
 import logging
 import os
-import re
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional
 
 import pystac
 from pystac.extensions.sat import OrbitState
@@ -11,6 +10,7 @@ from stactools.sentinel1.rtc_metadata import RTCMetadata
 from stactools.sentinel1 import constants as c
 
 logger = logging.getLogger(__name__)
+
 
 def create_item(
     granule_href: str,
@@ -39,8 +39,9 @@ def create_item(
 
     # --Common metadata--
     # https://github.com/radiantearth/stac-spec/blob/master/item-spec/common-metadata.md
-    item.common_metadata.providers = [c.SENTINEL_PROVIDER,
-                                      c.SENTINEL_RTC_PROVIDER]
+    item.common_metadata.providers = [
+        c.SENTINEL_PROVIDER, c.SENTINEL_RTC_PROVIDER
+    ]
 
     if additional_providers is not None:
         item.common_metadata.providers.extend(additional_providers)
@@ -70,9 +71,12 @@ def create_item(
     item.ext.sar.polarizations = c.SENTINEL_RTC_SAR['polarizations']
     item.ext.sar.resolution_range = c.SENTINEL_RTC_SAR['resolution_range']
     item.ext.sar.resolution_azimuth = c.SENTINEL_RTC_SAR['resolution_azimuth']
-    item.ext.sar.pixel_spacing_range = c.SENTINEL_RTC_SAR['pixel_spacing_range']
-    item.ext.sar.pixel_spacing_azimuth = c.SENTINEL_RTC_SAR['pixel_spacing_azimuth']
-    item.ext.sar.looks_equivalent_number = c.SENTINEL_RTC_SAR['looks_equivalent_number']
+    item.ext.sar.pixel_spacing_range = c.SENTINEL_RTC_SAR[
+        'pixel_spacing_range']
+    item.ext.sar.pixel_spacing_azimuth = c.SENTINEL_RTC_SAR[
+        'pixel_spacing_azimuth']
+    item.ext.sar.looks_equivalent_number = c.SENTINEL_RTC_SAR[
+        'looks_equivalent_number']
     item.ext.sar.looks_range = c.SENTINEL_RTC_SAR['looks_range']
     item.ext.sar.looks_azimuth = c.SENTINEL_RTC_SAR['looks_azimuth']
 
@@ -105,24 +109,25 @@ def create_item(
 
     # Metadata
     if include_grd_metadata:
-        for i,grd in enumerate(product_metadata.grd_ids):
-            json_href = os.path.join(product_metadata.href, grd, 'productInfo.json')
+        for i, grd in enumerate(product_metadata.grd_ids):
+            json_href = os.path.join(product_metadata.href, grd,
+                                     'productInfo.json')
             asset = pystac.Asset(href=json_href,
                                  media_type=pystac.MediaType.JSON,
                                  title=f'{grd} JSON metadata',
                                  roles=['metadata'])
             item.add_asset(f'productInfo_{i}', asset)
 
-            xml_href = os.path.join(product_metadata.href, grd, 'manifest.safe')
+            xml_href = os.path.join(product_metadata.href, grd,
+                                    'manifest.safe')
             asset = pystac.Asset(href=xml_href,
                                  media_type=pystac.MediaType.XML,
                                  title=f'{grd} XML metadata',
                                  roles=['metadata'])
             item.add_asset(f'manifest_{i}', asset)
 
-
     # --Links--
-    #item.links.append(c.SENTINEL_LICENSE)
+    # item.links.append(c.SENTINEL_LICENSE)
     item.links.append(c.SENTINEL_RTC_LICENSE)
 
     return item

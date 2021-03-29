@@ -23,12 +23,11 @@ def create_sentinel1_command(cli):
         '-p',
         '--providers',
         help='Path to JSON file containing array of additional providers')
-    @click.option(
-        '-m',
-        '--metadata',
-        is_flag=True,
-        default=False,
-        help='Include links to original GRD metadata as STAC Assets')
+    @click.option('-m',
+                  '--metadata',
+                  is_flag=True,
+                  default=False,
+                  help='Include links to original GRD metadata as STAC Assets')
     def create_item_command(src, dst, providers, metadata):
         """Creates a STAC Item for a given Sentinel1 RTC product
 
@@ -41,8 +40,9 @@ def create_sentinel1_command(cli):
             with open(providers) as f:
                 additional_providers = json.load(f)
 
-        item = create_item(src, additional_providers=additional_providers,
-                                include_grd_metadata=metadata)
+        item = create_item(src,
+                           additional_providers=additional_providers,
+                           include_grd_metadata=metadata)
         item_path = os.path.join(dst, f'{item.id}.json')
         item.set_self_href(item_path)
         item.save_object()

@@ -36,7 +36,5 @@ class CreateItemTest(CliTestCase):
 
                         item.validate()
 
-                        bands_seen = set()
-
                         for asset in item.assets.values():
                             self.assertTrue(is_absolute_href(asset.href))
