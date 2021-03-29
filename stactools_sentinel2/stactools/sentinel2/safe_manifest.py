@@ -35,7 +35,7 @@ class SafeManifest:
         if file_path is None:
             return None
         else:
-            return os.path.abspath(os.path.join(self.granule_href, file_path))
+            return os.path.join(self.granule_href, file_path)
 
     @property
     def thumbnail_href(self) -> Optional[str]:
