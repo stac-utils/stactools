@@ -62,7 +62,6 @@ def create_landsat_command(cli):
 
         item_path = os.path.join(dst, '{}.json'.format(item.id))
         item.set_self_href(item_path)
-
         item.save_object()
 
     return landsat

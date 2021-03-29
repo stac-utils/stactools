@@ -72,6 +72,10 @@ def transform_stac_to_stac(item: Item,
     """
     Handle a 0.7.0 item and convert it to a 1.0.0.beta2 item.
     """
+    # Clear hierarchical links
+    item.set_parent(None)
+    item.set_root(None)
+
     # Remove USGS extension and add back eo
     item.ext.enable("eo")
 

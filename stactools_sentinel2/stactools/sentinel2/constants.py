@@ -1,11 +1,10 @@
 import pystac
-from pystac.link import (Link, LinkType)
+from pystac.link import Link
 from pystac.extensions.eo import Band
 
 SENTINEL_LICENSE = Link(rel='license',
                         target='https://sentinel.esa.int/documents/' +
-                        '247904/690755/Sentinel_Data_Legal_Notice',
-                        link_type=LinkType.ABSOLUTE)
+                        '247904/690755/Sentinel_Data_Legal_Notice')
 
 SENTINEL_INSTRUMENTS = ['msi']
 SENTINEL_CONSTELLATION = 'Sentinel 2'
