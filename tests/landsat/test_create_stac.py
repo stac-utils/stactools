@@ -8,26 +8,17 @@ from shapely.geometry import box, shape, mapping
 
 from stactools.core.projection import reproject_geom
 from stactools.landsat.commands import create_landsat_command
+from stactools.landsat.stac import create_stac_item
 from stactools.landsat.constants import (L8_SR_BANDS, L8_SP_BANDS)
-from tests.utils import (TestData, CliTestCase)
+from tests.utils import CliTestCase
+from tests.landsat.data import TEST_MTL_PATHS
 
 
 class CreateItemTest(CliTestCase):
     def create_subcommand_functions(self):
         return [create_landsat_command]
 
-    def Xtest_create_item(self):
-        mtl_paths = [
-            TestData.get_path(
-                'data-files/landsat/assets/LC08_L2SP_005009_20150710_20200908_02_T2_MTL.xml'
-            ),
-            TestData.get_path(
-                'data-files/landsat/assets2/LC08_L2SR_099120_20191129_20201016_02_T2_MTL.xml'
-            ),
-            TestData.get_path(
-                'data-files/landsat/assets3/LC08_L2SP_008059_20191201_20200825_02_T1_MTL.xml'
-            )
-        ]
+    def test_create_item(self):
 
         def check_proj_bbox(item):
             bbox = item.bbox
@@ -41,7 +32,7 @@ class CreateItemTest(CliTestCase):
             self.assertLess((reproj_bbox_shp - bbox_shp).area,
                             0.0001 * reproj_bbox_shp.area)
 
-        for mtl_path in mtl_paths:
+        for mtl_path in TEST_MTL_PATHS:
             with self.subTest(mtl_path):
                 with TemporaryDirectory() as tmp_dir:
                     cmd = [
@@ -57,7 +48,6 @@ class CreateItemTest(CliTestCase):
                     fname = jsons[0]
 
                     item = pystac.read_file(os.path.join(tmp_dir, fname))
-
                     item.validate()
 
                     bands_seen = set()
@@ -78,17 +68,6 @@ class CreateItemTest(CliTestCase):
                     check_proj_bbox(item)
 
     def test_convert_and_create_agree(self):
-        mtl_paths = [
-            TestData.get_path(
-                'data-files/landsat/assets/LC08_L2SP_005009_20150710_20200908_02_T2_MTL.xml'
-            ),
-            TestData.get_path(
-                'data-files/landsat/assets2/LC08_L2SR_099120_20191129_20201016_02_T2_MTL.xml'
-            ),
-            TestData.get_path(
-                'data-files/landsat/assets3/LC08_L2SP_008059_20191201_20200825_02_T1_MTL.xml'
-            )
-        ]
 
         def get_item(output_dir: str) -> pystac.Item:
             jsons = [p for p in os.listdir(output_dir) if p.endswith('.json')]
@@ -101,7 +80,7 @@ class CreateItemTest(CliTestCase):
 
             return item
 
-        for mtl_path in mtl_paths:
+        for mtl_path in TEST_MTL_PATHS:
             with self.subTest(mtl_path):
                 with TemporaryDirectory() as tmp_dir:
                     create_dir = os.path.join(tmp_dir, 'create')
