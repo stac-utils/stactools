@@ -82,6 +82,10 @@ RUN pip install -r /tmp/planet/requirements.txt
 COPY stactools_sentinel2/requirements.txt /tmp/sentinel2/requirements.txt
 RUN pip install -r /tmp/sentinel2/requirements.txt
 
+# Sentinel 1
+COPY stactools_sentinel1/requirements.txt /tmp/sentinel1/requirements.txt
+RUN pip install -r /tmp/sentinel1/requirements.txt
+
 # Jupyter
 RUN pip install jupyter==1.0.0
 
