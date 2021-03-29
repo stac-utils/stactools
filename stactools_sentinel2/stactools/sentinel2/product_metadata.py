@@ -10,7 +10,6 @@ from stactools.core.io import ReadHrefModifier
 from stactools.core.io.xml import XmlElement
 from stactools.core.utils import map_opt
 from stactools.sentinel2.constants import PRODUCT_METADATA_ASSET_KEY
-from stactools.sentinel2.utils import band_index_to_name
 
 
 class ProductMetadataError(Exception):
@@ -170,19 +169,6 @@ class ProductMetadata:
                     'n1:Quality_Indicators_Info/Technical_Quality_Assessment/'
                     'DEGRADED_MSI_DATA_PERCENTAGE')),
         }
-
-        irradiance_nodes = self.reflectance_conversion_node.findall(
-            'Solar_Irradiance_List/SOLAR_IRRADIANCE')
-
-        for node in irradiance_nodes:
-            band_text = node.get_attr('bandId')
-            if band_text is None:
-                raise ProductMetadataError(
-                    f"Cannot get bandId property from irradiance node in {self.href}"
-                )
-            band_name = band_index_to_name(int(band_text))
-            key = f's2:solarIrradiance{band_name}'
-            result[key] = float(node.text)
 
         return {k: v for k, v in result.items() if v is not None}
 

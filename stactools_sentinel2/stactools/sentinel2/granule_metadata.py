@@ -6,7 +6,6 @@ from stactools.core.io import ReadHrefModifier
 from stactools.core.io.xml import XmlElement
 from stactools.core.utils import map_opt
 from stactools.sentinel2.constants import GRANULE_METADATA_ASSET_KEY
-from stactools.sentinel2.utils import band_index_to_name
 
 
 class GranuleMetadataError(Exception):
@@ -104,20 +103,7 @@ class GranuleMetadata:
             's2:mean_solar_azimuth': self.mean_solar_azimuth
         }
 
-        for node in self._viewing_angle_nodes:
-            band_text = node.get_attr('bandId')
-            if band_text is None:
-                raise GranuleMetadataError(
-                    f'Cannot find bandId in viewing angle node for {self.href}'
-                )
-            band_name = band_index_to_name(int(band_text))
-            zenith_key = f's2:meanIncidenceZenithAngle{band_name}'
-            azimuth_key = f's2:meanIncidenceAzimuthAngle{band_name}'
-            result[zenith_key] = map_opt(float, node.find('ZENITH_ANGLE').text)
-            result[azimuth_key] = map_opt(float,
-                                          node.find('AZIMUTH_ANGLE').text)
-
-        return result
+        return {k: v for k, v in result.items() if v is not None}
 
     def create_asset(self):
         asset = pystac.Asset(href=self.href,
