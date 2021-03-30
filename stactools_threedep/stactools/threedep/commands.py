@@ -30,7 +30,7 @@ def create_threedep_command(cli):
     def create_collection_command(destination, source, id, quiet):
         """Creates a 3DEP collection in DESTINATION.
 
-        If SOURCE is not provided, will use the metadata in USGS. SOURCE is
+        If SOURCE is not provided, will use the metadata in AWS. SOURCE is
         expected to be a directory tree mirroring the structure on USGS, so
         it is best created using `stac threedep download-metadata`.
         """
@@ -43,7 +43,8 @@ def create_threedep_command(cli):
             else:
                 ids = utils.fetch_ids(product)
             for id in ids:
-                item = stac.create_item(product, id, source)
+                item = stac.create_item_from_product_and_id(
+                    product, id, source)
                 items[product].append(item)
                 if not quiet:
                     print(item.id)

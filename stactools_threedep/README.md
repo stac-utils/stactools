@@ -35,13 +35,12 @@ To create an item from AWS, use `stactools.threedep.stac.create_item`:
 
 ```python
 from stactools.threedep import stac
-item = stac.create_item("1", "n41w106")
+item = stac.create_item_from_product_and_id("1", "n41w106")
 ```
 
 You can also create an item directly from the href of a metadata XML file anyhwere:
 
 ```python
-from stactools.threedep import Metadata
-metadata = Metadata.from_href("ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged/Elevation/1/TIFF/n41w106/USGS_1_n41w106.xml")
-item = metadata.to_item()
+from stactools.threedep import stac
+item = stac.create_item("ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged/Elevation/1/TIFF/n41w106/USGS_1_n41w106.xml")
 ```

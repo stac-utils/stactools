@@ -4,14 +4,12 @@ from typing import Union
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
 
-from shapely.geometry import box, shape, mapping
-from pystac import STAC_IO, Item, Asset, MediaType, Link
+from shapely.geometry import box, mapping
+from pystac import STAC_IO, Asset, MediaType, Link
 
 from stactools.core.projection import reproject_geom
-from stactools.threedep.constants import THREEDEP_CRS, THREEDEP_EPSG, AWS_BASE
+from stactools.threedep.constants import THREEDEP_CRS, THREEDEP_EPSG, DEFAULT_BASE
 from stactools.threedep import utils
-
-DEFAULT_BASE = AWS_BASE
 
 
 class Metadata:
@@ -60,29 +58,7 @@ class Metadata:
         self.product = parts[0]
         self.id = parts[2]
 
-    def to_item(self, base=DEFAULT_BASE) -> Item:
-        """Creates a STAC Item from these metadata."""
-        geometry = self.geometry()
-        bbox = list(shape(geometry).bounds)
-        item = Item(id=self.stac_id(),
-                    geometry=self.geometry(),
-                    bbox=bbox,
-                    datetime=self.datetime(),
-                    properties={})
-        start_datetime = self.start_datetime()
-        end_datetime = self.end_datetime()
-        if start_datetime and end_datetime:
-            item.common_metadata.start_datetime = start_datetime
-            item.common_metadata.end_datetime = end_datetime
-        item.common_metadata.gsd = self.gsd()
-        item.links.append(self.derived_from_link(base))
-        item.assets["data"] = self.data_asset(base)
-        item.assets["metadata"] = self.metadata_asset(base)
-        item.assets["thumbnail"] = self.thumbnail_asset(base)
-        item.ext.enable("projection")
-        item.ext.projection.apply(**self.projection_extension_dict())
-        return item
-
+    @property
     def stac_id(self) -> str:
         """Returns the STAC ID of this metadata.
 
@@ -91,6 +67,7 @@ class Metadata:
         """
         return "{}-{}".format(self.id, self.product)
 
+    @property
     def geometry(self) -> dict:
         """Returns this item's geometry in WGS84."""
         original_bbox = [
@@ -102,6 +79,7 @@ class Metadata:
         return reproject_geom(THREEDEP_CRS, "EPSG:4326",
                               mapping(box(*original_bbox)))
 
+    @property
     def datetime(self) -> Union[datetime.datetime, None]:
         """Returns the collection publication datetime."""
         if self.current == "publication date":
@@ -109,6 +87,7 @@ class Metadata:
         else:
             raise NotImplementedError
 
+    @property
     def start_datetime(self) -> Union[datetime.datetime, None]:
         """Returns the start datetime for this record.
 
@@ -117,10 +96,12 @@ class Metadata:
         """
         return _format_date(self.begdate)
 
+    @property
     def end_datetime(self) -> Union[datetime.datetime, None]:
         """Returns the end datetime for this record."""
         return _format_date(self.enddate, end_of_year=True)
 
+    @property
     def gsd(self) -> float:
         """Returns the nominal ground sample distance from these metadata."""
         if self.product == "1":
@@ -155,6 +136,7 @@ class Metadata:
         return Link("derived_from",
                     self._asset_href_with_extension(base, "xml"))
 
+    @property
     def projection_extension_dict(self) -> dict:
         """Returns a dictionary of values to be applied to the projection extension."""
         shape = [int(self.rowcount), int(self.colcount)]
