@@ -111,3 +111,15 @@ def create_threedep_command(cli):
                 text = STAC_IO.read_text(source_path)
                 with open(path, "w") as f:
                     f.write(text)
+
+    @threedep.command(
+        "fetch-ids",
+        short_help="Fetch all product ids and print them to stdout")
+    @click.argument("product")
+    @click.option("--usgs-ftp/--no-usgs-ftp",
+                  default=False,
+                  help="Fetch from the USGS FTP instead of AWS.")
+    def fetch_ids_command(product: str, usgs_ftp: bool):
+        """Fetches product ids and prints them to stdout."""
+        for id in utils.fetch_ids(product, use_usgs_ftp=usgs_ftp):
+            print(id)
