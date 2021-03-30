@@ -21,3 +21,4 @@ USGS_PROVIDER = Provider(
 
 USGS_FTP_SERVER = "rockyftp.cr.usgs.gov"
 USGS_FTP_BASE = f"ftp://{USGS_FTP_SERVER}/vdelivery/Datasets/Staged/Elevation"
+AWS_BASE = "https://prd-tnm.s3.amazonaws.com/StagedProducts/Elevation"

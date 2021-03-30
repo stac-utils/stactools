@@ -2,6 +2,7 @@ import datetime
 import unittest
 
 from stactools.threedep import Metadata
+from stactools.threedep.constants import USGS_FTP_BASE
 from tests.utils import TestData
 
 
@@ -44,9 +45,9 @@ class MetadataTest(unittest.TestCase):
         self.assertEqual(item.common_metadata.gsd, 30)
 
         data = item.assets["data"]
-        self.assertEqual(
-            data.href, ("ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged"
-                        "/Elevation/1/TIFF/n41w106/USGS_1_n41w106.tif"))
+        self.assertEqual(data.href,
+                         ("https://prd-tnm.s3.amazonaws.com/StagedProducts"
+                          "/Elevation/1/TIFF/n41w106/USGS_1_n41w106.tif"))
         self.assertEqual(data.title, "USGS 1 arc-second n41w106 1 x 1 degree")
         self.assertTrue(
             data.description.startswith(
@@ -57,9 +58,9 @@ class MetadataTest(unittest.TestCase):
         self.assertTrue(data.roles, ["data"])
 
         data = item.assets["metadata"]
-        self.assertEqual(
-            data.href, ("ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged"
-                        "/Elevation/1/TIFF/n41w106/USGS_1_n41w106.xml"))
+        self.assertEqual(data.href,
+                         ("https://prd-tnm.s3.amazonaws.com/StagedProducts"
+                          "/Elevation/1/TIFF/n41w106/USGS_1_n41w106.xml"))
         self.assertTrue(data.title is None)
         self.assertTrue(data.description is None)
         self.assertEqual(data.media_type, "application/xml")
@@ -68,7 +69,7 @@ class MetadataTest(unittest.TestCase):
         data = item.assets["thumbnail"]
         self.assertEqual(
             data.href,
-            ("ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged/Elevation/"
+            ("https://prd-tnm.s3.amazonaws.com/StagedProducts/Elevation/"
              "1/TIFF/n41w106/USGS_1_n41w106.jpg"))
         self.assertTrue(data.title is None)
         self.assertTrue(data.description is None)
@@ -77,10 +78,9 @@ class MetadataTest(unittest.TestCase):
 
         link = next(link for link in item.links if link.rel == "derived_from")
         self.assertTrue(link is not None)
-        self.assertEqual(
-            link.target,
-            ("ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged"
-             "/Elevation/1/TIFF/n41w106/USGS_1_n41w106.xml"))
+        self.assertEqual(link.target,
+                         ("https://prd-tnm.s3.amazonaws.com/StagedProducts"
+                          "/Elevation/1/TIFF/n41w106/USGS_1_n41w106.xml"))
 
         item.ext.enable("projection")
         self.assertEqual(item.ext.projection.epsg, 5498)
@@ -123,3 +123,28 @@ class MetadataTest(unittest.TestCase):
         item = metadata.to_item()
         self.assertEqual(item.id, "n41w106-13")
         self.assertEqual(item.common_metadata.gsd, 10)
+
+    def test_change_base(self):
+        path = TestData.get_path(
+            "data-files/threedep/base/1/TIFF/n41w106/USGS_1_n41w106.xml")
+        metadata = Metadata.from_href(path)
+        item = metadata.to_item(base=USGS_FTP_BASE)
+        data = item.assets["data"]
+        self.assertEqual(
+            data.href, ("ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged"
+                        "/Elevation/1/TIFF/n41w106/USGS_1_n41w106.tif"))
+        data = item.assets["metadata"]
+        self.assertEqual(
+            data.href, ("ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged"
+                        "/Elevation/1/TIFF/n41w106/USGS_1_n41w106.xml"))
+        data = item.assets["thumbnail"]
+        self.assertEqual(
+            data.href,
+            ("ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged/Elevation/"
+             "1/TIFF/n41w106/USGS_1_n41w106.jpg"))
+        link = next(link for link in item.links if link.rel == "derived_from")
+        self.assertTrue(link is not None)
+        self.assertEqual(
+            link.target,
+            ("ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged"
+             "/Elevation/1/TIFF/n41w106/USGS_1_n41w106.xml"))

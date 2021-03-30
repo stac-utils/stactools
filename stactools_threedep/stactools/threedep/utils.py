@@ -20,8 +20,8 @@ def fetch_ids(product: str) -> [str]:
 
 def path(product: str,
          id: str,
-         extension: str = None,
-         base: str = None) -> str:
+         base: str = None,
+         extension: str = None) -> str:
     """Returns the subpath for this product and id.
 
     E.g. path("1", "n41w106") == "1/TIFF/n41w106/USGS_1_n41w106"

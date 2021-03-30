@@ -8,8 +8,10 @@ from shapely.geometry import box, shape, mapping
 from pystac import STAC_IO, Item, Asset, MediaType, Link
 
 from stactools.core.projection import reproject_geom
-from stactools.threedep.constants import THREEDEP_CRS, THREEDEP_EPSG, USGS_FTP_BASE
+from stactools.threedep.constants import THREEDEP_CRS, THREEDEP_EPSG, AWS_BASE
 from stactools.threedep import utils
+
+DEFAULT_BASE = AWS_BASE
 
 
 class Metadata:
@@ -25,14 +27,11 @@ class Metadata:
     def from_product_and_id(cls,
                             product: str,
                             id: str,
-                            base_href=None) -> Metadata:
-        """Creates a Metadata from a product and id.
-
-        Optionally, pass base_href to use something other than the USGS FTP.
-        """
-        if base_href is None:
-            base_href = USGS_FTP_BASE
-        href = utils.path(product, id, base=base_href, extension="xml")
+                            base: str = None) -> Metadata:
+        """Creates a Metadata from a product and id."""
+        if base is None:
+            base = DEFAULT_BASE
+        href = utils.path(product, id, extension="xml", base=base)
         return cls.from_href(href)
 
     def __init__(self, xml: Element):
@@ -60,9 +59,8 @@ class Metadata:
         parts = tiff_href.split('/')[-4:]
         self.product = parts[0]
         self.id = parts[2]
-        self.base_href = USGS_FTP_BASE
 
-    def to_item(self) -> Item:
+    def to_item(self, base=DEFAULT_BASE) -> Item:
         """Creates a STAC Item from these metadata."""
         geometry = self.geometry()
         bbox = list(shape(geometry).bounds)
@@ -77,10 +75,10 @@ class Metadata:
             item.common_metadata.start_datetime = start_datetime
             item.common_metadata.end_datetime = end_datetime
         item.common_metadata.gsd = self.gsd()
-        item.links.append(self.derived_from_link())
-        item.assets["data"] = self.data_asset()
-        item.assets["metadata"] = self.metadata_asset()
-        item.assets["thumbnail"] = self.thumbnail_asset()
+        item.links.append(self.derived_from_link(base))
+        item.assets["data"] = self.data_asset(base)
+        item.assets["metadata"] = self.metadata_asset(base)
+        item.assets["thumbnail"] = self.thumbnail_asset(base)
         item.ext.enable("projection")
         item.ext.projection.apply(**self.projection_extension_dict())
         return item
@@ -132,29 +130,30 @@ class Metadata:
         else:
             raise NotImplementedError
 
-    def data_asset(self) -> Asset:
+    def data_asset(self, base: str = DEFAULT_BASE) -> Asset:
         """Returns the data asset (aka the tiff file)."""
-        return Asset(href=self._asset_href_with_extension("tif"),
+        return Asset(href=self._asset_href_with_extension(base, "tif"),
                      title=self.title,
                      description=self.description,
                      media_type=MediaType.COG,
                      roles=["data"])
 
-    def metadata_asset(self) -> Asset:
+    def metadata_asset(self, base: str = DEFAULT_BASE) -> Asset:
         """Returns the data asset (aka the tiff file)."""
-        return Asset(href=self._asset_href_with_extension("xml"),
+        return Asset(href=self._asset_href_with_extension(base, "xml"),
                      media_type=MediaType.XML,
                      roles=["metadata"])
 
-    def thumbnail_asset(self) -> Asset:
+    def thumbnail_asset(self, base: str = DEFAULT_BASE) -> Asset:
         """Returns the numbnail asset."""
-        return Asset(href=self._asset_href_with_extension("jpg"),
+        return Asset(href=self._asset_href_with_extension(base, "jpg"),
                      media_type=MediaType.JPEG,
                      roles=["thumbnail"])
 
-    def derived_from_link(self) -> Link:
+    def derived_from_link(self, base: str = DEFAULT_BASE) -> Link:
         """Returns the derived from link for this file."""
-        return Link("derived_from", self._asset_href_with_extension("xml"))
+        return Link("derived_from",
+                    self._asset_href_with_extension(base, "xml"))
 
     def projection_extension_dict(self) -> dict:
         """Returns a dictionary of values to be applied to the projection extension."""
@@ -190,11 +189,11 @@ class Metadata:
             "geometry": geometry,
         }
 
-    def _asset_href_with_extension(self, extension: str) -> str:
+    def _asset_href_with_extension(self, base: str, extension: str) -> str:
         return utils.path(self.product,
                           self.id,
-                          extension=extension,
-                          base=self.base_href)
+                          base=base,
+                          extension=extension)
 
 
 def _format_date(date: str,

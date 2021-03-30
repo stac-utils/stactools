@@ -16,7 +16,7 @@ Options are:
 
 ### Command line
 
-To build a `pystac.Collection` directly from from USGS's FTP into a directory named `usgs-3dep-stac`:
+To build a `pystac.Collection` directly from AWS into a directory named `usgs-3dep-stac`:
 
 ```bash
 stac threedep create-collection usgs-3dep-stac
@@ -31,14 +31,14 @@ stac threedep create-collection usgs-3dep-stac --source usgs-3dep-metadata
 
 ### API
 
-To create an item from USGS's FTP, use `stactools.threedep.stac.create_item`:
+To create an item from AWS, use `stactools.threedep.stac.create_item`:
 
 ```python
 from stactools.threedep import stac
 item = stac.create_item("1", "n41w106")
 ```
 
-You can also create an item directly from the href of a metadata XML file:
+You can also create an item directly from the href of a metadata XML file anyhwere:
 
 ```python
 from stactools.threedep import Metadata
