@@ -1,7 +1,7 @@
 from pystac.extensions.eo import Band
 
-L8_PLATFORM = "LANDSAT_8"
-L8_INSTRUMENTS = ["OLI_TIRS"]
+L8_PLATFORM = "landsat-8"
+L8_INSTRUMENTS = ["oli", "tirs"]
 
 L8_EXTENSION_SCHEMA = "https://landsat.usgs.gov/stac/landsat-extension/schema.json"
 L8_ITEM_DESCRIPTION = "Landsat Collection 2 Level-2 Surface Reflectance Product"
