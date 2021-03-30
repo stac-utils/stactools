@@ -3,7 +3,7 @@ import logging
 import os
 import re
 from tempfile import TemporaryDirectory
-from typing import Any, List, Tuple
+from typing import Any, List, Tuple, Dict
 
 import rasterio as rio
 from shapely.geometry import shape
@@ -76,7 +76,7 @@ def _create_cog_for_sensor(sensor: str, file_prefix: str, tmp_dir: str,
 
 
 def create_cogs(hdf_path: str, xml_metadata: XmlMetadata,
-                output_path: str) -> None:
+                output_path: str) -> Dict[str, str]:
     """Create COGs from an HDF asset and an XmlMetadata
 
     Args:
@@ -114,12 +114,16 @@ def create_cogs(hdf_path: str, xml_metadata: XmlMetadata,
     reprojected_geom = reproject_geom('epsg:4326', crs, geom)
     bounds = list(shape(reprojected_geom).bounds)
 
+    result = {}
     with TemporaryDirectory() as tmp_dir:
         for sensor, subdataset_info in sensor_to_subdatasets.items():
-            _create_cog_for_sensor(sensor,
-                                   aster_id.file_prefix,
-                                   tmp_dir=tmp_dir,
-                                   output_dir=output_path,
-                                   bounds=bounds,
-                                   crs=crs,
-                                   subdataset_info=subdataset_info)
+            result[sensor] = _create_cog_for_sensor(
+                sensor,
+                aster_id.file_prefix,
+                tmp_dir=tmp_dir,
+                output_dir=output_path,
+                bounds=bounds,
+                crs=crs,
+                subdataset_info=subdataset_info)
+
+    return result

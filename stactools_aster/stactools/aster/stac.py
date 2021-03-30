@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import Optional
 
@@ -13,6 +14,8 @@ from stactools.aster.constants import (
 from stactools.aster.xml_metadata import XmlMetadata
 from stactools.aster.utils import (AsterSceneId, get_sensors_to_bands)
 
+logger = logging.getLogger(__name__)
+
 ASTER_PROVIDER = pystac.Provider(
     name='NASA LP DAAC at the USGS EROS Center',
     url='https://doi.org/10.5067/ASTER/AST_L1T.003',
@@ -22,9 +25,9 @@ ASTER_PROVIDER = pystac.Provider(
 def _add_cog_assets(
         item: pystac.Item,
         xml_metadata: XmlMetadata,
-        vnir_cog_href: str,
-        swir_cog_href: str,
-        tir_cog_href: str,
+        vnir_cog_href: Optional[str],
+        swir_cog_href: Optional[str],
+        tir_cog_href: Optional[str],
         read_href_modifier: Optional[ReadHrefModifier] = None) -> None:
 
     pointing_angles = xml_metadata.pointing_angles
@@ -41,6 +44,10 @@ def _add_cog_assets(
     sensors_to_bands = get_sensors_to_bands()
 
     for sensor in ASTER_SENSORS:
+        if sensors_to_hrefs[sensor] is None:
+            logger.warning(f'Skipping {sensor} COG')
+            continue
+
         cog_href = sensors_to_hrefs[sensor]
         sensor_asset = pystac.Asset(href=cog_href,
                                     media_type=pystac.MediaType.COG,
@@ -72,9 +79,9 @@ def _add_cog_assets(
 
 
 def create_item(xml_href: str,
-                vnir_cog_href: str,
-                swir_cog_href: str,
-                tir_cog_href: str,
+                vnir_cog_href: Optional[str],
+                swir_cog_href: Optional[str],
+                tir_cog_href: Optional[str],
                 hdf_href: Optional[str] = None,
                 vnir_browse_href: Optional[str] = None,
                 tir_browse_href: Optional[str] = None,
@@ -82,6 +89,14 @@ def create_item(xml_href: str,
                 qa_txt_href: Optional[str] = None,
                 additional_providers=None,
                 read_href_modifier: Optional[ReadHrefModifier] = None):
+    """Creates and item from ASTER Assets."""
+
+    if vnir_cog_href is None and \
+        swir_cog_href is None and \
+            tir_cog_href is None and \
+            hdf_href is None:
+        raise ValueError('Need to supply at least one data asset.')
+
     file_name = os.path.basename(xml_href)
     scene_id = AsterSceneId.from_path(file_name)
 

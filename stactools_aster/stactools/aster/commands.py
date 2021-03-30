@@ -39,9 +39,9 @@ def create_aster_command(cli):
     @aster.command('create-item',
                    short_help='Create a STAC Item from a ASTER XML file')
     @click.option('--xml', required=True, help='XML metadat file (.hdf.xml).')
-    @click.option('--vnir', required=True, help="HREF to the VNIR COG file.")
-    @click.option('--swir', required=True, help="HREF to the SWIR COG file.")
-    @click.option('--tir', required=True, help="HREF to the TIR COG file.")
+    @click.option('--vnir', help="HREF to the VNIR COG file.")
+    @click.option('--swir', help="HREF to the SWIR COG file.")
+    @click.option('--tir', help="HREF to the TIR COG file.")
     @click.option('--hdf', help="HREF to the HDF EOS data.")
     @click.option('--vnir-browse', help="HREF to the VNIR browse image.")
     @click.option('--tir-browse', help="HREF to the TIR browse image.")
