@@ -60,6 +60,7 @@ def create_item(
     if additional_providers is not None:
         item.common_metadata.providers.extend(additional_providers)
 
+    item.common_metadata.platform = product_metadata.platform
     item.common_metadata.constellation = SENTINEL_CONSTELLATION
     item.common_metadata.instruments = SENTINEL_INSTRUMENTS
 
