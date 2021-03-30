@@ -51,7 +51,8 @@ def _add_cog_assets(
         item.ext.eo.set_bands(sensors_to_bands[sensor], sensor_asset)
 
         # Set view off_nadir
-        item.ext.view.off_nadir = pointing_angles[sensor]
+        if sensor in pointing_angles:
+            item.ext.view.off_nadir = abs(pointing_angles[sensor])
 
         # Open COG headers to get proj info
         cog_read_href = cog_href

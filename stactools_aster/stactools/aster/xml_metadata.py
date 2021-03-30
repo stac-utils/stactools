@@ -35,12 +35,16 @@ class XmlMetadata:
         return XmlMetadataError(f"Cannot find {item} in metadata" + (
             "" if self.href is None else f" at {self.href}"))
 
-    def _get_psa_value(self, name: str) -> str:
+    def _get_optional_psa_value(self, name: str) -> Optional[str]:
         result = next(
             iter([
                 psa.find_text('PSAValue') for psa in self._psas
                 if psa.find_text('PSAName') == name
             ]), None)
+        return result
+
+    def _get_required_psa_value(self, name: str) -> str:
+        result = self._get_optional_psa_value(name)
         if result is None:
             raise self._xml_error(name)
         return result
@@ -95,27 +99,31 @@ class XmlMetadata:
 
     @property
     def cloud_cover(self) -> float:
-        return float(self._get_psa_value('SceneCloudCoverage'))
+        return float(self._get_required_psa_value('SceneCloudCoverage'))
 
     @property
     def pointing_angles(self) -> Dict[str, float]:
-        return {
-            VNIR_SENSOR: float(self._get_psa_value('ASTERVNIRPointingAngle')),
-            SWIR_SENSOR: float(self._get_psa_value('ASTERSWIRPointingAngle')),
-            TIR_SENSOR: float(self._get_psa_value('ASTERTIRPointingAngle'))
-        }
+        # point angles don't always exist
+        result: Dict[str, float] = {}
+        for sensor in [VNIR_SENSOR, SWIR_SENSOR, TIR_SENSOR]:
+            pointing_angle = self._get_optional_psa_value(
+                f'ASTER{sensor}PointingAngle')
+            if pointing_angle is not None:
+                result[sensor] = float(pointing_angle)
+
+        return result
 
     @property
     def sun_azimuth(self) -> float:
-        return float(self._get_psa_value('Solar_Azimuth_Angle'))
+        return float(self._get_required_psa_value('Solar_Azimuth_Angle'))
 
     @property
     def sun_elevation(self) -> float:
-        return float(self._get_psa_value('Solar_Elevation_Angle'))
+        return float(self._get_required_psa_value('Solar_Elevation_Angle'))
 
     @property
     def utm_zone(self) -> int:
-        return int(self._get_psa_value('UTMZoneNumber'))
+        return int(self._get_required_psa_value('UTMZoneNumber'))
 
     @property
     def epsg(self) -> int:
@@ -123,7 +131,7 @@ class XmlMetadata:
 
     @property
     def orbit_state(self) -> OrbitState:
-        if self._get_psa_value('FlyingDirection') == 'DE':
+        if self._get_required_psa_value('FlyingDirection') == 'DE':
             return OrbitState.DESCENDING
         else:
             return OrbitState.ASCENDING
@@ -132,13 +140,13 @@ class XmlMetadata:
     def aster_properties(self) -> Dict[str, Any]:
         result = {
             UPPER_LEFT_QUAD_CLOUD_COVER:
-            float(self._get_psa_value('UpperLeftQuadCloudCoverage')),
+            float(self._get_required_psa_value('UpperLeftQuadCloudCoverage')),
             UPPER_RIGHT_QUAD_CLOUD_COVER:
-            float(self._get_psa_value('UpperRightQuadCloudCoverage')),
+            float(self._get_required_psa_value('UpperRightQuadCloudCoverage')),
             LOWER_LEFT_QUAD_CLOUD_COVER:
-            float(self._get_psa_value('LowerLeftQuadCloudCoverage')),
+            float(self._get_required_psa_value('LowerLeftQuadCloudCoverage')),
             LOWER_RIGHT_QUAD_CLOUD_COVER:
-            float(self._get_psa_value('LowerRightQuadCloudCoverage'))
+            float(self._get_required_psa_value('LowerRightQuadCloudCoverage'))
         }
 
         return result

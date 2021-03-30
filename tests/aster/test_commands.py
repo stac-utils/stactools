@@ -27,6 +27,44 @@ class CreateItemTest(CliTestCase):
     def create_subcommand_functions(self):
         return [create_aster_command]
 
+    def test_create_item_from_xml(self):
+        xml_paths = [
+            TestData.get_path(
+                'data-files/aster/AST_L1T_00303042000203404_20150409092553_2788.hdf.xml'
+            ),
+            TestData.get_path(
+                'data-files/aster/AST_L1T_00309032000003144_20150411122552_103734.hdf.xml'
+            )
+        ]
+
+        for xml_path in xml_paths:
+            with self.subTest(xml_path):
+                with TemporaryDirectory() as tmp_dir:
+                    stac_cmd = [
+                        'aster', 'create-item', '--xml', xml_path, '--vnir',
+                        TestData.get_path('data-files/aster/dummy.tif'),
+                        '--swir',
+                        TestData.get_path('data-files/aster/dummy.tif'),
+                        '--tir',
+                        TestData.get_path('data-files/aster/dummy.tif'),
+                        '--vnir-browse', VNIR_BROWSE_PATH, '--tir-browse',
+                        TIR_BROWSE_PATH, '--qa-browse', QA_BROWSE_PATH,
+                        '--qa-txt', QA_TXT_PATH, '--output', tmp_dir
+                    ]
+
+                    self.run_command(stac_cmd)
+
+                    jsons = [
+                        p for p in os.listdir(tmp_dir) if p.endswith('.json')
+                    ]
+                    self.assertEqual(len(jsons), 1)
+                    item_path = os.path.join(tmp_dir, jsons[0])
+
+                    item: pystac.Item = cast(pystac.Item,
+                                             pystac.read_file(item_path))
+
+                    item.validate()
+
     def test_create_cogs_then_items(self):
         """Test cogs and items so we don't have to save additional
         test data"""
