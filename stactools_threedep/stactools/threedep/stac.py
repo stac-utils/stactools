@@ -1,13 +1,18 @@
+from typing import Optional
+
 from pystac import Item
 from shapely.geometry import shape
 
+from stactools.core.io import ReadHrefModifier
 from stactools.threedep.metadata import Metadata
 from stactools.threedep.constants import DEFAULT_BASE
 
 
-def create_item(href: str, base: str = DEFAULT_BASE) -> Item:
+def create_item(href: str,
+                read_href_modifier: Optional[ReadHrefModifier] = None,
+                base: str = DEFAULT_BASE) -> Item:
     """Creates a STAC item from an href to an XML metadata file."""
-    metadata = Metadata.from_href(href)
+    metadata = Metadata.from_href(href, read_href_modifier)
     return create_item_from_metadata(metadata, base)
 
 

@@ -1,12 +1,14 @@
 from __future__ import annotations
 import datetime
-from typing import Union
+from typing import Union, Optional
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
 
 from shapely.geometry import box, mapping
-from pystac import STAC_IO, Asset, MediaType, Link
+from pystac import Asset, MediaType, Link
 
+from stactools.core import io
+from stactools.core.io import ReadHrefModifier
 from stactools.core.projection import reproject_geom
 from stactools.threedep.constants import THREEDEP_CRS, THREEDEP_EPSG, DEFAULT_BASE
 from stactools.threedep import utils
@@ -15,9 +17,12 @@ from stactools.threedep import utils
 class Metadata:
     """3DEP file metadata."""
     @classmethod
-    def from_href(cls, href: str) -> Metadata:
+    def from_href(
+            cls,
+            href: str,
+            read_href_modifier: Optional[ReadHrefModifier] = None) -> Metadata:
         """Creates a metadata from an href to the XML metadata file."""
-        text = STAC_IO.read_text(href)
+        text = io.read_text(href, read_href_modifier)
         element_tree = ElementTree.fromstring(text)
         return cls(element_tree)
 

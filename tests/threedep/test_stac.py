@@ -149,3 +149,16 @@ class CreateItemTest(unittest.TestCase):
         path = TestData.get_path("data-files/threedep/base")
         item = stac.create_item_from_product_and_id("1", "n41w106", path)
         item.validate()
+
+    def test_read_href_modifier(self):
+        did_it = False
+
+        def modify_href(href: str) -> str:
+            nonlocal did_it
+            did_it = True
+            return href
+
+        path = TestData.get_path(
+            "data-files/threedep/base/1/TIFF/n41w106/USGS_1_n41w106.xml")
+        _ = stac.create_item(path, modify_href)
+        self.assertTrue(did_it)
