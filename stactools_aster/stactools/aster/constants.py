@@ -13,8 +13,8 @@ ASTER_FILE_NAME_REGEX = re.compile(r'AST_L1T_(?P<start>[\d]+)_'
                                    r'(?P<production>[\d]+)_'
                                    r'(?P<processing>[\d]+)')
 
-ASTER_PLATFORM = "Terra"
-ASTER_INSTRUMENT = "ASTER"
+ASTER_PLATFORM = "terra"
+ASTER_INSTRUMENT = "aster"
 
 VNIR_SENSOR = 'VNIR'
 SWIR_SENSOR = 'SWIR'
