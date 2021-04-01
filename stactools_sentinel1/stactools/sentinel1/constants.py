@@ -1,13 +1,12 @@
 import pystac
-from pystac.link import (Link, LinkType)
+from pystac.link import Link
 from pystac.extensions import sar
 
 # General Sentinel-1 Constants
 # -
 SENTINEL_LICENSE = Link(rel='license',
                         target='https://sentinel.esa.int/documents/' +
-                        '247904/690755/Sentinel_Data_Legal_Notice',
-                        link_type=LinkType.ABSOLUTE)
+                        '247904/690755/Sentinel_Data_Legal_Notice')
 
 SENTINEL_INSTRUMENTS = ['c-sar']
 SENTINEL_CONSTELLATION = 'sentinel-1'
@@ -29,8 +28,7 @@ SENTINEL_RTC_PROVIDER = pystac.Provider(
 
 SENTINEL_RTC_LICENSE = Link(
     rel='license',
-    target='https://www.indigoag.com/forms/atlas-sentinel-license',
-    link_type=LinkType.ABSOLUTE)
+    target='https://www.indigoag.com/forms/atlas-sentinel-license')
 
 SENTINEL_RTC_SAR = {
     'instrument_mode': 'IW',

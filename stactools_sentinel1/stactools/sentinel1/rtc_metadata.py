@@ -4,9 +4,12 @@ import pystac
 from pystac.utils import str_to_datetime
 
 import rasterio
-import geopandas as gpd
+import rasterio.features
+from rasterio import Affine as A
+from rasterio.warp import transform_geom
+from shapely.geometry import mapping, shape
+import numpy as np
 import os
-import io
 import json
 import logging
 
@@ -17,49 +20,46 @@ class RTCMetadata:
     def __init__(self, href):
         self.href = href
 
-        def _load_metadata(asset='local_incident_angle.tif'):
+        def _load_metadata_from_asset(asset='local_incident_angle.tif', scale=1, precision=5):
             ''' key metadata stored in Geotiff tags '''
             with rasterio.Env(AWS_NO_SIGN_REQUEST='YES',
                               GDAL_DISABLE_READDIR_ON_OPEN='EMPTY_DIR'):
                 with rasterio.open(os.path.join(href, asset)) as src:
                     metadata = src.profile
                     metadata.update(src.tags())
-                    # other things that aren't keys in src.profile
+                    # other useful things that aren't already keys in src.profile
                     metadata['PROJ_BBOX'] = list(src.bounds)
                     metadata['SHAPE'] = src.shape
 
-            return metadata
+                    bbox, footprint = _get_geometries(src, scale, precision)
 
-        def _get_geometries():
-            ''' bbox is MGRS grid square, but geometry is intersection of bbox
-            and S1 frames use to create RTC product. EPSG:4326'''
-            # NOTE: could also save proj:geometry in UTM CRS...
-            gridfile = os.path.join(os.path.dirname(__file__),
-                                    'sentinel1-rtc-conus-grid.geojson')
-            gf = gpd.read_file(gridfile)
-            gf.rename(columns=dict(id='tile'), inplace=True)
-            gf_grid = gf[gf.tile == self.metadata['TILE_ID']]
-            bbox = list(gf_grid.total_bounds)
+            return metadata, bbox, footprint
 
-            frames = []
-            for i in range(1, int(self.metadata['NUMBER_SCENES']) + 1):
-                m = json.loads(self.metadata[f'SCENE_{i}_METADATA'])
-                frames.append(gpd.read_file(io.StringIO(m['footprint'])))
-            footprints = gpd.pd.concat(frames)
+        def _get_geometries(src, scale, precision):
+            ''' scale can be 1,2,4,8,16. scale=1 creates most precise footprint
+            at the expense of reading all pixel values. scale=2 reads 1/4 amount
+            of data be overestimates footprint by at least 1pixel (20 meters).
+            '''
+            with rasterio.vrt.WarpedVRT(src, crs='EPSG:4326') as vrt:
+                bbox = [np.round(x, decimals=precision) for x in vrt.bounds]
 
-            intersection = gpd.overlay(gf_grid, footprints, how='intersection')
-            valid_footprint = intersection.unary_union.convex_hull
+            arr = src.read(1, out_shape=(src.height // scale, src.width // scale))
+            arr[np.where(arr != 0)] = 1
+            transform = src.transform * A.scale(scale)
 
-            geometry = {
-                "type": "Polygon",
-                "coordinates": [list(valid_footprint.exterior.coords)]
-            }
+            for geom, val in rasterio.features.shapes(arr, transform=transform):
+                if val == 1:
+                    geometry = shape(
+                        transform_geom(src.crs, "EPSG:4326", geom, precision=precision)
+                        )
+                    footprint = mapping(geometry.convex_hull)
 
-            return (bbox, geometry)
+                    return bbox, footprint
 
-        def _get_provinance():
+        def _get_provenance():
             ''' RTC products are from mosaiced GRD frames '''
-            # NOTE: return entire dictionary or just GRD frame names?
+            # NOTE: just GRD frame names? or additional info, like IPF from manifest.safe
+            # <safe:software name="Sentinel-1 IPF" version="002.72"/>
             grd_ids = []
             for i in range(1, int(self.metadata['NUMBER_SCENES']) + 1):
                 m = json.loads(self.metadata[f'SCENE_{i}_METADATA'])
@@ -78,10 +78,9 @@ class RTCMetadata:
                 mid = start + (end - start) / 2
             return start, mid, end
 
-        self.metadata = _load_metadata()
-        self.grd_ids = _get_provinance()
+        self.metadata, self.bbox, self.geometry = _load_metadata_from_asset()
+        self.grd_ids = _get_provenance()
         self.start_datetime, self.datetime, self.end_datetime = _get_times()
-        self.bbox, self.geometry = _get_geometries()
 
     @property
     def product_id(self) -> str:

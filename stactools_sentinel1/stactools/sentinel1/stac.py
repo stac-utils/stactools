@@ -86,12 +86,26 @@ def create_item(
     item.ext.sat.relative_orbit = product_metadata.relative_orbit
     item.ext.sat.absolute_orbit = product_metadata.absolute_orbit
 
-    # proj https://github.com/stac-extensions/projection
+    # PROJECTION https://github.com/stac-extensions/projection
     item.ext.enable('projection')
     item.ext.projection.epsg = product_metadata.epsg
     item.ext.projection.shape = product_metadata.shape
     item.ext.projection.proj_bbox = product_metadata.proj_bbox
     item.ext.projection.transform = product_metadata.metadata['transform']
+
+    # Additional extensions could be useful, but not yet implemented in pystac:
+
+    # MGRS https://github.com/stac-extensions/mgrs
+    #item.ext.enable('mgrs')
+    #item.ext.projection.utm_zone = product_metadata.metadata['TILE_ID'][:2]
+    #item.ext.projection.latitude_band = product_metadata.metadata['TILE_ID'][2]
+    #item.ext.projection.grid_square = product_metadata.metadata['TILE_ID'][3:]
+
+    # RASTER https://github.com/stac-extensions/raster
+    # To capture nodata value and incidence angle units and scaling
+    # https://github.com/stac-extensions/raster#value-object
+
+
 
     # --Assets--
 
