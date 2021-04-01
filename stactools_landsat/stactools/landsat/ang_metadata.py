@@ -43,7 +43,7 @@ class AngMetadata:
 
         if scene_id is None:
             href_msg = "" if href is None else f" from {href}"
-            raise AngError("Could not get scene id{href_msg}")
+            raise AngError(f"Could not get scene id {href_msg}")
 
         self.scene_id = scene_id
 
@@ -70,4 +70,4 @@ class AngMetadata:
                   href,
                   read_href_modifier: Optional[ReadHrefModifier] = None
                   ) -> "AngMetadata":
-        return cls(read_text(href, read_href_modifier))
+        return cls(read_text(href, read_href_modifier), href=href)
