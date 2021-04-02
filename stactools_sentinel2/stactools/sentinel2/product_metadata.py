@@ -148,7 +148,7 @@ class ProductMetadata:
             's2:product_type':
             self.product_info_node.find_text('PRODUCT_TYPE'),
             's2:datatake_id':
-            self.datatake_node.find_text('datatakeIdentifier'),
+            self.datatake_node.get_attr('datatakeIdentifier'),
             's2:datatake_type':
             self.datatake_node.find_text('DATATAKE_TYPE'),
             's2:datastrip_id':
