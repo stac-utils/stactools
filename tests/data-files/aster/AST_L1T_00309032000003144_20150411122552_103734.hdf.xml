@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE GranuleMetaDataFile SYSTEM "http://ecsinfo.gsfc.nasa.gov/ECSInfo/ecsmetadata/dtds/DPL/ECS/ScienceGranuleMetadata.dtd">
+<GranuleMetaDataFile>
+    <DTDVersion>1.0</DTDVersion>
+    <DataCenterId>EDC</DataCenterId>
+    <GranuleURMetaData>
+        <GranuleUR>SC:AST_L1T.003:2149478211</GranuleUR>
+        <DbID>2149478211</DbID>
+        <InsertTime>2015-04-11 12:28:48.972</InsertTime>
+        <LastUpdate>2018-07-09 19:52:23.000</LastUpdate>
+        <CollectionMetaData>
+            <ShortName>AST_L1T</ShortName>
+            <VersionID>3</VersionID>
+        </CollectionMetaData>
+        <DataFiles>
+            <DataFileContainer>
+                <DistributedFileName>AST_L1T_00309032000003144_20150411122552_103734_T.tif</DistributedFileName>
+                <FileSize>2254836</FileSize>
+                <ChecksumType>MD5</ChecksumType>
+                <Checksum>e7b898b7cac33cdc6aeed3742317bb34</Checksum>
+                <ChecksumOrigin>DPLIngst</ChecksumOrigin>
+            </DataFileContainer>
+            <DataFileContainer>
+                <DistributedFileName>AST_L1T_00309032000003144_20150411122552_103734.hdf</DistributedFileName>
+                <FileSize>130529932</FileSize>
+                <ChecksumType>MD5</ChecksumType>
+                <Checksum>b9f2913dc98bdd381faa5a82d7ef17cd</Checksum>
+                <ChecksumOrigin>DPLIngst</ChecksumOrigin>
+            </DataFileContainer>
+            <DataFileContainer>
+                <DistributedFileName>AST_L1T_00309032000003144_20150411122552_103734_V.tif</DistributedFileName>
+                <FileSize>80926294</FileSize>
+                <ChecksumType>MD5</ChecksumType>
+                <Checksum>835d706340f01f9c304a2c1f41200264</Checksum>
+                <ChecksumOrigin>DPLIngst</ChecksumOrigin>
+            </DataFileContainer>
+        </DataFiles>
+        <ECSDataGranule>
+            <SizeMBECSDataGranule>203.811</SizeMBECSDataGranule>
+            <ReprocessingActual>processed once</ReprocessingActual>
+            <LocalGranuleID>AST_L1T_00309032000003144_20150411122552_103734</LocalGranuleID>
+            <DayNightFlag>Day</DayNightFlag>
+            <ProductionDateTime>2015-04-11 17:26:33.000</ProductionDateTime>
+        </ECSDataGranule>
+        <PGEVersionClass>
+            <PGEVersion>1.0.0</PGEVersion>
+        </PGEVersionClass>
+        <SingleDateTime>
+            <TimeofDay>00:31:44.069000</TimeofDay>
+            <CalendarDate>2000-09-03</CalendarDate>
+        </SingleDateTime>
+        <SpatialDomainContainer>
+            <HorizontalSpatialDomainContainer>
+                <GPolygon>
+                    <Boundary>
+                        <Point>
+                            <PointLongitude>151.772639771632</PointLongitude>
+                            <PointLatitude>0.490884189800945</PointLatitude>
+                        </Point>
+                        <Point>
+                            <PointLongitude>152.518298476232</PointLongitude>
+                            <PointLatitude>0.490980125184369</PointLatitude>
+                        </Point>
+                        <Point>
+                            <PointLongitude>152.518313933781</PointLongitude>
+                            <PointLatitude>-0.170173911164072</PointLatitude>
+                        </Point>
+                        <Point>
+                            <PointLongitude>151.772679146785</PointLongitude>
+                            <PointLatitude>-0.170140660608306</PointLatitude>
+                        </Point>
+                    </Boundary>
+                </GPolygon>
+            </HorizontalSpatialDomainContainer>
+        </SpatialDomainContainer>
+        <MeasuredParameter>
+            <MeasuredParameterContainer>
+                <ParameterName>Corrected Radiance at Sensor</ParameterName>
+                <QAStats>
+                    <QAPercentMissingData>0</QAPercentMissingData>
+                    <QAPercentOutofBoundsData>0</QAPercentOutofBoundsData>
+                    <QAPercentInterpolatedData>100</QAPercentInterpolatedData>
+                    <QAPercentCloudCover>100</QAPercentCloudCover>
+                </QAStats>
+                <QAFlags>
+                    <AutomaticQualityFlag>Passed</AutomaticQualityFlag>
+                    <AutomaticQualityFlagExplanation>Passed if algorithm ran within bounds of execution constraints. Suspect if bounds of execution constraints violated. Failed if PGE failed.</AutomaticQualityFlagExplanation>
+                </QAFlags>
+            </MeasuredParameterContainer>
+        </MeasuredParameter>
+        <PSAs>
+            <PSA>
+                <PSAName>ASTERMapProjection</PSAName>
+                <PSAValue>Universal Transverse Mercator</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>SceneCloudCoverage</PSAName>
+                <PSAValue>100</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>UpperLeftQuadCloudCoverage</PSAName>
+                <PSAValue>100</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>UpperRightQuadCloudCoverage</PSAName>
+                <PSAValue>100</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>LowerLeftQuadCloudCoverage</PSAName>
+                <PSAValue>100</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>LowerRightQuadCloudCoverage</PSAName>
+                <PSAValue>99</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>VNIR1_ObservationMode</PSAName>
+                <PSAValue>ON</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>VNIR2_ObservationMode</PSAName>
+                <PSAValue>ON</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>SWIR_ObservationMode</PSAName>
+                <PSAValue>ON</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>TIR_ObservationMode</PSAName>
+                <PSAValue>ON</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>Band1_Available</PSAName>
+                <PSAValue>Yes, band is acquired</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>Band2_Available</PSAName>
+                <PSAValue>Yes, band is acquired</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>Band3N_Available</PSAName>
+                <PSAValue>Yes, band is acquired</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>Band3B_Available</PSAName>
+                <PSAValue>No, band was not acquired</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>Band4_Available</PSAName>
+                <PSAValue>Yes, band is acquired</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>Band5_Available</PSAName>
+                <PSAValue>Yes, band is acquired</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>Band6_Available</PSAName>
+                <PSAValue>Yes, band is acquired</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>Band7_Available</PSAName>
+                <PSAValue>Yes, band is acquired</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>Band8_Available</PSAName>
+                <PSAValue>Yes, band is acquired</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>Band9_Available</PSAName>
+                <PSAValue>Yes, band is acquired</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>Band10_Available</PSAName>
+                <PSAValue>Yes, band is acquired</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>Band11_Available</PSAName>
+                <PSAValue>Yes, band is acquired</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>Band12_Available</PSAName>
+                <PSAValue>Yes, band is acquired</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>Band13_Available</PSAName>
+                <PSAValue>Yes, band is acquired</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>Band14_Available</PSAName>
+                <PSAValue>Yes, band is acquired</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>Solar_Azimuth_Angle</PSAName>
+                <PSAValue>69.354924</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>Solar_Elevation_Angle</PSAName>
+                <PSAValue>69.072805</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>GenerationDateandTime</PSAName>
+                <PSAValue>2015-04-11T17:26:33.000Z</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>GeometricDBVersion</PSAName>
+                <PSAValue>03.01</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>RadiometricDBVersion</PSAName>
+                <PSAValue>04.00</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>ASTERGains</PSAName>
+                <PSAValue>01 HGH, 02 HGH, 3N NOR, 04 NOR, 05 NOR, 06 NOR, 07 NOR, 08 NOR, 09 NOR</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>Resampling</PSAName>
+                <PSAValue>CC</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>FlyingDirection</PSAName>
+                <PSAValue>DE</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>ASTERProcessingCenter</PSAName>
+                <PSAValue>LPDAAC</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>ASTERReceivingCenter</PSAName>
+                <PSAValue>EDOS</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>ASTERMapOrientationAngle</PSAName>
+                <PSAValue>0.0</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>ASTERVNIRPointingAngle</PSAName>
+                <PSAValue>-8.583</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>ASTERSWIRPointingAngle</PSAName>
+                <PSAValue>-8.487</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>ASTERTIRPointingAngle</PSAName>
+                <PSAValue>-8.557</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>identifier_product_doi_authority</PSAName>
+                <PSAValue>http://dx.doi.org</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>identifier_product_doi</PSAName>
+                <PSAValue>10.5067/ASTER/AST_L1T.003</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>FullResolutionVisibleBrowseAvailable</PSAName>
+                <PSAValue>YES</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>FullResolutionThermalBrowseAvailable</PSAName>
+                <PSAValue>YES</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>CorrectionAchieved</PSAName>
+                <PSAValue>Systematic</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>NumberGCPChipsCorrelated</PSAName>
+                <PSAValue>0</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>UTMZoneNumber</PSAName>
+                <PSAValue>56</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>SpheroidCode</PSAName>
+                <PSAValue>WGS84</PSAValue>
+            </PSA>
+            <PSA>
+                <PSAName>QABrowseAvailable</PSAName>
+                <PSAValue>NO</PSAValue>
+            </PSA>
+        </PSAs>
+        <InputGranule>
+            <InputPointer>ASTL1A 0009030031440301050580</InputPointer>
+        </InputGranule>
+        <BrowseProduct>
+            <BrowseGranuleId>UR:10:DsShESDTUR:UR:15:DsShSciServerUR:13:[EDC:DSSDSRV]:24:BR:Browse.001:2159671020</BrowseGranuleId>
+        </BrowseProduct>
+    </GranuleURMetaData>
+</GranuleMetaDataFile>

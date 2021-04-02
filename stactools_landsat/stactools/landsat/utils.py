@@ -1,6 +1,6 @@
 import datetime
 
-import dateutil
+import dateutil.parser
 import rasterio
 from pystac import Item, Link, MediaType
 from rasterio import RasterioIOError
@@ -72,6 +72,10 @@ def transform_stac_to_stac(item: Item,
     """
     Handle a 0.7.0 item and convert it to a 1.0.0.beta2 item.
     """
+    # Clear hierarchical links
+    item.set_parent(None)
+    item.set_root(None)
+
     # Remove USGS extension and add back eo
     item.ext.enable("eo")
 
@@ -107,10 +111,10 @@ def transform_stac_to_stac(item: Item,
             else:
                 raise ValueError('Asset SR_B2.TIF or SR_B2.TIF required')
 
-            opened_asset = rasterio.open(asset.href)
-            shape = [opened_asset.height, opened_asset.width]
-            transform = opened_asset.transform
-            crs = opened_asset.crs.to_epsg()
+            with rasterio.open(asset.href) as opened_asset:
+                shape = [opened_asset.height, opened_asset.width]
+                transform = opened_asset.transform
+                crs = opened_asset.crs.to_epsg()
 
             # Now we have the info, we can make the fields
             item.ext.enable("projection")

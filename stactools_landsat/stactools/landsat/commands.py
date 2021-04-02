@@ -1,11 +1,10 @@
-import json
 import os
-import sys
 
 import click
-from pystac import Item
-from stactools.landsat.utils import (transform_mtl_to_stac,
-                                     transform_stac_to_stac)
+import pystac
+
+from stactools.landsat.utils import transform_stac_to_stac
+from stactools.landsat.stac import create_stac_item
 
 
 def create_landsat_command(cli):
@@ -19,10 +18,37 @@ def create_landsat_command(cli):
     def landsat():
         pass
 
-    @landsat.command("convert",
-                     short_help="Convert a Landsat MTL file to a STAC Item")
-    @click.option("--mtl", "-m", help="Path to an MTL file.")
-    @click.option("--stac", "-s", help="Path to a STAC file.")
+    @landsat.command(
+        "create-item",
+        short_help="Create a STAC item from collection 2 scene metadata.")
+    @click.option("--level",
+                  type=click.Choice(['level-1', 'level-2'],
+                                    case_sensitive=False),
+                  default="level-2",
+                  show_default=True,
+                  help="Product level to process")
+    @click.option("--mtl", required=True, help="HREF to an MTL file.")
+    @click.option("--output",
+                  required=True,
+                  help="HREF of diretory in which to write the item.")
+    def create_item_cmd(level: str, mtl: str, output: str):
+        """Creates a STAC Item for a Landsat 8 C2 Level-2 scene's products.
+
+        All asset paths are based on the MTL path, as all assets are assumed to
+        reside in the same directory/blob prefix/etc.
+        """
+        if level != 'level-2':
+            raise click.BadOptionUsage("level",
+                                       "Only level-2 currently implemented.")
+
+        item = create_stac_item(mtl_xml_href=mtl)
+        item.set_self_href(os.path.join(output, f'{item.id}.json'))
+        item.save_object()
+
+    @landsat.command(
+        "convert",
+        short_help="Convert a USGS STAC 0.7 Item to an updated STAC Item")
+    @click.option("--stac", "-s", required=True, help="Path to a STAC file.")
     @click.option(
         "--enable-proj",
         "-p",
@@ -30,25 +56,12 @@ def create_landsat_command(cli):
         is_flag=True,
         help="Enable the proj extension. Requires access to blue band.")
     @click.option("--dst", "-d", help="Output directory")
-    def landsat_command(mtl, stac, enable_proj, dst):
-        if mtl and stac or (not mtl and not stac):
-            print("Please choose one of either MTL or STAC, not both")
-            sys.exit(1)
-
-        item = None
-        if mtl:
-            # Transform not implemented, so tell folks
-            print("MTL transform not yet implemented.")
-            sys.exit(1)
-            with open(mtl) as f:
-                item = transform_mtl_to_stac(json.load(f))
-        elif stac:
-            in_item = Item.from_file(stac)
-            item = transform_stac_to_stac(in_item, enable_proj=enable_proj)
+    def convert_cmd(stac, enable_proj, dst):
+        in_item = pystac.Item.from_file(stac)
+        item = transform_stac_to_stac(in_item, enable_proj=enable_proj)
 
         item_path = os.path.join(dst, '{}.json'.format(item.id))
         item.set_self_href(item_path)
-
         item.save_object()
 
-    return landsat_command
+    return landsat

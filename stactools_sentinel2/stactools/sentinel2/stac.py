@@ -5,12 +5,13 @@ from typing import Dict, List, Optional, Tuple
 
 import pystac
 from pystac.extensions.sat import OrbitState
-import rasterio.transform
 
+from stactools.core.io import ReadHrefModifier
+from stactools.core.projection import transform_from_bbox
 from stactools.sentinel2.safe_manifest import SafeManifest
 from stactools.sentinel2.product_metadata import ProductMetadata
 from stactools.sentinel2.granule_metadata import GranuleMetadata
-from stactools.sentinel2.utils import ReadHrefModifier, extract_gsd
+from stactools.sentinel2.utils import extract_gsd
 from stactools.sentinel2.constants import (DATASTRIP_METADATA_ASSET_KEY,
                                            SENTINEL_PROVIDER, SENTINEL_LICENSE,
                                            SENTINEL_BANDS,
@@ -22,10 +23,9 @@ logger = logging.getLogger(__name__)
 
 
 def create_item(
-    granule_href: str,
-    additional_providers: Optional[List[pystac.Provider]] = None,
-    read_href_modifier: Optional[ReadHrefModifier] = None
-) -> Tuple[pystac.Item, pystac.Item]:
+        granule_href: str,
+        additional_providers: Optional[List[pystac.Provider]] = None,
+        read_href_modifier: Optional[ReadHrefModifier] = None) -> pystac.Item:
     """Create a STC Item from a Sentinel 2 granule.
 
     Arguments:
@@ -37,11 +37,7 @@ def create_item(
             an Azure SAS token or creating a signed URL.
 
     Returns:
-        Tuple[pystac.Item, pystac.Item]: A tuple with the first element
-            being the Item only populated with STAC core and common extension metadata,
-            and the second element being an "Extended Item" with additional metadata
-            from the Sentinel 2 granule metatadata files. These items are linked
-            together with the "extends" and "extended-by" rel types.
+        pystac.Item: An item representing the Sentinel 2 scene
     """ # noqa
 
     safe_manifest = SafeManifest(granule_href, read_href_modifier)
@@ -64,6 +60,7 @@ def create_item(
     if additional_providers is not None:
         item.common_metadata.providers.extend(additional_providers)
 
+    item.common_metadata.platform = product_metadata.platform
     item.common_metadata.constellation = SENTINEL_CONSTELLATION
     item.common_metadata.instruments = SENTINEL_INSTRUMENTS
 
@@ -87,6 +84,12 @@ def create_item(
         raise ValueError(
             f'Could not determine EPSG code for {granule_href}; which is required.'
         )
+
+    # s2 properties
+    item.properties.update({
+        **product_metadata.metadata_dict,
+        **granule_metadata.metadata_dict
+    })
 
     # --Assets--
 
@@ -133,20 +136,7 @@ def create_item(
 
     item.links.append(SENTINEL_LICENSE)
 
-    # Create extended metadata item
-
-    extended_item = item.clone()
-    extended_item.id = f'{item.id}-extended'
-    extended_item.properties.update({
-        **product_metadata.metadata_dict,
-        **granule_metadata.metadata_dict
-    })
-
-    item.add_link(
-        pystac.Link('extended-by', extended_item, pystac.MediaType.JSON))
-    extended_item.add_link(pystac.Link('extends', item, pystac.MediaType.JSON))
-
-    return (item, extended_item)
+    return item
 
 
 def image_asset_from_href(
@@ -183,10 +173,8 @@ def image_asset_from_href(
 
     # Extract gsd and proj info
     gsd = extract_gsd(asset_href)
-    shape = resolution_to_shape[int(gsd)]
-    transform = rasterio.transform.from_bounds(proj_bbox[0], proj_bbox[1],
-                                               proj_bbox[2], proj_bbox[3],
-                                               shape[1], shape[0])[:6]
+    shape = list(resolution_to_shape[int(gsd)])
+    transform = transform_from_bbox(proj_bbox, shape)
 
     def set_asset_properties(asset):
         item.common_metadata.set_gsd(gsd, asset)

@@ -4,7 +4,6 @@ import json
 import os
 
 from stactools.sentinel2.stac import create_item
-from stactools.sentinel2.cog import create_cogs
 
 logger = logging.getLogger(__name__)
 
@@ -24,11 +23,7 @@ def create_sentinel2_command(cli):
         '-p',
         '--providers',
         help='Path to JSON file containing array of additional providers')
-    @click.option('-c',
-                  '--cogify',
-                  is_flag=True,
-                  help='Convert each non-COG asset into a COG')
-    def create_item_command(src, dst, providers, cogify):
+    def create_item_command(src, dst, providers):
         """Creates a STAC Item for a given Sentinel 2 granule
 
         SRC is the path to the granule
@@ -41,17 +36,11 @@ def create_sentinel2_command(cli):
             with open(providers) as f:
                 additional_providers = json.load(f)
 
-        (item, extended_item) = create_item(
-            src, additional_providers=additional_providers)
+        item = create_item(src, additional_providers=additional_providers)
 
-        if cogify:
-            create_cogs(item)
+        item_path = os.path.join(dst, '{}.json'.format(item.id))
+        item.set_self_href(item_path)
 
-        for i in [item, extended_item]:
-            item_path = os.path.join(dst, '{}.json'.format(i.id))
-            i.set_self_href(item_path)
-
-        for i in [item, extended_item]:
-            i.save_object()
+        item.save_object()
 
     return sentinel2

@@ -2,28 +2,22 @@ from collections import defaultdict
 import logging
 import os
 import re
-from subprocess import Popen, PIPE, STDOUT
 from tempfile import TemporaryDirectory
+from typing import Any, List, Tuple, Dict
 
-import pystac
 import rasterio as rio
 from shapely.geometry import shape
 
-from stactools.aster.constants import (HDF_ASSET_KEY, ASTER_BANDS)
 from stactools.core.projection import reproject_geom
+from stactools.core.utils.subprocess import call
+from stactools.aster.utils import AsterSceneId
+from stactools.aster.xml_metadata import XmlMetadata
 
 logger = logging.getLogger(__name__)
 
 
-def call(command):
-    def log_subprocess_output(pipe):
-        for line in iter(pipe.readline, b''):  # b'\n'-separated lines
-            logger.info(line.decode("utf-8").strip('\n'))
-
-    process = Popen(command, stdout=PIPE, stderr=STDOUT)
-    with process.stdout:
-        log_subprocess_output(process.stdout)
-    return process.wait()  # 0 means success
+def get_cog_filename(item_id, sensor):
+    return f'{item_id}-{sensor}.tif'
 
 
 def export_band(subdataset, bounds, crs, output_path):
@@ -46,91 +40,90 @@ def cogify(input_path, output_path):
     ])
 
 
-def _create_cog(item, href, subdatasets, bands):
-    geom = item.geometry
-    crs = 'epsg:{}'.format(item.ext.projection.epsg)
-    reprojected_geom = reproject_geom('epsg:4326', crs, geom)
-    bounds = list(shape(reprojected_geom).bounds)
+def set_band_names(href: str, band_names: List[str]) -> None:
+    with rio.open(href) as ds:
+        profile = ds.profile
 
-    with TemporaryDirectory() as tmp_dir:
-        band_paths = []
-        for subdataset, band in zip(subdatasets, bands):
-            band_path = os.path.join(tmp_dir, '{}.tif'.format(band.name))
-            export_band(subdataset, bounds, crs, band_path)
-            band_paths.append(band_path)
-
-        merged_path = os.path.join(tmp_dir, 'merged.tif')
-        merge_bands(band_paths, merged_path)
-
-        cogify(merged_path, href)
-
-    return href
+    with rio.open(href, 'w', **profile) as ds:
+        ds.descriptions = band_names
 
 
-def create_cogs(item, cog_directory=None):
-    """Create COGs from the HDF asset contained in the passed in STAC item.
+def _create_cog_for_sensor(sensor: str, file_prefix: str, tmp_dir: str,
+                           output_dir: str, bounds: List[float], crs: str,
+                           subdataset_info: List[Tuple[Any, int]]) -> str:
+    sensor_cog_href = os.path.join(output_dir,
+                                   get_cog_filename(file_prefix, sensor))
+
+    sensor_dir = os.path.join(tmp_dir, sensor)
+    os.makedirs(sensor_dir)
+
+    band_paths = []
+    band_names = []
+    for subdataset, band_order in subdataset_info:
+        band_path = os.path.join(sensor_dir, '{}.tif'.format(band_order))
+        export_band(subdataset, bounds, crs, band_path)
+        band_paths.append(band_path)
+        band_names.append(f"ImageData{band_order} {sensor}_Swath")
+
+    merged_path = os.path.join(sensor_dir, 'merged.tif')
+    merge_bands(band_paths, merged_path)
+
+    cogify(merged_path, sensor_cog_href)
+
+    set_band_names(sensor_cog_href, band_names)
+
+    return sensor_cog_href
+
+
+def create_cogs(hdf_path: str, xml_metadata: XmlMetadata,
+                output_path: str) -> Dict[str, str]:
+    """Create COGs from an HDF asset and an XmlMetadata
 
     Args:
-        item (pystac.Item): ASTER L1T 003 Item that contains an asset
-            with key equal to stactools.aster.constants.HDF_ASSET_KEY,
-            which will be converted to COGs.
-        cog_dir (str): A URI of a directory to store COGs. This will be used
-            in conjunction with the file names based on the COG asset to store
-            the COG data. If not supplied, the directory of the Item's self HREF
-            will be used.
-
-    Returns:
-        pystac.Item: The same item, mutated to include assets for the
-            new COGs.
+        hdf_path: Path to the ASTER L1T 003 HDF EOS data
+        xml_metadata: The XmlMetadata representing this ASTER scene.
+        output_path: The directory to which the cogs will be written.
     """
-    if cog_directory is None:
-        cog_directory = os.path.dirname(item.get_self_href())
+    logger.info(f'Creating COGs and writing to {output_path}...')
+    file_name = os.path.basename(hdf_path)
+    aster_id = AsterSceneId.from_path(file_name)
 
-    hdf_asset = item.assets.get(HDF_ASSET_KEY)
-    if hdf_asset is None:
-        raise ValueError(
-            'Item does not have a asset with key {}.'.format(HDF_ASSET_KEY))
-
-    hdf_href = hdf_asset.href
-    with rio.open(hdf_href) as ds:
+    with rio.open(hdf_path) as ds:
         subdatasets = ds.subdatasets
 
     # Gather the subdatasets by sensor, sorted by band number
     sensor_to_subdatasets = defaultdict(list)
-    for sd in subdatasets:
-        m = re.search(r':?([\w]+)_Swath:ImageData([\d]+)', sd)
+    for subdataset in subdatasets:
+        m = re.search(r':?([\w]+)_Swath:ImageData([\d]+)', subdataset)
         if m is None:
             raise ValueError(
                 'Unexpected subdataset {} - is this a non-standard ASTER L1T 003 HDF-EOS file?'
-                .format(sd))
-        sensor_to_subdatasets[m.group(1)].append((sd, m.group(2)))
+                .format(subdataset))
+        sensor = m.group(1)
+        band_order = m.group(2)
+        sensor_to_subdatasets[sensor].append((subdataset, band_order))
 
+    # Sort by band_order
     for k in sensor_to_subdatasets:
         sensor_to_subdatasets[k] = [
-            x[0] for x in sorted(sensor_to_subdatasets[k], key=lambda x: x[1])
+            x for x in sorted(sensor_to_subdatasets[k], key=lambda x: x[1])
         ]
 
-    sensor_to_bands = defaultdict(list)
+    geom, _ = xml_metadata.geometries
+    crs = 'epsg:{}'.format(xml_metadata.epsg)
+    reprojected_geom = reproject_geom('epsg:4326', crs, geom)
+    bounds = list(shape(reprojected_geom).bounds)
 
-    # Gather the bands for each sensor, sorted by band number
-    for band in ASTER_BANDS:
-        sensor_to_bands[band.description.split('_')[0]].append(band)
-    for sensor in sensor_to_bands:
-        sensor_to_bands[sensor] = sorted(
-            sensor_to_bands[sensor],
-            key=lambda b: re.search('([d]+)', b.description).group(1))
+    result = {}
+    with TemporaryDirectory() as tmp_dir:
+        for sensor, subdataset_info in sensor_to_subdatasets.items():
+            result[sensor] = _create_cog_for_sensor(
+                sensor,
+                aster_id.file_prefix,
+                tmp_dir=tmp_dir,
+                output_dir=output_path,
+                bounds=bounds,
+                crs=crs,
+                subdataset_info=subdataset_info)
 
-    # Use subdataset keys, as data might be missing some sensors.
-    for sensor in sensor_to_subdatasets:
-        href = os.path.join(cog_directory, '{}-cog.tif'.format(sensor))
-        _create_cog(item, href, sensor_to_subdatasets[sensor],
-                    sensor_to_bands[sensor])
-
-        asset = pystac.Asset(href=href,
-                             media_type=pystac.MediaType.COG,
-                             roles=['data'],
-                             title='{} Swath data'.format(sensor))
-
-        item.ext.eo.set_bands(sensor_to_bands[sensor], asset)
-
-        item.assets[sensor] = asset
+    return result

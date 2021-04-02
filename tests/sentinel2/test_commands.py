@@ -50,22 +50,21 @@ class CreateItemTest(CliTestCase):
                     jsons = [
                         p for p in os.listdir(tmp_dir) if p.endswith('.json')
                     ]
-                    self.assertEqual(len(jsons), 2)
+                    self.assertEqual(len(jsons), 1)
+                    fname = jsons[0]
 
-                    for fname in jsons:
-                        item = pystac.read_file(os.path.join(tmp_dir, fname))
+                    item = pystac.read_file(os.path.join(tmp_dir, fname))
 
-                        item.validate()
+                    item.validate()
 
-                        bands_seen = set()
+                    bands_seen = set()
 
-                        for asset in item.assets.values():
-                            self.assertTrue(is_absolute_href(asset.href))
-                            bands = item.ext.eo.get_bands(asset)
-                            if bands is not None:
-                                bands_seen |= set(b.name for b in bands)
+                    for asset in item.assets.values():
+                        self.assertTrue(is_absolute_href(asset.href))
+                        bands = item.ext.eo.get_bands(asset)
+                        if bands is not None:
+                            bands_seen |= set(b.name for b in bands)
 
-                        self.assertEqual(bands_seen,
-                                         set(SENTINEL_BANDS.keys()))
+                    self.assertEqual(bands_seen, set(SENTINEL_BANDS.keys()))
 
-                        check_proj_bbox(item)
+                    check_proj_bbox(item)
