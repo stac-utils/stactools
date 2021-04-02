@@ -1,6 +1,6 @@
 from datetime import datetime
 import re
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from shapely.geometry import mapping, Polygon
 import pystac
@@ -17,9 +17,10 @@ class ProductMetadataError(Exception):
 
 
 class ProductMetadata:
-    def __init__(self,
-                 href,
-                 read_href_modifier: Optional[ReadHrefModifier] = None):
+    def __init__(
+            self,
+            href,
+            read_href_modifier: Optional[ReadHrefModifier] = None) -> None:
         self.href = href
         self._root = XmlElement.from_file(href, read_href_modifier)
 
@@ -137,7 +138,7 @@ class ProductMetadata:
         return None if m is None else m.group(1)
 
     @property
-    def metadata_dict(self):
+    def metadata_dict(self) -> Dict[str, Any]:
         result = {
             's2:product_uri':
             self.product_id,
