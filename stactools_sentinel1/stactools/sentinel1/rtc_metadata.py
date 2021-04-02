@@ -136,6 +136,7 @@ class RTCMetadata:
     def metadata_dict(self):
         ''' match s2 l2a cogs from https://earth-search.aws.element84.com/v0 '''
         sentinel_metadata = {
+            'sentinel:mgrs': self.metadata['TILE_ID'],
             'sentinel:utm_zone': self.metadata['TILE_ID'][:2],
             'sentinel:latitude_band': self.metadata['TILE_ID'][2],
             'sentinel:grid_square': self.metadata['TILE_ID'][3:],

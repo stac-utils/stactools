@@ -11,6 +11,28 @@ from stactools.sentinel1 import constants as c
 
 logger = logging.getLogger(__name__)
 
+def create_collection() -> pystac.Collection:
+    """Creates a STAC Collection for Sentinel-1 RTC
+    """
+    # Lists of all possible values for items
+    summary_dict = {'constellation' : [c.SENTINEL_CONSTELLATION],
+                    'platform' : c.SENTINEL_PLATFORMS,
+                    'gsd' : [c.SENTINEL_RTC_SAR['gsd']],
+                    'proj:epsg' : c.SENTINEL_RTC_EPSGS,
+                   }
+
+    collection = pystac.Collection('sentinel1-rtc-aws',
+                      description=c.SENTINEL_RTC_DESCRIPTION,
+                      extent=c.SENTINEL_RTC_EXTENT,
+                      title='Sentinel-1 RTC CONUS',
+                      stac_extensions=['sar','sat','proj'],
+                      license='various',
+                      keywords=['backscatter','radiometry','sentinel','copernicus','esa','sar'],
+                      providers=[c.SENTINEL_PROVIDER, c.SENTINEL_RTC_PROVIDER],
+                      summaries=summary_dict,
+                     )
+
+    return collection
 
 def create_item(
     granule_href: str,
