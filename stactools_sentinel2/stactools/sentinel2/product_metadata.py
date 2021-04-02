@@ -158,16 +158,7 @@ class ProductMetadata:
             's2:mgrs_tile':
             self.mgrs_tile,
             's2:reflectance_conversion_factor':
-            map_opt(float, self.reflectance_conversion_node.find_text('U')),
-            's2:cloud_coverage_assessment':
-            map_opt(float,
-                    self.qa_node.find_text('Cloud_Coverage_Assessment')),
-            's2:degraded_msi_data_percentage':
-            map_opt(
-                float,
-                self._root.find_text(
-                    'n1:Quality_Indicators_Info/Technical_Quality_Assessment/'
-                    'DEGRADED_MSI_DATA_PERCENTAGE')),
+            map_opt(float, self.reflectance_conversion_node.find_text('U'))
         }
 
         return {k: v for k, v in result.items() if v is not None}
