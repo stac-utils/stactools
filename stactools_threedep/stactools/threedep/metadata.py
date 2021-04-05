@@ -155,24 +155,10 @@ class Metadata:
             0.0,
             1.0,
         ]
-        bbox = [
-            float(self.minx),
-            float(self.miny),
-            float(self.maxx),
-            float(self.maxy)
-        ]
-        centroid = {
-            "lon": (bbox[0] + bbox[2]) / 2.0,
-            "lat": (bbox[1] + bbox[3]) / 2.0,
-        }
-        geometry = mapping(box(*bbox))
         return {
             "epsg": THREEDEP_EPSG,
             "shape": shape,
             "transform": transform,
-            "bbox": bbox,
-            "centroid": centroid,
-            "geometry": geometry,
         }
 
     def _asset_href_with_extension(self, base: str, extension: str) -> str:

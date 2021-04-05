@@ -83,20 +83,11 @@ class CreateItemTest(unittest.TestCase):
 
         item.ext.enable("projection")
         self.assertEqual(item.ext.projection.epsg, 5498)
-        self.assertTrue(item.ext.projection.geometry is not None)
-        self.assertEqual(item.ext.projection.bbox, [
-            -106.001666667082, 39.9983333334175, -104.998333333716,
-            41.0016666667842
-        ])
         self.assertEqual(item.ext.projection.shape, [3612, 3612])
         self.assertEqual(item.ext.projection.transform, [
             0.00027777778, 0.0, -106.001666667082, 0.0, -0.00027777778,
             41.0016666667842, 0.0, 0.0, 1.0
         ])
-        self.assertEqual(item.ext.projection.centroid, {
-            "lon": -105.50000000039901,
-            "lat": 40.500000000100854,
-        })
 
         item.validate()
 
