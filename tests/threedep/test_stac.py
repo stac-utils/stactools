@@ -162,3 +162,10 @@ class CreateItemTest(unittest.TestCase):
             "data-files/threedep/base/1/TIFF/n41w106/USGS_1_n41w106.xml")
         _ = stac.create_item(path, modify_href)
         self.assertTrue(did_it)
+
+    def test_explicit_none_goes_to_aws(self):
+        path = TestData.get_path(
+            "data-files/threedep/base/1/TIFF/n41w106/USGS_1_n41w106.xml")
+        item0 = stac.create_item(path)
+        item1 = stac.create_item(path, base=None)
+        self.assertEqual(item0.to_dict(), item1.to_dict())

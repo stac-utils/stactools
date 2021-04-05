@@ -176,6 +176,8 @@ class Metadata:
         }
 
     def _asset_href_with_extension(self, base: str, extension: str) -> str:
+        if base is None:
+            base = DEFAULT_BASE
         return utils.path(self.product,
                           self.id,
                           base=base,
