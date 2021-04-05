@@ -15,15 +15,14 @@ class CreateCollectionTest(CliTestCase):
         path = TestData.get_path("data-files/threedep/base")
         with TemporaryDirectory() as directory:
             result = self.run_command([
-                "threedep", "create-collection", directory, "--id", "n41w106",
+                "threedep", "create-catalog", directory, "--id", "n41w106",
                 "--id", "n40w106", "--quiet", "--source", path
             ])
             self.assertEqual(result.exit_code,
                              0,
                              msg="\n{}".format(result.output))
-            collection = pystac.read_file(
-                os.path.join(directory, "collection.json"))
-            item_ids = set([item.id for item in collection.get_all_items()])
+            catalog = pystac.read_file(os.path.join(directory, "catalog.json"))
+            item_ids = set([item.id for item in catalog.get_all_items()])
             self.assertEqual(
                 item_ids,
                 set(["n40w106-1", "n40w106-13", "n41w106-1", "n41w106-13"]))

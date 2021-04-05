@@ -45,4 +45,5 @@ def create_item_from_metadata(metadata: Metadata, base: DEFAULT_BASE) -> Item:
     item.assets["thumbnail"] = metadata.thumbnail_asset(base)
     item.ext.enable("projection")
     item.ext.projection.apply(**metadata.projection_extension_dict)
+    item.properties["threedep:region"] = metadata.region
     return item

@@ -15,8 +15,8 @@ def create_threedep_command(cli):
         pass
 
     @threedep.command(
-        "create-collection",
-        short_help="Create a STAC collection for existing USGS 3DEP data")
+        "create-catalog",
+        short_help="Create a STAC catalog for existing USGS 3DEP data")
     @click.argument("destination")
     @click.option("-s",
                   "--source",
@@ -27,14 +27,15 @@ def create_threedep_command(cli):
                   multiple=True,
                   help="Ids to fetch. If not provided, will fetch all IDs.")
     @click.option("--quiet/--no-quiet", default=False)
-    def create_collection_command(destination, source, id, quiet):
-        """Creates a 3DEP collection in DESTINATION.
+    def create_catalog_command(destination, source, id, quiet):
+        """Creates a relative published 3DEP catalog in DESTINATION.
 
         If SOURCE is not provided, will use the metadata in AWS. SOURCE is
         expected to be a directory tree mirroring the structure on USGS, so
         it is best created using `stac threedep download-metadata`.
         """
         base_ids = id  # not sure how to rename arguments in click
+        collections = {}
         items = {}
         for product in PRODUCTS:
             items[product] = []
@@ -48,19 +49,7 @@ def create_threedep_command(cli):
                 items[product].append(item)
                 if not quiet:
                     print(item.id)
-        all_items = [item for sublist in items.values() for item in sublist]
-        if not all_items:
-            raise Exception("no items found")
-        extent = Extent.from_items(all_items)
-        collection = Collection(
-            id=USGS_3DEP_ID,
-            title="USGS 3DEP DEMs",
-            keywords=["USGS", "3DEP", "NED", "DEM", "elevation"],
-            providers=[USGS_PROVIDER],
-            description=DESCRIPTION,
-            extent=extent,
-            license="PDDL-1.0")
-        for product in PRODUCTS:
+            extent = Extent.from_items(items[product])
             if product == "1":
                 title = "1 arc-second"
                 description = "USGS 3DEP 1 arc-second DEMs"
@@ -69,13 +58,26 @@ def create_threedep_command(cli):
                 description = "USGS 3DEP 1/3 arc-second DEMs"
             else:
                 raise NotImplementedError
-            catalog = Catalog(id=product, description=description, title=title)
-            collection.add_child(catalog)
-            catalog.add_items(items[product])
-        collection.update_extent_from_items()
-        collection.normalize_hrefs(destination)
-        collection.save(catalog_type=CatalogType.SELF_CONTAINED)
-        collection.validate()
+            collection = Collection(
+                id=f"{USGS_3DEP_ID}-{product}",
+                title=title,
+                keywords=["USGS", "3DEP", "NED", "DEM", "elevation"],
+                providers=[USGS_PROVIDER],
+                description=description,
+                extent=extent,
+                license="PDDL-1.0")
+            collections[product] = collection
+        catalog = Catalog(id=USGS_3DEP_ID,
+                          description=DESCRIPTION,
+                          title="USGS 3DEP DEMs",
+                          catalog_type=CatalogType.RELATIVE_PUBLISHED)
+        for product, collection in collections.items():
+            catalog.add_child(collection)
+            collection.add_items(items[product])
+        catalog.generate_subcatalogs("${threedep:region}")
+        catalog.normalize_hrefs(destination)
+        catalog.save()
+        catalog.validate()
 
     @threedep.command("download-metadata",
                       short_help="Download all metadata for USGS 3DEP data")

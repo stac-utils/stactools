@@ -161,6 +161,27 @@ class Metadata:
             "transform": transform,
         }
 
+    @property
+    def region(self) -> str:
+        """Returns this objects 3dep "region".
+
+        Region is defined as a 10x10 lat/lon box that nominally contains this item.
+        E.g. for n41w106, the region would be n40w110. This is used mostly for
+        creating subcatalogs for STACBrowser.
+        """
+        import math
+        n_or_s = self.id[0]
+        lat = float(self.id[1:3])
+        if n_or_s == "s":
+            lat = -lat
+        lat = math.floor(lat / 10) * 10
+        e_or_w = self.id[3]
+        lon = float(self.id[4:])
+        if e_or_w == "w":
+            lon = -lon
+        lon = math.floor(lon / 10) * 10
+        return f"{n_or_s}{abs(lat)}{e_or_w}{abs(lon)}"
+
     def _asset_href_with_extension(self, base: str, extension: str) -> str:
         if base is None:
             base = DEFAULT_BASE
