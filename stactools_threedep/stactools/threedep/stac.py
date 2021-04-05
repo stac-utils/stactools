@@ -39,7 +39,7 @@ def create_item_from_metadata(metadata: Metadata, base: DEFAULT_BASE) -> Item:
         item.common_metadata.start_datetime = start_datetime
         item.common_metadata.end_datetime = end_datetime
     item.common_metadata.gsd = metadata.gsd
-    item.links.append(metadata.derived_from_link(base))
+    item.links.append(metadata.via_link(base))
     item.assets["data"] = metadata.data_asset(base)
     item.assets["metadata"] = metadata.metadata_asset(base)
     item.assets["thumbnail"] = metadata.thumbnail_asset(base)

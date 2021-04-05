@@ -75,7 +75,7 @@ class CreateItemTest(unittest.TestCase):
         self.assertEqual(data.media_type, "image/jpeg")
         self.assertEqual(data.roles, ["thumbnail"])
 
-        link = next(link for link in item.links if link.rel == "derived_from")
+        link = next(link for link in item.links if link.rel == "via")
         self.assertTrue(link is not None)
         self.assertEqual(link.target,
                          ("https://prd-tnm.s3.amazonaws.com/StagedProducts"
@@ -138,7 +138,7 @@ class CreateItemTest(unittest.TestCase):
             data.href,
             ("ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged/Elevation/"
              "1/TIFF/n41w106/USGS_1_n41w106.jpg"))
-        link = next(link for link in item.links if link.rel == "derived_from")
+        link = next(link for link in item.links if link.rel == "via")
         self.assertTrue(link is not None)
         self.assertEqual(
             link.target,

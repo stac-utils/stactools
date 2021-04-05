@@ -136,10 +136,9 @@ class Metadata:
                      media_type=MediaType.JPEG,
                      roles=["thumbnail"])
 
-    def derived_from_link(self, base: str = DEFAULT_BASE) -> Link:
-        """Returns the derived from link for this file."""
-        return Link("derived_from",
-                    self._asset_href_with_extension(base, "xml"))
+    def via_link(self, base: str = DEFAULT_BASE) -> Link:
+        """Returns the via link for this file."""
+        return Link("via", self._asset_href_with_extension(base, "xml"))
 
     @property
     def projection_extension_dict(self) -> dict:
