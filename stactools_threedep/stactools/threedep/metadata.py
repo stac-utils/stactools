@@ -131,10 +131,18 @@ class Metadata:
                      roles=["metadata"])
 
     def thumbnail_asset(self, base: str = DEFAULT_BASE) -> Asset:
-        """Returns the numbnail asset."""
+        """Returns the thumbnail asset."""
         return Asset(href=self._asset_href_with_extension(base, "jpg"),
                      media_type=MediaType.JPEG,
                      roles=["thumbnail"])
+
+    def gpkg_asset(self, base: str = DEFAULT_BASE) -> Asset:
+        """Returns the geopackage asset."""
+        return Asset(href=self._asset_href_with_extension(base,
+                                                          "gpkg",
+                                                          id_only=True),
+                     media_type=MediaType.GEOPACKAGE,
+                     roles=["metadata"])
 
     def via_link(self, base: str = DEFAULT_BASE) -> Link:
         """Returns the via link for this file."""
@@ -182,13 +190,17 @@ class Metadata:
         lon = math.floor(lon / 10) * 10
         return f"{n_or_s}{abs(lat)}{e_or_w}{abs(lon)}"
 
-    def _asset_href_with_extension(self, base: str, extension: str) -> str:
+    def _asset_href_with_extension(self,
+                                   base: str,
+                                   extension: str,
+                                   id_only: bool = False) -> str:
         if base is None:
             base = DEFAULT_BASE
         return utils.path(self.product,
                           self.id,
                           base=base,
-                          extension=extension)
+                          extension=extension,
+                          id_only=id_only)
 
 
 def _format_date(date: str,

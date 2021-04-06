@@ -48,14 +48,19 @@ def _fetch_ids_from_aws(product: str) -> [str]:
 def path(product: str,
          id: str,
          base: str = None,
-         extension: str = None) -> str:
+         extension: str = None,
+         id_only: bool = False) -> str:
     """Returns the subpath for this product and id.
 
     E.g. path("1", "n41w106") == "1/TIFF/n41w106/USGS_1_n41w106"
     E.g. path("1", "n41w106", extension="tif") == "1/TIFF/n41w106/USGS_1_n41w106.tif"
     E.g. path("1", "n41w106", base="/base/dir") == "/base/dir/1/TIFF/n41w106/USGS_1_n41w106"
+    E.g. path("1", "n41w106", id_only=True) == "/base/dir/1/TIFF/n41w106/n41w106"
     """
-    path = "{}/TIFF/{}/USGS_{}_{}".format(product, id, product, id)
+    if id_only:
+        path = "{}/TIFF/{}/{}".format(product, id, id)
+    else:
+        path = "{}/TIFF/{}/USGS_{}_{}".format(product, id, product, id)
     if extension:
         path = "{}.{}".format(path, extension)
     if base:

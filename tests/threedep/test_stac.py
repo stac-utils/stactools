@@ -75,6 +75,16 @@ class CreateItemTest(unittest.TestCase):
         self.assertEqual(data.media_type, "image/jpeg")
         self.assertEqual(data.roles, ["thumbnail"])
 
+        data = item.assets["gpkg"]
+        self.assertEqual(
+            data.href,
+            ("https://prd-tnm.s3.amazonaws.com/StagedProducts/Elevation/"
+             "1/TIFF/n41w106/n41w106.gpkg"))
+        self.assertTrue(data.title is None)
+        self.assertTrue(data.description is None)
+        self.assertEqual(data.media_type, "application/geopackage+sqlite3")
+        self.assertEqual(data.roles, ["metadata"])
+
         link = next(link for link in item.links if link.rel == "via")
         self.assertTrue(link is not None)
         self.assertEqual(link.target,
