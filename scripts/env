@@ -9,6 +9,7 @@ STACTOOLS_SUBPACKAGE_DIRS=(
     "stactools_landsat"
     "stactools_planet"
     "stactools_naip"
+    "stactools_threedep"
     "stactools_browse"
     "stactools_sentinel2"
 );
@@ -22,6 +23,7 @@ STACTOOLS_COVERAGE_DIRS=(
     "stactools_landsat/stactools/landsat"
     "stactools_planet/stactools/planet"
     "stactools_naip/stactools/naip"
+    "stactools_threedep/stactools/threedep"
     "stactools_browse/stactools/browse"
     "stactools_sentinel2/stactools/sentinel2"
 );
