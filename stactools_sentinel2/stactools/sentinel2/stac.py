@@ -12,12 +12,10 @@ from stactools.sentinel2.safe_manifest import SafeManifest
 from stactools.sentinel2.product_metadata import ProductMetadata
 from stactools.sentinel2.granule_metadata import GranuleMetadata
 from stactools.sentinel2.utils import extract_gsd
-from stactools.sentinel2.constants import (DATASTRIP_METADATA_ASSET_KEY,
-                                           SENTINEL_PROVIDER, SENTINEL_LICENSE,
-                                           SENTINEL_BANDS,
-                                           SENTINEL_INSTRUMENTS,
-                                           SENTINEL_CONSTELLATION,
-                                           INSPIRE_METADATA_ASSET_KEY)
+from stactools.sentinel2.constants import (
+    BANDS_TO_RESOLUTIONS, DATASTRIP_METADATA_ASSET_KEY, SENTINEL_PROVIDER,
+    SENTINEL_LICENSE, SENTINEL_BANDS, SENTINEL_INSTRUMENTS,
+    SENTINEL_CONSTELLATION, INSPIRE_METADATA_ASSET_KEY)
 
 logger = logging.getLogger(__name__)
 
@@ -184,17 +182,22 @@ def image_asset_from_href(
 
     # Handle band image
 
-    band_id_search = re.search(r'_(B\w{2})_', asset_href)
+    band_id_search = re.search(r'_(B\w{2})', asset_href)
     if band_id_search is not None:
-        band_id = band_id_search.group(1)
+        band_id, href_res = os.path.splitext(asset_href)[0].split('_')[-2:]
+        asset_res = int(href_res.replace('m', ''))
         band = SENTINEL_BANDS[band_id]
+        if asset_res == BANDS_TO_RESOLUTIONS[band_id][0]:
+            asset_key = band_id
+        else:
+            asset_key = f'{band_id}_{asset_res}m'
         asset = pystac.Asset(href=asset_href,
                              media_type=asset_media_type,
                              title=band.description,
                              roles=['data'])
         item.ext.eo.set_bands([SENTINEL_BANDS[band_id]], asset)
         set_asset_properties(asset)
-        return (band_id, asset)
+        return (asset_key, asset)
 
     # Handle auxiliary images
 
