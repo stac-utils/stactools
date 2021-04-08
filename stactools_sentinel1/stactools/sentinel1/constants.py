@@ -22,7 +22,6 @@ SENTINEL_PROVIDER = pystac.Provider(
     roles=['producer', 'processor', 'licensor'],
     url='https://earth.esa.int/web/guest/home')
 
-
 # RTC-specific constants
 # -
 SENTINEL_RTC_PROVIDER = pystac.Provider(
@@ -34,10 +33,11 @@ SENTINEL_RTC_LICENSE = Link(
     rel='license',
     target='https://www.indigoag.com/forms/atlas-sentinel-license')
 
-SENTINEL_RTC_DESCRIPTION = '''Sentinel1 radiometric terrain corrected backscatter (RTC) over CONUS. The Sentinel-1 mission is a constellation of C-band Synthetic Aperature Radar (SAR) satellites from the European Space Agency launched since 2014. These satellites collect observations of radar backscatter intensity day or night, regardless of the weather conditions, making them enormously valuable for environmental monitoring. These radar data have been processed from original Ground Range Detected (GRD) scenes into a Radiometrically Terrain Corrected, tiled product suitable for analysis. This product is available over the Contiguous United States (CONUS) since 2017 when Sentinel-1 data became globally available.'''
+SENTINEL_RTC_DESCRIPTION = 'Sentinel1 radiometric terrain corrected backscatter (RTC) over CONUS. The Sentinel-1 mission is a constellation of C-band Synthetic Aperature Radar (SAR) satellites from the European Space Agency launched since 2014. These satellites collect observations of radar backscatter intensity day or night, regardless of the weather conditions, making them enormously valuable for environmental monitoring. These radar data have been processed from original Ground Range Detected (GRD) scenes into a Radiometrically Terrain Corrected, tiled product suitable for analysis. This product is available over the Contiguous United States (CONUS) since 2017 when Sentinel-1 data became globally available.'  # noqa: E501
 
-SENTINEL_RTC_EXTENT = Extent(SpatialExtent([-124.73460,24.54254,-66.89191,49.36949]),
-                             TemporalExtent([str_to_datetime("2016-07-29T00:00:00Z"), None]))
+SENTINEL_RTC_EXTENT = Extent(
+    SpatialExtent([-124.73460, 24.54254, -66.89191, 49.36949]),
+    TemporalExtent([str_to_datetime("2016-07-29T00:00:00Z"), None]))
 
 utm_zones = ['10', '11', '12', '13', '14', '15', '16', '17', '18', '19']
 SENTINEL_RTC_EPSGS = [int(f'326{x}') for x in utm_zones]

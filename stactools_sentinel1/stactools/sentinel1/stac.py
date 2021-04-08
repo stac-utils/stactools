@@ -11,35 +11,40 @@ from stactools.sentinel1 import constants as c
 
 logger = logging.getLogger(__name__)
 
+
 def create_collection() -> pystac.Collection:
     """Creates a STAC Collection for Sentinel-1 RTC
     """
     # Lists of all possible values for items
-    summary_dict = {'constellation' : [c.SENTINEL_CONSTELLATION],
-                    'platform' : c.SENTINEL_PLATFORMS,
-                    'gsd' : [c.SENTINEL_RTC_SAR['gsd']],
-                    'proj:epsg' : c.SENTINEL_RTC_EPSGS,
-                   }
+    summary_dict = {
+        'constellation': [c.SENTINEL_CONSTELLATION],
+        'platform': c.SENTINEL_PLATFORMS,
+        'gsd': [c.SENTINEL_RTC_SAR['gsd']],
+        'proj:epsg': c.SENTINEL_RTC_EPSGS,
+    }
 
-    collection = pystac.Collection('sentinel1-rtc-aws',
-                      description=c.SENTINEL_RTC_DESCRIPTION,
-                      extent=c.SENTINEL_RTC_EXTENT,
-                      title='Sentinel-1 RTC CONUS',
-                      stac_extensions=['sar','sat','proj'],
-                      license='various',
-                      keywords=['backscatter','radiometry','sentinel','copernicus','esa','sar'],
-                      providers=[c.SENTINEL_PROVIDER, c.SENTINEL_RTC_PROVIDER],
-                      summaries=summary_dict,
-                     )
+    collection = pystac.Collection(
+        'sentinel1-rtc-aws',
+        description=c.SENTINEL_RTC_DESCRIPTION,
+        extent=c.SENTINEL_RTC_EXTENT,
+        title='Sentinel-1 RTC CONUS',
+        stac_extensions=['sar', 'sat', 'proj'],
+        keywords=[
+            'backscatter', 'radiometry', 'sentinel', 'copernicus', 'esa', 'sar'
+        ],
+        providers=[c.SENTINEL_PROVIDER, c.SENTINEL_RTC_PROVIDER],
+        summaries=summary_dict,
+    )
 
     return collection
+
 
 def create_item(
     granule_href: str,
     additional_providers: Optional[List[pystac.Provider]] = None,
     include_grd_metadata: Optional[bool] = False,
 ) -> pystac.Item:
-    """Create a STAC Item from a Sentinel 1 RTC S3 Key
+    """Create a STAC Item from a Sentinel-1 RTC S3 Key
 
     Arguments:
         granule_href: The HREF to the S3 Key for particular MGRS tile product
@@ -118,16 +123,14 @@ def create_item(
     # Additional extensions could be useful, but not yet implemented in pystac:
 
     # MGRS https://github.com/stac-extensions/mgrs
-    #item.ext.enable('mgrs')
-    #item.ext.projection.utm_zone = product_metadata.metadata['TILE_ID'][:2]
-    #item.ext.projection.latitude_band = product_metadata.metadata['TILE_ID'][2]
-    #item.ext.projection.grid_square = product_metadata.metadata['TILE_ID'][3:]
+    # item.ext.enable('mgrs')
+    # item.ext.projection.utm_zone = product_metadata.metadata['TILE_ID'][:2]
+    # item.ext.projection.latitude_band = product_metadata.metadata['TILE_ID'][2]
+    # item.ext.projection.grid_square = product_metadata.metadata['TILE_ID'][3:]
 
     # RASTER https://github.com/stac-extensions/raster
     # To capture nodata value and incidence angle units and scaling
     # https://github.com/stac-extensions/raster#value-object
-
-
 
     # --Assets--
 

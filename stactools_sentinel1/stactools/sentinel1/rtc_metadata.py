@@ -20,7 +20,9 @@ class RTCMetadata:
     def __init__(self, href):
         self.href = href
 
-        def _load_metadata_from_asset(asset='local_incident_angle.tif', scale=1, precision=5):
+        def _load_metadata_from_asset(asset='local_incident_angle.tif',
+                                      scale=1,
+                                      precision=5):
             ''' key metadata stored in Geotiff tags '''
             with rasterio.Env(AWS_NO_SIGN_REQUEST='YES',
                               GDAL_DISABLE_READDIR_ON_OPEN='EMPTY_DIR'):
@@ -42,19 +44,29 @@ class RTCMetadata:
             '''
             with rasterio.vrt.WarpedVRT(src, crs='EPSG:4326') as vrt:
                 bbox = [np.round(x, decimals=precision) for x in vrt.bounds]
-
-            arr = src.read(1, out_shape=(src.height // scale, src.width // scale))
+            arr = src.read(1,
+                           out_shape=(src.height // scale, src.width // scale))
             arr[np.where(arr != 0)] = 1
             transform = src.transform * A.scale(scale)
 
-            for geom, val in rasterio.features.shapes(arr, transform=transform):
+            # Get polygon covering entire valid data region
+            rioshapes = rasterio.features.shapes(arr, transform=transform)
+            max_perimeter = 0
+            max_geometry = None
+            for geom, val in rioshapes:
                 if val == 1:
-                    geometry = shape(
-                        transform_geom(src.crs, "EPSG:4326", geom, precision=precision)
-                        )
-                    footprint = mapping(geometry.convex_hull)
+                    geometry = shape(geom)
+                    if geometry.length > max_perimeter:
+                        max_perimeter = geometry.length
+                        max_geometry = geometry
 
-                    return bbox, footprint
+            valid_geom = mapping(max_geometry.convex_hull)
+            footprint = transform_geom(src.crs,
+                                       "EPSG:4326",
+                                       valid_geom,
+                                       precision=precision)
+
+            return bbox, footprint
 
         def _get_provenance():
             ''' RTC products are from mosaiced GRD frames '''
