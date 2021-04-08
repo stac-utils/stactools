@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE metadata SYSTEM "https://thor-f5.er.usgs.gov/ngtoc/metadata/fgdc-std-001-1998.dtd">
+<metadata>
+  <idinfo>
+    <citation>
+      <citeinfo>
+        <origin>U.S. Geological Survey</origin>
+        <pubdate>20180328</pubdate>
+        <title>USGS 1 arc-second n40w106 1 x 1 degree</title>
+        <geoform>raster digital data</geoform>
+        <pubinfo>
+          <pubplace>Reston, VA</pubplace>
+          <publish>U.S. Geological Survey</publish>
+        </pubinfo>
+        <onlink>https://nationalmap.gov/elevation.html</onlink>
+        <onlink>https://nationalmap.gov/viewer.html</onlink>
+      </citeinfo>
+    </citation>
+    <descript>
+      <abstract>This tile of the 3D Elevation Program (3DEP) seamless products is 1 arc-second resolution.  3DEP data serve as the elevation layer of The National Map, and provide basic elevation information for Earth science studies and mapping applications in the United States. Scientists and resource managers use 3DEP data for global change research, hydrologic modeling, resource monitoring, mapping and visualization, and many other applications. 3DEP data compose an elevation dataset that consists of seamless layers and a high resolution layer.  Each of these layers consists of the best available raster elevation data of the conterminous United States, Alaska, Hawaii, territorial islands, Mexico and Canada.  3DEP data are updated continually as new data become available. Seamless 3DEP data are derived from diverse source data that are processed to a common coordinate system and unit of vertical measure. These data are distributed in geographic coordinates in units of decimal degrees, and in conformance with the North American Datum of 1983 (NAD 83). All elevation values are in meters and, over the conterminous United States, are referenced to the North American Vertical Datum of 1988 (NAVD 88). The vertical reference will vary in other areas. Seamless 3DEP data are available nationally (except for Alaska) at resolutions of 1 arc-second (approximately 30 meters) and 1/3 arc-second (approximately 10 meters). In most of Alaska, only lower resolution source data are available. As a result, most seamless 3DEP data for Alaska are at 2 arc-second (approximately 60 meters) grid spacing. Part of Alaska is available at the 1 and 1/3 arc-second resolutions from interferometric synthetic aperture radar (ifsar) collections starting in 2010.  Plans are in place for collection of statewide ifsar in Alaska. All 3DEP products are public domain.</abstract>
+      <purpose>The 3DEP data serves as the elevation layer of The National Map, and provides basic elevation information for Earth science studies and mapping applications in the United States.  The data are utilized by the scientific and resource management communities for global change research, hydrologic modeling, resource monitoring, mapping and visualization applications.</purpose>
+      <supplinf>This tile of seamless 3DEP dataset is 1 arc-second resolution,  TIFF file format, and covers a 1 degree block.   The geographic area of coverage is described below in the Bounding Coordinates.  Additional information for the 3DEP products may be found on https://nationalmap.gov/elevation.html. Data may be downloaded through The National Map Viewer: https://nationalmap.gov/viewer.html.  Direct links for direct access by automated services are provided in the "Distribution" section of this metadata.</supplinf>
+    </descript>
+    <timeperd>
+      <timeinfo>
+        <rngdates>
+          <begdate>1947</begdate>
+          <enddate>2016</enddate>
+        </rngdates>
+      </timeinfo>
+      <current>publication date</current>
+    </timeperd>
+    <status>
+      <progress>In work</progress>
+      <update>As needed</update>
+    </status>
+    <spdom>
+      <bounding>
+        <westbc>-106.001666667082</westbc>
+        <eastbc>-104.998333333716</eastbc>
+        <northbc>40.001666666984</northbc>
+        <southbc>38.9983333336173</southbc>
+      </bounding>
+    </spdom>
+    <keywords><theme>
+        <themekt>ISO 19115 Topic Category</themekt>
+        <themekey>elevation</themekey>
+        <themekey>1-degree DEM</themekey>
+        <themekey>1 arc-second DEM</themekey>
+      </theme>
+      <theme>
+        <themekt>NGDA Portfolio Themes</themekt>
+        <themekey>Elevation</themekey>
+      </theme>
+      <theme>
+        <themekt>3D Elevation Program (3DEP)</themekt>
+        <themekey>3D Elevation Program</themekey>
+        <themekey>3DEP</themekey>
+        <themekey>National Elevation Dataset</themekey>
+        <themekey>NED</themekey>
+        <themekey>Elevation</themekey>
+        <themekey>Grid</themekey>
+        <themekey>Light Detection And Ranging</themekey>
+        <themekey>LIDAR</themekey>
+        <themekey>Interferometric Synthetic Aperture Radar</themekey>
+        <themekey>IFSAR</themekey>
+        <themekey>High Resolution</themekey>
+        <themekey>Topographic Surface</themekey>
+        <themekey>Topography</themekey>
+        <themekey>Bare Earth</themekey>
+        <themekey>Hydro-Flattened</themekey>
+        <themekey>Terrain Elevation</themekey>
+        <themekey>Cartography</themekey>
+        <themekey>DEM</themekey>
+        <themekey>Digital Elevation Model</themekey>
+        <themekey>Geographic Information System</themekey>
+        <themekey>Digital Mapping</themekey>
+        <themekey>Digital Terrain Model</themekey>
+        <themekey>Geodata</themekey>
+        <themekey>GIS</themekey>
+        <themekey>Mapping</themekey>
+        <themekey>Raster</themekey>
+        <themekey>USGS</themekey>
+        <themekey>U.S. Geological Survey</themekey>
+      </theme>
+      <place>
+        <placekt>Geographic Names Information System</placekt>
+        <placekey>US</placekey>
+        <placekey>United States</placekey>
+      </place>
+    </keywords><accconst>None.  Any downloading and use of these data signifies a user's agreement to comprehension and compliance of the USGS Standard Disclaimer.  Insure all portions of metadata are read and clearly understood before using these data in order to protect both user and USGS interests.</accconst>
+    <useconst>There is no guarantee or warranty concerning the accuracy of the data.  Users should be aware that temporal changes may have occurred since these data were collected and that some parts of these data may no longer represent actual surface conditions.  Users should not use these data for critical applications without a full awareness of their limitations.  Acknowledgement of the originating agencies would be appreciated in products derived from these data.  Any user who modifies the data is obligated to describe the types of modifications they perform.  User specifically agrees not to misrepresent the data, nor to imply that changes made were approved or endorsed by the USGS.  Please refer to https://www.usgs.gov/privacy.html for the USGS disclaimer.</useconst>
+    <browse>
+      <browsen>ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged/Elevation/1/TIFF/n40w106/USGS_1_n40w106.jpg</browsen>
+      <browsed>Thumbnail JPG image</browsed>
+      <browset>JPEG</browset>
+    </browse>
+    <datacred>Acknowledgement of the originating agencies would be appreciated in products derived from these data.</datacred>
+  </idinfo>
+  <spdoinfo>
+    <direct>Raster</direct>
+    <rastinfo>
+      <rasttype>Pixel</rasttype>
+      <rowcount>3612</rowcount>
+      <colcount>3612</colcount>
+      <vrtcount>1</vrtcount>
+    </rastinfo>
+  </spdoinfo>
+  <spref>
+    <horizsys>
+      <geograph>
+        <latres>0.00027777778</latres>
+        <longres>0.00027777778</longres>
+        <geogunit>Decimal degrees</geogunit>
+      </geograph>
+      <geodetic>
+        <horizdn>North American Datum of 1983</horizdn>
+        <ellips>Geodetic Reference System 80</ellips>
+        <semiaxis>6378137.000000</semiaxis>
+        <denflat>298.2572221</denflat>
+      </geodetic>
+    </horizsys>
+    <vertdef>
+      <altsys>
+        <altdatum>North American Vertical Datum of 1988</altdatum>
+        <altres>1.000000</altres>
+        <altunits>meters</altunits>
+        <altenc>Implicit coordinate</altenc>
+      </altsys>
+    </vertdef>
+  </spref>
+  <eainfo>
+    <overview>
+      <eaover>The attribute summary can be found in the Data Dictionary (http://nationalmap.gov/3DEP/3dep_prodmetadata.html).</eaover>
+      <eadetcit>A link to the 3DEP Data Dictionary describing information that is included in the spatial metadata shapefiles acquired with the DEM is provided at the end of the Metadata Information section of this document.</eadetcit>
+    </overview>
+  </eainfo>
+  <distinfo>
+    <distrib>
+      <cntinfo>
+        <cntorgp>
+          <cntorg>U.S. Geological Survey</cntorg>
+        </cntorgp>
+        <cntaddr>
+          <addrtype>mailing and physical</addrtype>
+          <address>USGS National Geospatial Program Office</address>
+          <address>12201 Sunrise Valley Drive</address>
+          <city>Reston</city>
+          <state>VA</state>
+          <postal>20192</postal>
+          <country>USA</country>
+        </cntaddr>
+        <cntvoice>1-888-ASK-USGS (1-888-275-8747)</cntvoice>
+        <hours>Monday through Friday 8:00 AM to 4:00 PM Eastern Time Zone USA</hours>
+        <cntinst>Please visit http://www.usgs.gov/ask/ to contact us.</cntinst>
+      </cntinfo>
+    </distrib>
+    <resdesc>Downloadable Data</resdesc>
+    <distliab>Although these data have been processed successfully on a computer system at the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty. The USGS or the U.S. Government shall not be held liable for improper or incorrect use of the data described and/or contained herein.</distliab>
+    <stdorder>
+      <digform>
+        <digtinfo>
+          <formname>TIFF</formname>
+          <transize>0.048295</transize>
+        </digtinfo>
+        <digtopt>
+          <onlinopt>
+            <computer>
+              <networka>
+                <networkr>ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged/Elevation/1/TIFF/n40w106/USGS_1_n40w106.tif</networkr>
+              </networka>
+            </computer>
+          </onlinopt>
+        </digtopt>
+      </digform>
+      <fees>NONE</fees>
+    </stdorder>
+  </distinfo>
+  <metainfo>
+    <metd>20180328</metd>
+    <metc>
+      <cntinfo>
+        <cntorgp>
+          <cntorg>U.S. Geological Survey</cntorg>
+        </cntorgp>
+        <cntaddr>
+          <addrtype>mailing and physical</addrtype>
+          <address>USGS National Geospatial Program Office</address>
+          <address>12201 Sunrise Valley Drive</address>
+          <city>Reston</city>
+          <state>VA</state>
+          <postal>20192</postal>
+          <country>USA</country>
+        </cntaddr>
+        <cntvoice>1-888-ASK-USGS (1-888-275-8747)</cntvoice>
+        <hours>Monday through Friday 8:00 AM to 4:00 PM Eastern Time Zone USA</hours>
+        <cntinst>Please visit http://www.usgs.gov/ask/ to contact us.</cntinst>
+      </cntinfo>
+    </metc>
+    <metstdn>FGDC Content Standard for Digital Geospatial Metadata</metstdn>
+    <metstdv>FGDC-STD-001-1998</metstdv>
+    <metextns>
+      <onlink>http://nationalmap.gov/3DEP/3dep_prodmetadata.html</onlink>
+      <metprof>3D Elevation Program (3DEP) Metadata</metprof>
+    </metextns>
+  </metainfo>
+</metadata>

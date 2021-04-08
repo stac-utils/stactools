@@ -32,6 +32,8 @@ python:
     - method: pip
       path: stactools_planet/
     - method: pip
+      path: stactools_threedep/
+    - method: pip
       path: stactools_browse/
     - method: pip
       path: stactools_sentinel2/

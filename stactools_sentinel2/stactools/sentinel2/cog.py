@@ -9,6 +9,9 @@ from pystac.utils import make_absolute_href
 
 logger = logging.getLogger(__name__)
 
+# TODO: Refactor this into general-purpose cogification of item asset
+# Currently does not allow the specification of specific assets to cogify.
+
 
 def create_cogs(item):
     cog_directory = os.path.join(os.path.dirname(item.get_self_href()), "cog")

@@ -1,8 +1,5 @@
 # flake8: noqa
 
-from stactools.aster.stac import create_item
-from stactools.aster.cog import create_cogs
-
 import stactools.core
 
 stactools.core.use_fsspec()

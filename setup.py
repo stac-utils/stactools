@@ -34,6 +34,7 @@ subpackages = [
     Subpackage('landsat', is_extra=True),
     Subpackage('naip', is_extra=True),
     Subpackage('planet', is_extra=True),
+    Subpackage('threedep', is_extra=True),
     Subpackage('browse', is_extra=True),
     Subpackage('sentinel2', is_extra=True),
     Subpackage('sentinel1', is_extra=True)

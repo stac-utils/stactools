@@ -1,43 +1,76 @@
 from datetime import datetime
 import re
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from shapely.geometry import mapping, Polygon
 import pystac
 from pystac.utils import str_to_datetime
 
+from stactools.core.io import ReadHrefModifier
+from stactools.core.io.xml import XmlElement
+from stactools.core.utils import map_opt
 from stactools.sentinel2.constants import PRODUCT_METADATA_ASSET_KEY
-from stactools.sentinel2.utils import (ReadHrefModifier, band_index_to_name,
-                                       get_xml_node, get_xml_node_attr,
-                                       get_xml_node_text, list_xml_node,
-                                       read_xml, convert)
+
+
+class ProductMetadataError(Exception):
+    pass
 
 
 class ProductMetadata:
-    def __init__(self,
-                 href,
-                 read_href_modifier: Optional[ReadHrefModifier] = None):
+    def __init__(
+            self,
+            href,
+            read_href_modifier: Optional[ReadHrefModifier] = None) -> None:
         self.href = href
-        self._root = read_xml(href, read_href_modifier)
-        self.product_info_node = get_xml_node(self._root,
-                                              'n1:General_Info/Product_Info')
-        self.datatake_node = get_xml_node(self.product_info_node, 'Datatake')
-        self.granule_node = get_xml_node(
-            self.product_info_node,
+        self._root = XmlElement.from_file(href, read_href_modifier)
+
+        product_info_node = self._root.find('n1:General_Info/Product_Info')
+        if product_info_node is None:
+            raise ProductMetadataError(
+                f"Cannot find product info node for product metadata at {self.href}"
+            )
+        self.product_info_node = product_info_node
+
+        datatake_node = self.product_info_node.find('Datatake')
+        if datatake_node is None:
+            raise ProductMetadataError(
+                f"Cannot find Datatake node in product metadata at {self.href}"
+            )
+        self.datatake_node = datatake_node
+
+        granule_node = self.product_info_node.find(
             'Product_Organisation/Granule_List/Granule')
-        self.reflectance_conversion_node = get_xml_node(
-            self._root,
+        if granule_node is None:
+            raise ProductMetadataError(
+                f'Cannot find granule node in product metadata at {self.href}')
+        self.granule_node = granule_node
+
+        reflectance_conversion_node = self._root.find(
             'n1:General_Info/Product_Image_Characteristics/Reflectance_Conversion'
         )
-        self.qa_node = get_xml_node(self._root, 'n1:Quality_Indicators_Info')
+        if reflectance_conversion_node is None:
+            raise ProductMetadataError(
+                f"Could not find reflectance conversion node in product metadata at {self.href}"
+            )
+        self.reflectance_conversion_node = reflectance_conversion_node
+
+        qa_node = self._root.find('n1:Quality_Indicators_Info')
+        if qa_node is None:
+            raise ProductMetadataError(
+                f"Could not find QA node in product metadata at {self.href}")
+        self.qa_node = qa_node
 
         def _get_geometries():
-            geometric_info = self._root.find('n1:Geometric_Info',
-                                             self._root.nsmap)
+            geometric_info = self._root.find('n1:Geometric_Info')
+            footprint_text = geometric_info.find_text(
+                'Product_Footprint/Product_Footprint/Global_Footprint/EXT_POS_LIST'
+            )
+            if footprint_text is None:
+                ProductMetadataError(
+                    f'Cannot parse footprint from product metadata at {self.href}'
+                )
             footprint_coords = [
-                float(c) for c in geometric_info.find(
-                    'Product_Footprint/Product_Footprint/Global_Footprint/EXT_POS_LIST'
-                ).text.split(' ') if c
+                float(c) for c in footprint_text.split(' ') if c
             ]
             footprint_points = [
                 p[::-1] for p in list(zip(*[iter(footprint_coords)] * 2))
@@ -52,7 +85,7 @@ class ProductMetadata:
 
     @property
     def product_id(self) -> str:
-        result = get_xml_node_text(self.product_info_node, 'PRODUCT_URI')
+        result = self.product_info_node.find_text('PRODUCT_URI')
         if result is None:
             raise ValueError(
                 'Cannot determine product ID using product metadata '
@@ -62,7 +95,7 @@ class ProductMetadata:
 
     @property
     def datetime(self) -> datetime:
-        time = get_xml_node_text(self.product_info_node, 'PRODUCT_START_TIME')
+        time = self.product_info_node.find_text('PRODUCT_START_TIME')
         if time is None:
             raise ValueError(
                 'Cannot determine product start time using product metadata '
@@ -72,7 +105,7 @@ class ProductMetadata:
 
     @property
     def image_media_type(self) -> str:
-        if get_xml_node_attr(self.granule_node, 'imageFormat') == 'GeoTIFF':
+        if self.granule_node.get_attr('imageFormat') == 'GeoTIFF':
             return pystac.MediaType.COG
         else:
             return pystac.MediaType.JPEG2000
@@ -83,21 +116,21 @@ class ProductMetadata:
 
         return [
             f'{x.text}{extension}'
-            for x in list_xml_node(self.granule_node, 'IMAGE_FILE')
+            for x in self.granule_node.findall('IMAGE_FILE')
         ]
 
     @property
     def relative_orbit(self) -> Optional[int]:
-        return convert(
-            int, get_xml_node_text(self.datatake_node, 'SENSING_ORBIT_NUMBER'))
+        return map_opt(int,
+                       self.datatake_node.find_text('SENSING_ORBIT_NUMBER'))
 
     @property
     def orbit_state(self) -> Optional[str]:
-        return get_xml_node_text(self.datatake_node, 'SENSING_ORBIT_DIRECTION')
+        return self.datatake_node.find_text('SENSING_ORBIT_DIRECTION')
 
     @property
     def platform(self) -> Optional[str]:
-        return get_xml_node_text(self.datatake_node, 'SPACECRAFT_NAME')
+        return self.datatake_node.find_text('SPACECRAFT_NAME')
 
     @property
     def mgrs_tile(self) -> Optional[str]:
@@ -105,56 +138,31 @@ class ProductMetadata:
         return None if m is None else m.group(1)
 
     @property
-    def metadata_dict(self):
+    def metadata_dict(self) -> Dict[str, Any]:
         result = {
             's2:product_uri':
             self.product_id,
             's2:generation_time':
-            get_xml_node_text(self.product_info_node, 'GENERATION_TIME'),
+            self.product_info_node.find_text('GENERATION_TIME'),
             's2:processing_baseline':
-            get_xml_node_text(self.product_info_node, 'PROCESSING_BASELINE'),
+            self.product_info_node.find_text('PROCESSING_BASELINE'),
             's2:product_type':
-            get_xml_node_text(self.product_info_node, 'PRODUCT_TYPE'),
+            self.product_info_node.find_text('PRODUCT_TYPE'),
             's2:datatake_id':
-            get_xml_node_attr(self.datatake_node, 'datatakeIdentifier'),
+            self.datatake_node.get_attr('datatakeIdentifier'),
             's2:datatake_type':
-            get_xml_node_text(self.datatake_node, 'DATATAKE_TYPE'),
+            self.datatake_node.find_text('DATATAKE_TYPE'),
             's2:datastrip_id':
-            get_xml_node_attr(self.granule_node, 'datastripIdentifier'),
+            self.granule_node.get_attr('datastripIdentifier'),
             's2:granule_id':
-            get_xml_node_attr(self.granule_node, 'granuleIdentifier'),
+            self.granule_node.get_attr('granuleIdentifier'),
             's2:mgrs_tile':
             self.mgrs_tile,
             's2:reflectance_conversion_factor':
-            convert(float,
-                    get_xml_node_text(self.reflectance_conversion_node, 'U')),
-            's2:cloud_coverage_assessment':
-            convert(
-                float,
-                get_xml_node_text(self.qa_node, 'Cloud_Coverage_Assessment')),
-            's2:degraded_msi_data_percentage':
-            convert(
-                float,
-                get_xml_node_text(
-                    self._root,
-                    'n1:Quality_Indicators_Info/Technical_Quality_Assessment/'
-                    + 'DEGRADED_MSI_DATA_PERCENTAGE')),
+            map_opt(float, self.reflectance_conversion_node.find_text('U'))
         }
 
-        irradiance_nodes = list_xml_node(
-            self.reflectance_conversion_node,
-            'Solar_Irradiance_List/SOLAR_IRRADIANCE')
-
-        def _solar_irradiance_from_node(node):
-            band_name = band_index_to_name(int(node.get('bandId')))
-            key = f's2:solarIrradiance{band_name}'
-            value = float(node.text)
-            return {key: value}
-
-        for node in irradiance_nodes:
-            result.update(_solar_irradiance_from_node(node))
-
-        return result
+        return {k: v for k, v in result.items() if v is not None}
 
     def create_asset(self):
         asset = pystac.Asset(href=self.href,
