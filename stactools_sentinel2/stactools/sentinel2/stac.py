@@ -170,12 +170,15 @@ def image_asset_from_href(
         return ('preview', asset)
 
     # Extract gsd and proj info
-    gsd = extract_gsd(asset_href)
-    shape = list(resolution_to_shape[int(gsd)])
+    filename_gsd = extract_gsd(asset_href)
+    shape = list(resolution_to_shape[int(filename_gsd)])
     transform = transform_from_bbox(proj_bbox, shape)
 
-    def set_asset_properties(asset):
-        item.common_metadata.set_gsd(gsd, asset)
+    def set_asset_properties(asset: pystac.Asset, band_gsd: Optional[int] = None):
+        if filename_gsd is None:
+            item.common_metadata.set_gsd(filename_gsd, asset)
+        else:
+            item.common_metadata.set_gsd(band_gsd, asset)
         item.ext.projection.set_shape(shape, asset)
         item.ext.projection.set_bbox(proj_bbox, asset)
         item.ext.projection.set_transform(transform, asset)
@@ -196,7 +199,7 @@ def image_asset_from_href(
                              title=f'{band.description} - {href_res}',
                              roles=['data'])
         item.ext.eo.set_bands([SENTINEL_BANDS[band_id]], asset)
-        set_asset_properties(asset)
+        set_asset_properties(asset, band_gsd=BANDS_TO_RESOLUTIONS[band_id][0])
         return (asset_key, asset)
 
     # Handle auxiliary images
