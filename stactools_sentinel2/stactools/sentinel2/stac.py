@@ -193,7 +193,7 @@ def image_asset_from_href(
             asset_key = f'{band_id}_{asset_res}m'
         asset = pystac.Asset(href=asset_href,
                              media_type=asset_media_type,
-                             title=band.description,
+                             title=f'{band.description} - {href_res}',
                              roles=['data'])
         item.ext.eo.set_bands([SENTINEL_BANDS[band_id]], asset)
         set_asset_properties(asset)
