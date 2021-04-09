@@ -174,7 +174,8 @@ def image_asset_from_href(
     shape = list(resolution_to_shape[int(filename_gsd)])
     transform = transform_from_bbox(proj_bbox, shape)
 
-    def set_asset_properties(asset: pystac.Asset, band_gsd: Optional[int] = None):
+    def set_asset_properties(asset: pystac.Asset,
+                             band_gsd: Optional[int] = None):
         if filename_gsd is None:
             item.common_metadata.set_gsd(filename_gsd, asset)
         else:
