@@ -33,19 +33,19 @@ def merge_bands(input_paths, output_path):
     call(['gdal_merge.py', '-separate', '-o', output_path] + input_paths)
 
 
-def cogify(input_path, output_path):
-    call([
-        'gdal_translate', '-of', 'COG', '-co', 'compress=deflate', input_path,
-        output_path
-    ])
-
-
 def set_band_names(href: str, band_names: List[str]) -> None:
     with rio.open(href) as ds:
         profile = ds.profile
 
-    with rio.open(href, 'w', **profile) as ds:
+    with rio.open(href, 'r+', **profile) as ds:
         ds.descriptions = band_names
+
+
+def cogify(input_path, output_path):
+    call([
+        'gdal_translate', '-of', 'COG', '-co', 'predictor=2', '-co',
+        'compress=deflate', input_path, output_path
+    ])
 
 
 def _create_cog_for_sensor(sensor: str, file_prefix: str, tmp_dir: str,
@@ -68,9 +68,9 @@ def _create_cog_for_sensor(sensor: str, file_prefix: str, tmp_dir: str,
     merged_path = os.path.join(sensor_dir, 'merged.tif')
     merge_bands(band_paths, merged_path)
 
-    cogify(merged_path, sensor_cog_href)
+    set_band_names(merged_path, band_names)
 
-    set_band_names(sensor_cog_href, band_names)
+    cogify(merged_path, sensor_cog_href)
 
     return sensor_cog_href
 
