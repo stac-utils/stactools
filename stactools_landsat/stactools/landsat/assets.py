@@ -48,7 +48,8 @@ class AssetDef:
 
     def add_asset(self, item: pystac.Item, mtl_metadata: MtlMetadata,
                   base_href: str) -> None:
-        asset = pystac.Asset(href=self.get_href(base_href))
+        asset = pystac.Asset(href=self.get_href(base_href),
+                             media_type=self.media_type)
         if self.title:
             asset.title = self.title
         if self.description:

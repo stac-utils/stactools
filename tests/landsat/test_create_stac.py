@@ -108,6 +108,10 @@ class CreateItemTest(CliTestCase):
 
                     created_item = get_item(create_dir)
 
+                    # Ensure media_type is set
+                    for asset in created_item.assets.values():
+                        self.assertTrue(asset.media_type is not None)
+
                     for asset_def in SR_ASSET_DEFS:
                         self.assertIn(asset_def.key, created_item.assets)
                     if created_item.properties[
