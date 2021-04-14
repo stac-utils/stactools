@@ -7,6 +7,7 @@ from pystac.utils import is_absolute_href
 from shapely.geometry import box, shape, mapping
 
 from stactools.core.projection import reproject_geom
+from stactools.landsat.assets import SR_ASSET_DEFS, THERMAL_ASSET_DEFS
 from stactools.landsat.commands import create_landsat_command
 from stactools.landsat.constants import (L8_SR_BANDS, L8_SP_BANDS)
 from tests.utils import CliTestCase
@@ -104,6 +105,15 @@ class CreateItemTest(CliTestCase):
                         '--enable-proj', '--dst', convert_dir
                     ]
                     self.run_command(convert_cmd)
+
+                    created_item = get_item(create_dir)
+
+                    for asset_def in SR_ASSET_DEFS:
+                        self.assertIn(asset_def.key, created_item.assets)
+                    if created_item.properties[
+                            'landsat:processing_level'] == 'L2SP':
+                        for asset_def in THERMAL_ASSET_DEFS:
+                            self.assertIn(asset_def.key, created_item.assets)
 
                     # TODO: Resolve disagreements between convert and create.
                     # This might best be informed by USGS's own STAC 1.0.* items
