@@ -117,7 +117,7 @@ def create_item(
     item.ext.enable('projection')
     item.ext.projection.epsg = product_metadata.epsg
     item.ext.projection.shape = product_metadata.shape
-    item.ext.projection.proj_bbox = product_metadata.proj_bbox
+    item.ext.projection.bbox = product_metadata.proj_bbox
     item.ext.projection.transform = product_metadata.metadata['transform']
 
     # Additional extensions could be useful, but not yet implemented in pystac:

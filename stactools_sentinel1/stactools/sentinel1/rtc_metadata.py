@@ -96,10 +96,10 @@ class RTCMetadata:
 
     @property
     def product_id(self) -> str:
-        DATE = self.metadata['DATE'].replace('-', '')
+        date = self.metadata['DATE'].replace('-', '')
         orbNames = {'ascending': 'ASC', 'descending': 'DSC'}
-        ORB = orbNames[self.metadata['ORBIT_DIRECTION']]
-        id = f"{self.metadata['MISSION_ID']}_{DATE}_{self.metadata['TILE_ID']}_{ORB}"
+        orb = orbNames[self.metadata['ORBIT_DIRECTION']]
+        id = f"{self.metadata['MISSION_ID']}_{date}_{self.metadata['TILE_ID']}_{orb}"
         return id
 
     @property
