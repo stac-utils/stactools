@@ -1,3 +1,8 @@
+import stactools.core
+
+stactools.core.use_fsspec()
+
+
 def register_plugin(registry):
     # Register subcommands
 

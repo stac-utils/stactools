@@ -62,6 +62,10 @@ RUN pip install --no-build-isolation -r /tmp/aster/requirements.txt
 COPY stactools_corine/requirements.txt /tmp/corine/requirements.txt
 RUN pip install -r /tmp/corine/requirements.txt
 
+# Copernicus Global Land Cover Layers
+COPY stactools_cgls_lc100/requirements.txt /tmp/stactools_cgls_lc100/requirements.txt
+RUN pip install -r /tmp/stactools_cgls_lc100/requirements.txt
+
 # Landsat
 COPY stactools_landsat/requirements.txt /tmp/landsat/requirements.txt
 RUN pip install -r /tmp/landsat/requirements.txt
@@ -73,6 +77,14 @@ RUN pip install -r /tmp/naip/requirements.txt
 # Planet
 COPY stactools_planet/requirements.txt /tmp/planet/requirements.txt
 RUN pip install -r /tmp/planet/requirements.txt
+
+# Sentinel 2
+COPY stactools_sentinel2/requirements.txt /tmp/sentinel2/requirements.txt
+RUN pip install -r /tmp/sentinel2/requirements.txt
+
+# 3DEP
+COPY stactools_threedep/requirements.txt /tmp/threedep/requirements.txt
+RUN pip install -r /tmp/threedep/requirements.txt
 
 # Jupyter
 RUN pip install jupyter==1.0.0

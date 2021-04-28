@@ -5,25 +5,36 @@ from zipfile import ZipFile
 
 import requests
 
+CLGS_LC100_DIR = 'record/3939050/files'
+CLGS_LC100_TIF = 'PROBAV_LC100_global_v3.0.1_2019-nrt_Change-Confidence-layer_EPSG-4326.tif'
+CLGS_LC100_PARAM = 'download=1'
+
 EXTERNAL_DATA = {
-    'aster/AST_L1T_00301012006003619_20150512141939_7778.hdf': {
+    'aster/AST_L1T_00305032000040446_20150409135350_78838.hdf': {
         'url':
         ('https://ai4epublictestdata.blob.core.windows.net/'
-         'stactools/aster/AST_L1T_00301012006003619_20150512141939_7778.zip'),
+         'stactools/aster/AST_L1T_00305032000040446_20150409135350_78838.zip'),
         'compress':
         'zip'
+    },
+    'cgls_lc100/PROBAV_LC100_global_v3.0.1_2019-nrt_ccl.tif': {
+        'url': ('https://zenodo.org/'
+                '{}/{}?{}'.format(CLGS_LC100_DIR, CLGS_LC100_TIF,
+                                  CLGS_LC100_PARAM)),
+        'compress':
+        'none'
     }
 }
 
 
 class TestData:
     @staticmethod
-    def get_path(rel_path):
+    def get_path(rel_path: str) -> str:
         return os.path.abspath(
             os.path.join(os.path.dirname(__file__), '..', rel_path))
 
     @staticmethod
-    def get_external_data(rel_path):
+    def get_external_data(rel_path: str) -> str:
         path = TestData.get_path(os.path.join('data-files/external', rel_path))
         if not os.path.exists(path):
             entry = EXTERNAL_DATA.get(rel_path)
