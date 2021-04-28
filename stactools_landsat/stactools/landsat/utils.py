@@ -105,11 +105,11 @@ def transform_stac_to_stac(item: Item,
             # If we can load the blue band, use it to add proj information
             if item.assets.get("SR_B2.TIF"):
                 asset = item.assets["SR_B2.TIF"]
-            # SR_B10 is a fallback for SR_B2
-            elif item.assets.get("SR_B10.TIF"):
-                asset = item.assets["SR_B10.TIF"]
+            # ST_B10.TIF is a fallback for SR_B2
+            elif item.assets.get("ST_B10.TIF"):
+                asset = item.assets["ST_B10.TIF"]
             else:
-                raise ValueError('Asset SR_B2.TIF or SR_B2.TIF required')
+                raise ValueError('Asset SR_B2.TIF or ST_B10.TIF required')
 
             with rasterio.open(asset.href) as opened_asset:
                 shape = [opened_asset.height, opened_asset.width]
@@ -128,6 +128,8 @@ def transform_stac_to_stac(item: Item,
 
         except RasterioIOError:
             print("Failed to load blue band, so not handling proj fields")
+        except ValueError as error:
+            raise error
 
     # Remove .TIF from asset names
     new_assets = {}
