@@ -4,7 +4,7 @@ Working with Planet Data in the CLI
 In this tutorial, we'll use the stactools CLI to work with Planet data. We'll convert two Planet orders into STACs,
 merge the STACs, modify their layout, and browse results using the ``stac browse`` command.
 
-If you'd like to use the Python library functionality, see the :ref:`tutorial notebook </tutorials/working-withplanet-data.ipynb>` that performs the same actions, but in Python.
+If you'd like to use the Python library functionality, see the :ref:`tutorial notebook </tutorials/working-with-planet-data-in-python.ipynb>` that performs the same actions, but in Python.
 
 You'll need the `stactools_planet` and `stactools_browse` packages to follow along. You can install these with:
 
@@ -29,7 +29,7 @@ You'll also need Docker installed to be able to use the ``stac browse`` command.
 Ordering from Planet
 ====================
 
-We'll use IDs that are generated from a search that we performed in the :ref:`tutorial notebook </tutorials/working-withplanet-data.ipynb>`, so see that for a reference of how those searches were performed. The IDs are for 8 items over a part of southern Myanmar. Let's store those IDs in environment variables:
+We'll use IDs that are generated from a search that we performed in the :ref:`tutorial notebook </tutorials/working-with-planet-data-in-python.ipynb>`, so see that for a reference of how those searches were performed. The IDs are for 8 items over a part of southern Myanmar. Let's store those IDs in environment variables:
 
 .. code-block:: console
 
