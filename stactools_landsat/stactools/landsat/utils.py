@@ -108,8 +108,11 @@ def transform_stac_to_stac(item: Item,
             # ST_B10.TIF is a fallback for SR_B2
             elif item.assets.get("ST_B10.TIF"):
                 asset = item.assets["ST_B10.TIF"]
+            # Landsat5 does not have B10
+            elif item.assets.get("ST_B6.TIF"):
+                asset = item.assets["ST_B6.TIF"]
             else:
-                raise ValueError('Asset SR_B2.TIF or ST_B10.TIF required')
+                raise ValueError('Asset either SR_B2.TIF, ST_B10.TIF or ST_B6.TIF is required')
 
             with rasterio.open(asset.href) as opened_asset:
                 shape = [opened_asset.height, opened_asset.width]
