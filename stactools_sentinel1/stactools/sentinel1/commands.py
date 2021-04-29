@@ -19,6 +19,10 @@ def create_sentinel1_command(cli):
         short_help='Convert a Sentinel1 RTC product into a STAC item')
     @click.argument('src')
     @click.argument('dst')
+    @click.option('-a',
+                  '--asset',
+                  default='local_incident_angle.tif',
+                  help='Asset geotiff metadata to read')
     @click.option(
         '-p',
         '--providers',
@@ -28,7 +32,7 @@ def create_sentinel1_command(cli):
                   is_flag=True,
                   default=False,
                   help='Include links to original GRD metadata as STAC Assets')
-    def create_item_command(src, dst, providers, metadata):
+    def create_item_command(src, dst, asset, providers, metadata):
         """Creates a STAC Item for a given Sentinel1 RTC product
 
         SRC is the path to the granule
@@ -41,6 +45,7 @@ def create_sentinel1_command(cli):
                 additional_providers = json.load(f)
 
         item = create_item(src,
+                           asset,
                            additional_providers=additional_providers,
                            include_grd_metadata=metadata)
         item_path = os.path.join(dst, f'{item.id}.json')

@@ -41,4 +41,6 @@ setup(name=name,
       include_package_data=False,
       install_requires=install_requires,
       license="Apache Software License 2.0",
-      keywords=['stactools', 'psytac', 'imagery', 'raster', 'catalog', 'STAC', 'SAR'])
+      keywords=[
+          'stactools', 'psytac', 'imagery', 'raster', 'catalog', 'STAC', 'SAR'
+      ])

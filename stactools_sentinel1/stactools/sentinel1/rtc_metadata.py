@@ -17,16 +17,15 @@ logger = logging.getLogger(__name__)
 
 
 class RTCMetadata:
-    def __init__(self, href):
+    def __init__(self, href, asset):
         self.href = href
+        self.asset = asset
 
-        def _load_metadata_from_asset(asset='local_incident_angle.tif',
-                                      scale=1,
-                                      precision=5):
+        def _load_metadata_from_asset(scale=1, precision=5):
             ''' key metadata stored in Geotiff tags '''
             with rasterio.Env(AWS_NO_SIGN_REQUEST='YES',
                               GDAL_DISABLE_READDIR_ON_OPEN='EMPTY_DIR'):
-                with rasterio.open(os.path.join(href, asset)) as src:
+                with rasterio.open(os.path.join(href, self.asset)) as src:
                     metadata = src.profile
                     metadata.update(src.tags())
                     # other useful things that aren't already keys in src.profile

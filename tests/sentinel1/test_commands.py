@@ -23,7 +23,10 @@ class CreateItemTest(CliTestCase):
         for granule_href in granule_hrefs:
             with self.subTest(granule_href):
                 with TemporaryDirectory() as tmp_dir:
-                    cmd = ['sentinel1', 'create-item', granule_href, tmp_dir]
+                    cmd = [
+                        'sentinel1', 'create-item', granule_href, tmp_dir,
+                        '-a', 'local_incident_angle.vrt'
+                    ]
                     self.run_command(cmd)
 
                     jsons = [

@@ -41,6 +41,7 @@ def create_collection() -> pystac.Collection:
 
 def create_item(
     granule_href: str,
+    asset: str = 'local_incident_angle.tif',
     additional_providers: Optional[List[pystac.Provider]] = None,
     include_grd_metadata: Optional[bool] = False,
 ) -> pystac.Item:
@@ -49,6 +50,7 @@ def create_item(
     Arguments:
         granule_href: The HREF to the S3 Key for particular MGRS tile product
             e.g. : s3://sentinel-s1-rtc-indigo/tiles/RTC/1/IW/12/S/YJ/2016/S1B_20161121_12SYJ_ASC
+        asset: Asset to read geotiff metadata from (Gamma0_VV.tif, local_incident_angle.tif)
         additional_providers: Optional list of additional providers to set into the Item
         include_grd_metadata: Boolean to include links to original GRD metadata as STAC Assets
 
@@ -56,7 +58,7 @@ def create_item(
         pystac.Item: Item populated with STAC core and common extension metadata,
             from the Sentinel 1 RTC Geotiff files.
     """ # noqa
-    product_metadata = RTCMetadata(granule_href)
+    product_metadata = RTCMetadata(granule_href, asset)
 
     item = pystac.Item(id=product_metadata.product_id,
                        geometry=product_metadata.geometry,
@@ -84,7 +86,7 @@ def create_item(
     # STAC Metadata creation date
     item.common_metadata.created = datetime.utcnow()
 
-    # Addtional properties no belonging to extensions
+    # Additional properties no belonging to extensions
     item.properties.update(**product_metadata.metadata_dict)
 
     # --Extensions--
