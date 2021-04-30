@@ -102,45 +102,33 @@ def transform_stac_to_stac(item: Item,
 
     if enable_proj:
         try:
-            # If we can load the blue band, use it to add proj information
-            if item.assets.get("SR_B2.TIF"):
-                asset = item.assets["SR_B2.TIF"]
-            # ST_B10.TIF is a fallback for SR_B2
-            elif item.assets.get("ST_B10.TIF"):
-                asset = item.assets["ST_B10.TIF"]
-            # Landsat5 does not have B10
-            elif item.assets.get("ST_B6.TIF"):
-                asset = item.assets["ST_B6.TIF"]
-            else:
-                raise ValueError('Asset either SR_B2.TIF, ST_B10.TIF or ST_B6.TIF is required')
+            retrieved_tile_info = None
+            for name, asset in item.assets.items():
+                if asset.media_type == "image/vnd.stac.geotiff; cloud-optimized=true":
+                    if not retrieved_tile_info:
+                        with rasterio.open(asset.href) as opened_asset:
+                            shape = opened_asset.shape
+                            transform = opened_asset.transform
+                            crs = opened_asset.crs.to_epsg()
+                            retrieved_tile_info = True
 
-            with rasterio.open(asset.href) as opened_asset:
-                shape = [opened_asset.height, opened_asset.width]
-                transform = opened_asset.transform
-                crs = opened_asset.crs.to_epsg()
+                    item.ext.projection.set_transform(transform, asset=asset)
+                    item.ext.projection.set_shape(shape, asset=asset)
+                    asset.media_type = MediaType.COG
 
             # Now we have the info, we can make the fields
             item.ext.enable("projection")
             item.ext.projection.epsg = crs
 
-            for name, asset in item.assets.items():
-                if asset.media_type == "image/vnd.stac.geotiff; cloud-optimized=true":
-                    item.ext.projection.set_transform(transform, asset=asset)
-                    item.ext.projection.set_shape(shape, asset=asset)
-                    asset.media_type = MediaType.COG
-
-        except RasterioIOError:
+        except RasterioIOError as io_error:
             print("Failed to load blue band, so not handling proj fields")
-        except ValueError as error:
-            raise error
+            raise io_error
 
     # Remove .TIF from asset names
-    new_assets = {}
-
-    for name, asset in item.assets.items():
-        new_name = name.replace(".TIF", "")
-        new_assets[new_name] = asset
-    item.assets = new_assets
+    item.assets = {
+        name.replace(".TIF", ""): asset
+        for name, asset in item.assets.items()
+    }
 
     return item
 
