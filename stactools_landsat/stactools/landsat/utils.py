@@ -71,7 +71,7 @@ def transform_stac_to_stac(item: Item,
                            source_link: str = None) -> Item:
     """
     Handle a 0.7.0 item and convert it to a 1.0.0.beta2 item.
-    Assets geotiff files must be public accessible.
+    If `enable_proj` is true, the assets' geotiff files must be accessible.
     """
     # Clear hierarchical links
     item.set_parent(None)
