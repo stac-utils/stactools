@@ -2,10 +2,12 @@ import logging
 import os
 import shutil
 from tempfile import TemporaryDirectory
-from subprocess import Popen, PIPE, STDOUT
 
 import pystac
 from pystac.utils import make_absolute_href
+
+from stactools.core.utils.subprocess import call
+from stactools.core.utils.convert import cogify
 
 logger = logging.getLogger(__name__)
 
@@ -50,24 +52,6 @@ def is_non_cog_image(asset):
     return asset.media_type != pystac.MediaType.COG and (
         asset.media_type == pystac.MediaType.GEOTIFF
         or asset.media_type == pystac.MediaType.JPEG2000)
-
-
-def call(command):
-    def log_subprocess_output(pipe):
-        for line in iter(pipe.readline, b''):  # b'\n'-separated lines
-            logger.info(line.decode("utf-8").strip('\n'))
-
-    process = Popen(command, stdout=PIPE, stderr=STDOUT)
-    with process.stdout:
-        log_subprocess_output(process.stdout)
-    return process.wait()  # 0 means success
-
-
-def cogify(input_path, output_path):
-    call([
-        'gdal_translate', '-of', 'COG', '-co', 'compress=deflate', input_path,
-        output_path
-    ])
 
 
 def reproject(input_path, output_path):
