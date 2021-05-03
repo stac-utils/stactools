@@ -102,28 +102,35 @@ def transform_stac_to_stac(item: Item,
     del item.properties["eo:off_nadir"]
 
     if enable_proj:
-        try:
-            retrieved_tile_info = None
-            for name, asset in item.assets.items():
-                if "geotiff" in asset.media_type:
-                    if not retrieved_tile_info:
+
+        shape = None
+        transform = None
+        crs = None
+        for name, asset in item.assets.items():
+            if "geotiff" in asset.media_type:
+                # retrieve shape, transform and crs from the first geotiff file among the assets
+                if not shape:
+                    try:
                         with rasterio.open(asset.href) as opened_asset:
                             shape = opened_asset.shape
                             transform = opened_asset.transform
                             crs = opened_asset.crs.to_epsg()
-                            retrieved_tile_info = True
+                            # Check to ensure that all information is present
+                            if not shape or not transform or not crs:
+                                print(f"Failed setting shape, transform and csr from {asset.href}")
+                                raise Exception(f"Failed setting shape, transform and csr from {asset.href}")
 
-                    item.ext.projection.set_transform(transform, asset=asset)
-                    item.ext.projection.set_shape(shape, asset=asset)
-                    asset.media_type = MediaType.COG
+                    except RasterioIOError as io_error:
+                        print("Failed loading geotiff, so not handling proj fields")
+                        raise io_error
 
-            # Now we have the info, we can make the fields
-            item.ext.enable("projection")
-            item.ext.projection.epsg = crs
+                item.ext.projection.set_transform(transform, asset=asset)
+                item.ext.projection.set_shape(shape, asset=asset)
+                asset.media_type = MediaType.COG
 
-        except RasterioIOError as io_error:
-            print("Failed loading geotiff, so not handling proj fields")
-            raise io_error
+        # Now we have the info, we can make the fields
+        item.ext.enable("projection")
+        item.ext.projection.epsg = crs
 
     # Remove .TIF from asset names
     item.assets = {
@@ -134,10 +141,13 @@ def transform_stac_to_stac(item: Item,
     return item
 
 
-def stac_api_to_stac(uri: str) -> dict:
+def stac_api_to_stac(uri: str) -> Item:
     """
     Takes in a URI and uses that to feed the STAC transform
     """
-    item = Item.from_file(uri)
 
-    return transform_stac_to_stac(item, source_link=uri, enable_proj=False)
+    return transform_stac_to_stac(
+        item=Item.from_file(uri),
+        source_link=uri,
+        enable_proj=False
+    )
