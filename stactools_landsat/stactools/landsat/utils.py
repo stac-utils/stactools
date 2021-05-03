@@ -71,6 +71,7 @@ def transform_stac_to_stac(item: Item,
                            source_link: str = None) -> Item:
     """
     Handle a 0.7.0 item and convert it to a 1.0.0.beta2 item.
+    Assets geotiff files must be public accessible.
     """
     # Clear hierarchical links
     item.set_parent(None)
@@ -104,7 +105,7 @@ def transform_stac_to_stac(item: Item,
         try:
             retrieved_tile_info = None
             for name, asset in item.assets.items():
-                if asset.media_type == "image/vnd.stac.geotiff; cloud-optimized=true":
+                if "geotiff" in asset.media_type:
                     if not retrieved_tile_info:
                         with rasterio.open(asset.href) as opened_asset:
                             shape = opened_asset.shape
@@ -121,7 +122,7 @@ def transform_stac_to_stac(item: Item,
             item.ext.projection.epsg = crs
 
         except RasterioIOError as io_error:
-            print("Failed to load blue band, so not handling proj fields")
+            print("Failed loading geotiff, so not handling proj fields")
             raise io_error
 
     # Remove .TIF from asset names
