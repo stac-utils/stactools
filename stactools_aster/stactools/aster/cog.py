@@ -10,6 +10,7 @@ from shapely.geometry import shape
 
 from stactools.core.projection import reproject_geom
 from stactools.core.utils.subprocess import call
+from stactools.core.utils.convert import cogify
 from stactools.aster.utils import AsterSceneId
 from stactools.aster.xml_metadata import XmlMetadata
 
@@ -41,13 +42,6 @@ def set_band_names(href: str, band_names: List[str]) -> None:
         ds.descriptions = band_names
 
 
-def cogify(input_path, output_path):
-    call([
-        'gdal_translate', '-of', 'COG', '-co', 'predictor=2', '-co',
-        'compress=deflate', input_path, output_path
-    ])
-
-
 def _create_cog_for_sensor(sensor: str, file_prefix: str, tmp_dir: str,
                            output_dir: str, bounds: List[float], crs: str,
                            subdataset_info: List[Tuple[Any, int]]) -> str:
@@ -70,7 +64,7 @@ def _create_cog_for_sensor(sensor: str, file_prefix: str, tmp_dir: str,
 
     set_band_names(merged_path, band_names)
 
-    cogify(merged_path, sensor_cog_href)
+    cogify(merged_path, sensor_cog_href, extra_args=["-co", "predictor=2"])
 
     return sensor_cog_href
 
