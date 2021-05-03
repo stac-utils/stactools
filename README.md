@@ -80,6 +80,7 @@ See the [documentation page](https://stactools.readthedocs.io/en/latest/) for th
 | `stactools_landsat`           | Methods and commands for working with landsat data        |
 | `stactools_sentinel2`           | Methods and commands for working with Sentinel 2 data        |
 | `stactools_threedep`          | Methods and commands for working with 3DEP (formerly NED) elevation data        |
+| `stactools_goes`              | Methods and commands for working with GOES data |
 | `stactools_browse`            | Contains a command for launching stac-browser against a local STAC |
 
 Subpackages are symlinked to the `stactools` directory in this repo to allow them to be importable for python running at the top level directory of the repository clone.
@@ -206,3 +207,4 @@ stactools is happy to take contributions of new subpackages for working with spe
 - Add documentation for the subpackage.
 - Add subpackage to .readthedocs.yml install
 - Add the subpackage to the `subpackages` list in the top-level `setup.py`, with `is_extra=True`. This will allow for an install of that specific subpackage with the pip extras syntax, e.g. `pip install stactools[aster]`.
+- Create a symbolic link from the top level `stactools` directory to your subpackage, e.g. `ln -s ../stactools_{pkg}/stactools/{pkg} stactools/{pkg}`.

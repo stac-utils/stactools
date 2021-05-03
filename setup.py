@@ -36,7 +36,8 @@ subpackages = [
     Subpackage('planet', is_extra=True),
     Subpackage('threedep', is_extra=True),
     Subpackage('browse', is_extra=True),
-    Subpackage('sentinel2', is_extra=True)
+    Subpackage('sentinel2', is_extra=True),
+    Subpackage('goes', is_extra=True)
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
