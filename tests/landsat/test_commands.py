@@ -68,6 +68,21 @@ class LandsatTest(CliTestCase):
             with self.assertRaises(pystac.STACError):
                 transform_stac_to_stac(item)
 
+    def test_transform_static_stac_missing_asset_b2_b10(self):
+        """It has to be able to gather the right information from any geotiff files"""
+
+        for stac_file in self.landsat_stac_files:
+            item = pystac.Item.from_file(stac_file)
+
+            if item.assets.get("SR_B2.TIF"):
+                item.assets.pop("SR_B2.TIF")
+
+            if item.assets.get("ST_B10.TIF"):
+                item.assets.pop("ST_B10.TIF")
+
+            item = transform_stac_to_stac(item)
+            item.validate()
+
     def test_transform_dynamic_stac(self):
         """Convert a URI of a STAC 0.7.0 document to a STAC 1.0.0.beta.2 document"""
         item = stac_api_to_stac(self.landsat_stac_api)
