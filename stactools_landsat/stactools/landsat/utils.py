@@ -82,7 +82,9 @@ def transform_stac_to_stac(item: Item,
 
     # Add and update links
     if self_link:
-        item.links.append(Link(rel="self", target=self_link))
+        item.links.append(
+            Link(rel="self", target=self_link)
+        )
     if source_link:
         item.links.append(
             Link(rel="derived_from",
@@ -119,10 +121,14 @@ def transform_stac_to_stac(item: Item,
                             crs = opened_asset.crs.to_epsg()
                             # Check to ensure that all information is present
                             if not shape or not transform or not crs:
-                                raise STACError(f"Failed setting shape, transform and csr from {asset.href}")
+                                raise STACError(
+                                    f"Failed setting shape, transform and csr from {asset.href}"
+                                )
 
                     except RasterioIOError as io_error:
-                        raise STACError(f"Failed loading geotiff, so not handling proj fields, {io_error}")
+                        raise STACError(
+                            f"Failed loading geotiff, so not handling proj fields, {io_error}"
+                        )
 
                 item.ext.projection.set_transform(transform, asset=asset)
                 item.ext.projection.set_shape(shape, asset=asset)
