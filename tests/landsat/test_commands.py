@@ -5,18 +5,22 @@ from tempfile import TemporaryDirectory
 
 import pystac
 from stactools.landsat.commands import create_landsat_command
-from stactools.landsat.utils import (_parse_date, stac_api_to_stac,
-                                     transform_mtl_to_stac,
-                                     transform_stac_to_stac)
+from stactools.landsat.utils import (
+    _parse_date,
+    stac_api_to_stac,
+    transform_mtl_to_stac,
+    transform_stac_to_stac
+)
+
 from tests.utils import CliTestCase, TestData
 
 TEST_FOLDER = Path(TestData.get_path("data-files/landsat"))
 ALL_EXAMPLES = [
     "LC08_L2SR_081119_20200101_20200823_02_T2_SR_stac.json",
     "LC08_L2SP_030034_20201111_20201212_02_T1_SR_stac.json",
+    "LC08_L2SR_232122_20191218_20201023_02_T2_SR_stac.json",
     "LE07_L2SP_167064_20070321_20200913_02_T1_SR_stac.json",
     "LT05_L2SP_201034_19860504_20200917_02_T1_SR_stac.json",
-    "LC08_L2SR_232122_20191218_20201023_02_T2_SR_stac.json",
 ]
 
 
@@ -49,6 +53,20 @@ class LandsatTest(CliTestCase):
         for stac_file in self.landsat_stac_files:
             item = transform_stac_to_stac(pystac.Item.from_file(stac_file))
             item.validate()
+
+    def test_transform_static_stac_asset_not_available(self):
+        """Raises an exception when geotiff asset isn't available"""
+
+        for stac_file in self.landsat_stac_files:
+            item = pystac.Item.from_file(stac_file)
+            for asset in item.get_assets():
+                # Replace a valid local file for an invalid url forcing an exception
+                asset.href = asset.href.replace(
+                    'tests/data-files/landsat/LC08_L2SR_081119_20200101_20200823_02_T2_SR_B2_small.TIF',
+                    "https://usgs.gov/just/an/invalid/url/LC08_L2SR_081119_20200101_20200823_02_T2_SR_B2_small.TIF"
+                )
+            with self.assertRaises(pystac.STACError):
+                transform_stac_to_stac(item)
 
     def test_transform_dynamic_stac(self):
         """Convert a URI of a STAC 0.7.0 document to a STAC 1.0.0.beta.2 document"""

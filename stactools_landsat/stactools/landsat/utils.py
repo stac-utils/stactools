@@ -2,7 +2,7 @@ import datetime
 
 import dateutil.parser
 import rasterio
-from pystac import Item, Link, MediaType
+from pystac import Item, Link, MediaType, STACError
 from rasterio import RasterioIOError
 from shapely.geometry import box, mapping, shape
 
@@ -117,12 +117,10 @@ def transform_stac_to_stac(item: Item,
                             crs = opened_asset.crs.to_epsg()
                             # Check to ensure that all information is present
                             if not shape or not transform or not crs:
-                                print(f"Failed setting shape, transform and csr from {asset.href}")
-                                raise Exception(f"Failed setting shape, transform and csr from {asset.href}")
+                                raise STACError(f"Failed setting shape, transform and csr from {asset.href}")
 
                     except RasterioIOError as io_error:
-                        print("Failed loading geotiff, so not handling proj fields")
-                        raise io_error
+                        raise STACError(f"Failed loading geotiff, so not handling proj fields, {io_error}")
 
                 item.ext.projection.set_transform(transform, asset=asset)
                 item.ext.projection.set_shape(shape, asset=asset)
