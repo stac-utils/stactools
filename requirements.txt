@@ -1,0 +1,9 @@
+Shapely
+aiohttp
+click
+fsspec
+lxml
+pyproj
+pystac[validation]
+rasterio
+requests
