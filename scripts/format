@@ -6,9 +6,6 @@ if [[ -n "${CI}" ]]; then
     set -x
 fi
 
-# Import shared variables
-source ./scripts/env
-
 function usage() {
     echo -n \
         "Usage: $(basename "$0")
@@ -16,12 +13,7 @@ Format code with yapf
 "
 }
 
-PACKAGES_TO_CHECK=("${STACTOOLS_SUBPACKAGE_DIRS[@]}")
-for i in "${!STACTOOLS_SUBPACKAGE_DIRS[@]}"
-do
-    PACKAGES_TO_CHECK[i]=${PACKAGES_TO_CHECK[i]}/stactools
-done
-PACKAGES_TO_CHECK+=('tests')
+PACKAGES_TO_CHECK=("tests" "stactools")
 
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then

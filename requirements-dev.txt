@@ -9,4 +9,5 @@ sphinx-autobuild
 sphinx-click
 sphinxcontrib-fulltoc
 sphinxcontrib-napoleon
+twine
 yapf
