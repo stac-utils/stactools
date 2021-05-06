@@ -62,10 +62,8 @@ class LandsatTest(CliTestCase):
             for asset in item.get_assets():
                 # Replace a valid local file for an invalid url forcing an exception
                 asset.href = asset.href.replace(
-                    'tests/data-files/landsat/'
                     'LC08_L2SR_081119_20200101_20200823_02_T2_SR_B2_small.TIF',
-                    "https://usgs.gov/just/an/invalid/url/"
-                    "LC08_L2SR_081119_20200101_20200823_02_T2_SR_B2_small.TIF"
+                    "just/an/invalid/url.json"
                 )
             with self.assertRaises(pystac.STACError):
                 transform_stac_to_stac(item)
