@@ -41,7 +41,8 @@ def transform_mtl_to_stac(metadata: dict) -> Item:
     bounds = shape(geom).bounds
 
     # Like: "2020-01-01" for date and  "23:08:52.6773140Z" for time
-    acquired_date = _parse_date(f"{image['DATE_ACQUIRED']}T{image['SCENE_CENTER_TIME']}")
+    acquired_date = _parse_date(
+        f"{image['DATE_ACQUIRED']}T{image['SCENE_CENTER_TIME']}")
     created = _parse_date(proessing_record["DATE_PRODUCT_GENERATED"])
 
     item = Item(id=scene_id,

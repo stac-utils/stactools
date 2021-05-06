@@ -5,8 +5,7 @@ from tempfile import TemporaryDirectory
 
 import pystac
 from stactools.landsat.commands import create_landsat_command
-from stactools.landsat.utils import (_parse_date,
-                                     stac_api_to_stac,
+from stactools.landsat.utils import (_parse_date, stac_api_to_stac,
                                      transform_mtl_to_stac,
                                      transform_stac_to_stac)
 
