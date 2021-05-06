@@ -56,7 +56,7 @@ class LandsatTest(CliTestCase):
 
         for stac_file in self.landsat_stac_files:
             item = pystac.Item.from_file(stac_file)
-            for asset in item.get_assets():
+            for asset in item.assets.values():
                 # Replace a valid local file for an invalid url forcing an exception
                 asset.href = asset.href.replace(
                     'LC08_L2SR_081119_20200101_20200823_02_T2_SR_B2_small.TIF',
