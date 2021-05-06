@@ -123,7 +123,7 @@
             "eo:bands": [
                 0
             ],
-            "href": "https://landsatlook.usgs.gov/data/collection02/level-2/standard/oli-tirs/2019/232/122/LC08_L2SR_232122_20191218_20201023_02_T2/LC08_L2SR_232122_20191218_20201023_02_T2_SR_B1.TIF"
+            "href": "tests/data-files/landsat/LC08_L2SR_081119_20200101_20200823_02_T2_SR_B2_small.TIF"
         },
         "SR_B2.TIF": {
             "title": "Blue Band (B2)",
