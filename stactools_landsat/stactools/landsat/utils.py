@@ -11,8 +11,8 @@ def _parse_date(in_date: str) -> datetime.datetime:
     """
     Try to parse a date and return it as a datetime object with no timezone
     """
-    dt = dateutil.parser.parse(in_date)
-    return dt.replace(tzinfo=datetime.timezone.utc)
+    parsed_date = dateutil.parser.parse(in_date)
+    return parsed_date.replace(tzinfo=datetime.timezone.utc)
 
 
 def transform_mtl_to_stac(metadata: dict) -> Item:
@@ -41,13 +41,13 @@ def transform_mtl_to_stac(metadata: dict) -> Item:
     bounds = shape(geom).bounds
 
     # Like: "2020-01-01" for date and  "23:08:52.6773140Z" for time
-    dt = _parse_date(f"{image['DATE_ACQUIRED']}T{image['SCENE_CENTER_TIME']}")
+    acquired_date = _parse_date(f"{image['DATE_ACQUIRED']}T{image['SCENE_CENTER_TIME']}")
     created = _parse_date(proessing_record["DATE_PRODUCT_GENERATED"])
 
     item = Item(id=scene_id,
                 geometry=geom,
                 bbox=bounds,
-                datetime=dt,
+                datetime=acquired_date,
                 properties={})
 
     # Common metadata
@@ -105,31 +105,31 @@ def transform_stac_to_stac(item: Item,
         # Enabled projection
         item.ext.enable("projection")
 
-        shape = None
-        transform = None
+        obtained_shape = None
+        obtained_transform = None
         crs = None
         for name, asset in item.assets.items():
             if "geotiff" in asset.media_type:
                 # retrieve shape, transform and crs from the first geotiff file among the assets
-                if not shape:
+                if not obtained_shape:
                     try:
                         with rasterio.open(asset.href) as opened_asset:
-                            shape = opened_asset.shape
-                            transform = opened_asset.transform
+                            obtained_shape = opened_asset.shape
+                            obtained_transform = opened_asset.transform
                             crs = opened_asset.crs.to_epsg()
                             # Check to ensure that all information is present
-                            if not shape or not transform or not crs:
+                            if not obtained_shape or not obtained_transform or not crs:
                                 raise STACError(
                                     f"Failed setting shape, transform and csr from {asset.href}"
                                 )
 
                     except RasterioIOError as io_error:
                         raise STACError(
-                            f"Failed loading geotiff, so not handling proj fields, {io_error}"
-                        )
+                            "Failed loading geotiff, so not handling proj fields"
+                        ) from io_error
 
-                item.ext.projection.set_transform(transform, asset=asset)
-                item.ext.projection.set_shape(shape, asset=asset)
+                item.ext.projection.set_transform(obtained_transform, asset=asset)
+                item.ext.projection.set_shape(obtained_shape, asset=asset)
                 asset.media_type = MediaType.COG
 
         # Now we have the info, we can make the fields
