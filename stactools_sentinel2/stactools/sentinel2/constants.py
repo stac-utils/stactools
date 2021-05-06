@@ -93,3 +93,57 @@ SENTINEL_BANDS = {
                 center_wavelength=2.190,
                 full_width_half_max=0.242),
 }
+
+# A dict describing the resolutions that are
+# available for each band as separate assets.
+# The first resolution is the sensor gsd; others
+# are downscaled versions.
+BANDS_TO_RESOLUTIONS = {
+    'B01': [
+        60,
+    ],
+    'B02': [
+        10,
+        20,
+        60,
+    ],
+    'B03': [
+        10,
+        20,
+        60,
+    ],
+    'B04': [
+        10,
+        20,
+        60,
+    ],
+    'B05': [
+        20,
+        20,
+        60,
+    ],
+    'B06': [
+        20,
+        60,
+    ],
+    'B07': [
+        20,
+        60,
+    ],
+    'B08': [
+        10,
+    ],
+    'B8A': [
+        20,
+        60,
+    ],
+    'B09': [60],
+    'B11': [
+        20,
+        60,
+    ],
+    'B12': [
+        20,
+        60,
+    ],
+}
