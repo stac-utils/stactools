@@ -82,9 +82,7 @@ def transform_stac_to_stac(item: Item,
 
     # Add and update links
     if self_link:
-        item.links.append(
-            Link(rel="self", target=self_link)
-        )
+        item.links.append(Link(rel="self", target=self_link))
     if source_link:
         item.links.append(
             Link(rel="derived_from",
@@ -151,8 +149,6 @@ def stac_api_to_stac(uri: str) -> Item:
     Takes in a URI and uses that to feed the STAC transform
     """
 
-    return transform_stac_to_stac(
-        item=Item.from_file(uri),
-        source_link=uri,
-        enable_proj=False
-    )
+    return transform_stac_to_stac(item=Item.from_file(uri),
+                                  source_link=uri,
+                                  enable_proj=False)

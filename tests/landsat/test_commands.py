@@ -5,12 +5,10 @@ from tempfile import TemporaryDirectory
 
 import pystac
 from stactools.landsat.commands import create_landsat_command
-from stactools.landsat.utils import (
-    _parse_date,
-    stac_api_to_stac,
-    transform_mtl_to_stac,
-    transform_stac_to_stac
-)
+from stactools.landsat.utils import (_parse_date,
+                                     stac_api_to_stac,
+                                     transform_mtl_to_stac,
+                                     transform_stac_to_stac)
 
 from tests.utils import CliTestCase, TestData
 
@@ -63,8 +61,7 @@ class LandsatTest(CliTestCase):
                 # Replace a valid local file for an invalid url forcing an exception
                 asset.href = asset.href.replace(
                     'LC08_L2SR_081119_20200101_20200823_02_T2_SR_B2_small.TIF',
-                    "just/an/invalid/url.json"
-                )
+                    "just/an/invalid/url.json")
             with self.assertRaises(pystac.STACError):
                 transform_stac_to_stac(item)
 
