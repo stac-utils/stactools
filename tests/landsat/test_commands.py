@@ -27,9 +27,6 @@ class LandsatTest(CliTestCase):
 
     landsat_stac_files = [str(TEST_FOLDER / f) for f in ALL_EXAMPLES]
     landsat_mtl_file = TEST_FOLDER / "LC08_L2SR_081119_20200101_20200823_02_T2_MTL.json"
-    landsat_stac_api = (
-        "https://landsatlook.usgs.gov/sat-api/collections/"
-        "landsat-c2l2-sr/items/LC08_L2SR_081119_20200101_20200823_02_T2")
 
     @property
     def landsat_stac(self):
@@ -81,7 +78,7 @@ class LandsatTest(CliTestCase):
 
     def test_transform_dynamic_stac(self):
         """Convert a URI of a STAC 0.7.0 document to a STAC 1.0.0.beta.2 document"""
-        item = stac_api_to_stac(self.landsat_stac_api)
+        item = stac_api_to_stac(self.landsat_stac_files[0])
         item.validate()
 
     def test_transform_mtl(self):
