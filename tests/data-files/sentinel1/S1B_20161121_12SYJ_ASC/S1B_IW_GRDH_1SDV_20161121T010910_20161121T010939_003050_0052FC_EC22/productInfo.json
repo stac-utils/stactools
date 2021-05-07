@@ -1,0 +1,43 @@
+{
+  "id": "S1B_IW_GRDH_1SDV_20161121T010910_20161121T010939_003050_0052FC_EC22",
+  "path": "scenes/RTC/1/2016/11/21/IW/DV/S1B_IW_GRDH_1SDV_20161121T010910_20161121T010939_003050_0052FC_EC22/",
+  "missionId": "S1B",
+  "productType": "RTC",
+  "mode": "IW",
+  "polarization": "DV",
+  "startTime": "2016-11-21T01:09:10",
+  "stopTime": "2016-11-21T01:09:39",
+  "absoluteOrbitNumber": 3050,
+  "missionDataTakeId": "0052FC",
+  "productUniqueIdentifier": "EC22",
+  "sciHubIngestion": "2018-03-29T10:41:21.992000Z",
+  "s3Ingestion": "2020-09-22T11:02:42.715622Z",
+  "sciHubId": "d9a2eb83-5dca-4395-b87f-5c96f33a887c",
+  "footprint": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -109.653709,
+          38.73912
+        ],
+        [
+          -106.796921,
+          39.12991
+        ],
+        [
+          -106.437561,
+          37.386921
+        ],
+        [
+          -109.226921,
+          36.994385
+        ],
+        [
+          -109.653709,
+          38.73912
+        ]
+      ]
+    ]
+  }
+}

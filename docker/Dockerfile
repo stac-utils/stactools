@@ -82,6 +82,10 @@ RUN pip install -r /tmp/planet/requirements.txt
 COPY stactools_sentinel2/requirements.txt /tmp/sentinel2/requirements.txt
 RUN pip install -r /tmp/sentinel2/requirements.txt
 
+# Sentinel 1
+COPY stactools_sentinel1/requirements.txt /tmp/sentinel1/requirements.txt
+RUN pip install -r /tmp/sentinel1/requirements.txt
+
 # 3DEP
 COPY stactools_threedep/requirements.txt /tmp/threedep/requirements.txt
 RUN pip install -r /tmp/threedep/requirements.txt
