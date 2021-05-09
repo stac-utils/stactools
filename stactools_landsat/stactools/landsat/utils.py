@@ -109,7 +109,7 @@ def transform_stac_to_stac(item: Item,
         obtained_shape = None
         obtained_transform = None
         crs = None
-        for name, asset in item.assets.items():
+        for asset in item.assets.values():
             if "geotiff" in asset.media_type:
                 # retrieve shape, transform and crs from the first geotiff file among the assets
                 if not obtained_shape:
@@ -129,9 +129,8 @@ def transform_stac_to_stac(item: Item,
                             "Failed loading geotiff, so not handling proj fields"
                         ) from io_error
 
-                    item.ext.projection.set_transform(obtained_transform,
-                                                      asset=asset)
-                    item.ext.projection.set_shape(obtained_shape, asset=asset)
+                item.ext.projection.set_transform(obtained_transform, asset=asset)
+                item.ext.projection.set_shape(obtained_shape, asset=asset)
                 asset.media_type = MediaType.COG
 
         # Now we have the info, we can make the fields
