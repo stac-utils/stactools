@@ -92,9 +92,23 @@ def transform_stac_to_stac(item: Item,
 
     # Add some common fields
     item.common_metadata.constellation = "Landsat"
-    item.common_metadata.instruments = [
-        i.lower() for i in item.properties["eo:instrument"].split("_")
-    ]
+
+    if not item.properties.get("eo:instrument"):
+        raise STACError('eo:instrument missing among the properties')
+
+    if isinstance(item.properties["eo:instrument"], str):
+        item.common_metadata.instruments = [
+            i.lower() for i in item.properties["eo:instrument"].split("_")
+        ]
+    elif isinstance(item.properties["eo:instrument"], list):
+        item.common_metadata.instruments = [
+            i.lower() for i in item.properties["eo:instrument"]
+        ]
+    else:
+        raise STACError(
+            f'eo:instrument type {type(item.properties["eo:instrument"])} not supported'
+        )
+
     del item.properties["eo:instrument"]
 
     # Handle view extension
