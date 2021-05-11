@@ -112,12 +112,14 @@ def transform_stac_to_stac(item: Item,
 
     # Handle view extension
     item.ext.enable("view")
-    if item.properties.get("eo:off_nadir"):
+    if (item.properties.get("eo:off_nadir")
+            or item.properties.get("eo:off_nadir") == 0):
         item.ext.view.off_nadir = item.properties.pop("eo:off_nadir")
-    elif item.properties.get("view:off_nadir"):
+    elif (item.properties.get("view:off_nadir")
+          or item.properties.get("view:off_nadir") == 0):
         item.ext.view.off_nadir = item.properties.pop("view:off_nadir")
     else:
-        STACError('eo:off_nadir or view:off_nadir required')
+        STACError("eo:off_nadir or view:off_nadir is a required property")
 
     if enable_proj:
         # Enabled projection
