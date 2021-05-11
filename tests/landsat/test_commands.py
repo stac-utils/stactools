@@ -73,12 +73,6 @@ class LandsatTest(CliTestCase):
             if item.assets.get("ST_B10.TIF"):
                 item.assets.pop("ST_B10.TIF")
 
-            for asset in item.assets.values():
-                if "geotiff" in asset.media_type:
-                    asset.href = (
-                        "tests/data-files/landsat/"
-                        "LC08_L2SR_081119_20200101_20200823_02_T2_SR_B2_small.TIF"
-                    )
             item = transform_stac_to_stac(item)
             item.validate()
 
