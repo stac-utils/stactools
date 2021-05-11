@@ -146,7 +146,8 @@ def transform_stac_to_stac(item: Item,
                             "Failed loading geotiff, so not handling proj fields"
                         ) from io_error
 
-                item.ext.projection.set_transform(obtained_transform, asset=asset)
+                item.ext.projection.set_transform(obtained_transform,
+                                                  asset=asset)
                 item.ext.projection.set_shape(obtained_shape, asset=asset)
                 asset.media_type = MediaType.COG
 
