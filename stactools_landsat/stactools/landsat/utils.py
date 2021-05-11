@@ -92,15 +92,34 @@ def transform_stac_to_stac(item: Item,
 
     # Add some common fields
     item.common_metadata.constellation = "Landsat"
-    item.common_metadata.instruments = [
-        i.lower() for i in item.properties["eo:instrument"].split("_")
-    ]
-    del item.properties["eo:instrument"]
+
+    if not item.properties.get("eo:instrument"):
+        raise STACError("eo:instrument missing among the properties")
+
+    # Test if eo:instrument come as str or list
+    if isinstance(item.properties["eo:instrument"], str):
+        item.common_metadata.instruments = [
+            i.lower() for i in item.properties.pop("eo:instrument").split("_")
+        ]
+    elif isinstance(item.properties["eo:instrument"], list):
+        item.common_metadata.instruments = [
+            i.lower() for i in item.properties.pop("eo:instrument")
+        ]
+    else:
+        raise STACError(
+            f'eo:instrument type {type(item.properties["eo:instrument"])} not supported'
+        )
 
     # Handle view extension
     item.ext.enable("view")
-    item.ext.view.off_nadir = item.properties["eo:off_nadir"]
-    del item.properties["eo:off_nadir"]
+    if (item.properties.get("eo:off_nadir")
+            or item.properties.get("eo:off_nadir") == 0):
+        item.ext.view.off_nadir = item.properties.pop("eo:off_nadir")
+    elif (item.properties.get("view:off_nadir")
+          or item.properties.get("view:off_nadir") == 0):
+        item.ext.view.off_nadir = item.properties.pop("view:off_nadir")
+    else:
+        STACError("eo:off_nadir or view:off_nadir is a required property")
 
     if enable_proj:
         # Enabled projection
@@ -109,7 +128,7 @@ def transform_stac_to_stac(item: Item,
         obtained_shape = None
         obtained_transform = None
         crs = None
-        for name, asset in item.assets.items():
+        for asset in item.assets.values():
             if "geotiff" in asset.media_type:
                 # retrieve shape, transform and crs from the first geotiff file among the assets
                 if not obtained_shape:
@@ -129,9 +148,9 @@ def transform_stac_to_stac(item: Item,
                             "Failed loading geotiff, so not handling proj fields"
                         ) from io_error
 
-                    item.ext.projection.set_transform(obtained_transform,
-                                                      asset=asset)
-                    item.ext.projection.set_shape(obtained_shape, asset=asset)
+                item.ext.projection.set_transform(obtained_transform,
+                                                  asset=asset)
+                item.ext.projection.set_shape(obtained_shape, asset=asset)
                 asset.media_type = MediaType.COG
 
         # Now we have the info, we can make the fields
