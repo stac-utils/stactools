@@ -1,6 +1,29 @@
 # Changelog
 
-## [unreleased]
+## stactools 0.1.6
+
+### Added
+
+- Band assets for lower spatial resolution version of Sentinel 2 L2A ([#88](https://github.com/stac-utils/stactools/pull/88))
+- Version command ([#127](https://github.com/stac-utils/stactools/pull/127))
+
+### Changed
+
+- Better handling for Skysat images and other Planet improvements ([#73](https://github.com/stac-utils/stactools/pull/73))
+- Use core utilities in more subpackages ([#112](https://github.com/stac-utils/stactools/pull/112))
+
+### Fixed
+
+- Converted landsat tests to local instead of network access ([#105](https://github.com/stac-utils/stactools/pull/105))
+- Update landsat convert script to take new USGS fields ([#109](https://github.com/stac-utils/stactools/pull/109))
+- Typo in Sentinel 2 L2A items ([#116](https://github.com/stac-utils/stactools/pull/116))
+- `--enable-proj` flag for landsat's convert command ([#94](https://github.com/stac-utils/stactools/pull/94))
+- Small documentation typo ([#119](https://github.com/stac-utils/stactools/pull/119))
+- Removed leftover debugging code in sentinel2 test ([#118](https://github.com/stac-utils/stactools/pull/118))
+- Landsat8 bounding boxes were off by half of a pixel ([#121](https://github.com/stac-utils/stactools/pull/121))
+- Zero-valued z coordinates in sentinel2 metadata ([#122](https://github.com/stac-utils/stactools/pull/122))
+- SA_QA_AEROSOL asset key in landsat data ([#126](https://github.com/stac-utils/stactools/pull/126))
+- Relative paths in sentinel2 assets ([#125](https://github.com/stac-utils/stactools/pull/125))
 
 ## stactools 0.1.5
 
