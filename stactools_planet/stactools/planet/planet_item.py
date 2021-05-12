@@ -179,6 +179,9 @@ class PlanetItem:
                         roles.append('visual')
                         self._create_thumbnail(href, item, False)
                         thumbnail_created = True
+
+                    if "_sr" in asset_type:
+                        roles.append('reflectance')
             else:
                 roles = ['metadata']
 
