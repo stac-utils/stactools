@@ -36,4 +36,4 @@ python:
     - method: pip
       path: stactools_browse/
     - method: pip
-      path: stactools_sentinel/
+      path: stactools_sentinel2/

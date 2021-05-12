@@ -2,7 +2,7 @@ import datetime
 
 import dateutil.parser
 import rasterio
-from pystac import Item, Link, MediaType
+from pystac import Item, Link, MediaType, STACError
 from rasterio import RasterioIOError
 from shapely.geometry import box, mapping, shape
 
@@ -11,8 +11,8 @@ def _parse_date(in_date: str) -> datetime.datetime:
     """
     Try to parse a date and return it as a datetime object with no timezone
     """
-    dt = dateutil.parser.parse(in_date)
-    return dt.replace(tzinfo=datetime.timezone.utc)
+    parsed_date = dateutil.parser.parse(in_date)
+    return parsed_date.replace(tzinfo=datetime.timezone.utc)
 
 
 def transform_mtl_to_stac(metadata: dict) -> Item:
@@ -41,13 +41,14 @@ def transform_mtl_to_stac(metadata: dict) -> Item:
     bounds = shape(geom).bounds
 
     # Like: "2020-01-01" for date and  "23:08:52.6773140Z" for time
-    dt = _parse_date(f"{image['DATE_ACQUIRED']}T{image['SCENE_CENTER_TIME']}")
+    acquired_date = _parse_date(
+        f"{image['DATE_ACQUIRED']}T{image['SCENE_CENTER_TIME']}")
     created = _parse_date(proessing_record["DATE_PRODUCT_GENERATED"])
 
     item = Item(id=scene_id,
                 geometry=geom,
                 bbox=bounds,
-                datetime=dt,
+                datetime=acquired_date,
                 properties={})
 
     # Common metadata
@@ -71,6 +72,7 @@ def transform_stac_to_stac(item: Item,
                            source_link: str = None) -> Item:
     """
     Handle a 0.7.0 item and convert it to a 1.0.0.beta2 item.
+    If `enable_proj` is true, the assets' geotiff files must be accessible.
     """
     # Clear hierarchical links
     item.set_parent(None)
@@ -90,60 +92,84 @@ def transform_stac_to_stac(item: Item,
 
     # Add some common fields
     item.common_metadata.constellation = "Landsat"
-    item.common_metadata.instruments = [
-        i.lower() for i in item.properties["eo:instrument"].split("_")
-    ]
-    del item.properties["eo:instrument"]
+
+    if not item.properties.get("eo:instrument"):
+        raise STACError("eo:instrument missing among the properties")
+
+    # Test if eo:instrument come as str or list
+    if isinstance(item.properties["eo:instrument"], str):
+        item.common_metadata.instruments = [
+            i.lower() for i in item.properties.pop("eo:instrument").split("_")
+        ]
+    elif isinstance(item.properties["eo:instrument"], list):
+        item.common_metadata.instruments = [
+            i.lower() for i in item.properties.pop("eo:instrument")
+        ]
+    else:
+        raise STACError(
+            f'eo:instrument type {type(item.properties["eo:instrument"])} not supported'
+        )
 
     # Handle view extension
     item.ext.enable("view")
-    item.ext.view.off_nadir = item.properties["eo:off_nadir"]
-    del item.properties["eo:off_nadir"]
+    if (item.properties.get("eo:off_nadir")
+            or item.properties.get("eo:off_nadir") == 0):
+        item.ext.view.off_nadir = item.properties.pop("eo:off_nadir")
+    elif (item.properties.get("view:off_nadir")
+          or item.properties.get("view:off_nadir") == 0):
+        item.ext.view.off_nadir = item.properties.pop("view:off_nadir")
+    else:
+        STACError("eo:off_nadir or view:off_nadir is a required property")
 
     if enable_proj:
-        try:
-            # If we can load the blue band, use it to add proj information
-            if item.assets.get("SR_B2.TIF"):
-                asset = item.assets["SR_B2.TIF"]
-            # SR_B10 is a fallback for SR_B2
-            elif item.assets.get("SR_B10.TIF"):
-                asset = item.assets["SR_B10.TIF"]
-            else:
-                raise ValueError('Asset SR_B2.TIF or SR_B2.TIF required')
+        # Enabled projection
+        item.ext.enable("projection")
 
-            with rasterio.open(asset.href) as opened_asset:
-                shape = [opened_asset.height, opened_asset.width]
-                transform = opened_asset.transform
-                crs = opened_asset.crs.to_epsg()
+        obtained_shape = None
+        obtained_transform = None
+        crs = None
+        for asset in item.assets.values():
+            if "geotiff" in asset.media_type:
+                # retrieve shape, transform and crs from the first geotiff file among the assets
+                if not obtained_shape:
+                    try:
+                        with rasterio.open(asset.href) as opened_asset:
+                            obtained_shape = opened_asset.shape
+                            obtained_transform = opened_asset.transform
+                            crs = opened_asset.crs.to_epsg()
+                            # Check to ensure that all information is present
+                            if not obtained_shape or not obtained_transform or not crs:
+                                raise STACError(
+                                    f"Failed setting shape, transform and csr from {asset.href}"
+                                )
 
-            # Now we have the info, we can make the fields
-            item.ext.enable("projection")
-            item.ext.projection.epsg = crs
+                    except RasterioIOError as io_error:
+                        raise STACError(
+                            "Failed loading geotiff, so not handling proj fields"
+                        ) from io_error
 
-            for name, asset in item.assets.items():
-                if asset.media_type == "image/vnd.stac.geotiff; cloud-optimized=true":
-                    item.ext.projection.set_transform(transform, asset=asset)
-                    item.ext.projection.set_shape(shape, asset=asset)
-                    asset.media_type = MediaType.COG
+                item.ext.projection.set_transform(obtained_transform,
+                                                  asset=asset)
+                item.ext.projection.set_shape(obtained_shape, asset=asset)
+                asset.media_type = MediaType.COG
 
-        except RasterioIOError:
-            print("Failed to load blue band, so not handling proj fields")
+        # Now we have the info, we can make the fields
+        item.ext.projection.epsg = crs
 
     # Remove .TIF from asset names
-    new_assets = {}
-
-    for name, asset in item.assets.items():
-        new_name = name.replace(".TIF", "")
-        new_assets[new_name] = asset
-    item.assets = new_assets
+    item.assets = {
+        name.replace(".TIF", ""): asset
+        for name, asset in item.assets.items()
+    }
 
     return item
 
 
-def stac_api_to_stac(uri: str) -> dict:
+def stac_api_to_stac(uri: str) -> Item:
     """
     Takes in a URI and uses that to feed the STAC transform
     """
-    item = Item.from_file(uri)
 
-    return transform_stac_to_stac(item, source_link=uri, enable_proj=False)
+    return transform_stac_to_stac(item=Item.from_file(uri),
+                                  source_link=uri,
+                                  enable_proj=False)
