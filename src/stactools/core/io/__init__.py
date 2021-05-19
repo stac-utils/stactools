@@ -1,7 +1,10 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, TYPE_CHECKING, Union, Any
 
-import pystac
+from pystac import StacIO
 import fsspec
+
+if TYPE_CHECKING:
+    from pystac.link import Link as Link_Type
 
 ReadHrefModifier = Callable[[str], str]
 """Type alias for a function parameter
@@ -12,22 +15,38 @@ to a signed URL
 
 
 def read_text(href: str,
-              read_href_modifier: Optional[ReadHrefModifier]) -> str:
+              read_href_modifier: Optional[ReadHrefModifier] = None) -> str:
     if read_href_modifier is None:
-        return pystac.STAC_IO.read_text(href)
+        return StacIO.default().read_text(href)
     else:
-        return pystac.STAC_IO.read_text(read_href_modifier(href))
+        return StacIO.default().read_text(read_href_modifier(href))
+
+
+class FsspecStacIO(StacIO):
+    def read_text(self, source: Union[str, "Link_Type"], *args: Any,
+                  **kwargs: Any) -> str:
+        if isinstance(source, str):
+            href = source
+        else:
+            href = source.get_absolute_href()
+            if href is None:
+                raise IOError(
+                    f"Could not get an absolute HREF from link {source}")
+        with fsspec.open(href, "r") as f:
+            return f.read()
+
+    def write_text(self, dest: Union[str, "Link_Type"], txt: str, *args: Any,
+                   **kwargs: Any) -> None:
+        if isinstance(dest, str):
+            href = dest
+        else:
+            href = dest.get_absolute_href()
+            if href is None:
+                raise IOError(
+                    f"Could not get an absolute HREF from link {dest}")
+        with fsspec.open(href, "w") as destination:
+            return destination.write(txt)
 
 
 def use_fsspec():
-    # Use fsspec to handle IO
-    def fsspec_read_method(uri):
-        with fsspec.open(uri, 'r') as f:
-            return f.read()
-
-    def fsspec_write_method(uri, txt):
-        with fsspec.open(uri, 'w') as f:
-            return f.write(txt)
-
-    pystac.STAC_IO.read_text_method = fsspec_read_method
-    pystac.STAC_IO.write_text_method = fsspec_write_method
+    StacIO.set_default(FsspecStacIO)
