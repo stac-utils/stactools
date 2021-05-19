@@ -1,5 +1,9 @@
 from typing import Optional
+
 import pystac
+from pystac.extensions.eo import EOExtension
+from pystac.extensions.projection import ProjectionExtension
+from pystac.extensions.view import ViewExtension
 
 from stactools.core.io import ReadHrefModifier
 from stactools.landsat.assets import (ANG_ASSET_DEF, COMMON_ASSET_DEFS,
@@ -42,24 +46,27 @@ def create_stac_item(
     item.common_metadata.description = L8_ITEM_DESCRIPTION
 
     # eo
-    item.ext.enable('eo')
-    item.ext.eo.cloud_cover = mtl_metadata.cloud_cover
+    EOExtension.add_to(item)
+    eo = EOExtension.ext(item)
+    eo.cloud_cover = mtl_metadata.cloud_cover
 
     # view
-    item.ext.enable('view')
-    item.ext.view.off_nadir = mtl_metadata.off_nadir
-    item.ext.view.sun_elevation = mtl_metadata.sun_elevation
+    ViewExtension.add_to(item)
+    view = ViewExtension.ext(item)
+    view.off_nadir = mtl_metadata.off_nadir
+    view.sun_elevation = mtl_metadata.sun_elevation
     # Sun Azimuth in landsat metadata is -180 to 180 from north, west being negative.
     # In STAC, it's 0 to 360 clockwise from north.
     sun_azimuth = mtl_metadata.sun_azimuth
     if sun_azimuth < 0.0:
         sun_azimuth = 360 + sun_azimuth
-    item.ext.view.sun_azimuth = sun_azimuth
+    view.sun_azimuth = sun_azimuth
 
     # projection
-    item.ext.enable('projection')
-    item.ext.projection.epsg = mtl_metadata.epsg
-    item.ext.projection.bbox = mtl_metadata.proj_bbox
+    ProjectionExtension.add_to(item)
+    projection = ProjectionExtension.ext(item)
+    projection.epsg = mtl_metadata.epsg
+    projection.bbox = mtl_metadata.proj_bbox
 
     # landsat8
     item.stac_extensions.append(L8_EXTENSION_SCHEMA)

@@ -4,7 +4,9 @@ import re
 from typing import Dict, List, Optional, Tuple
 
 import pystac
-from pystac.extensions.sat import OrbitState
+from pystac.extensions.sat import OrbitState, SatExtension
+from pystac.extensions.eo import EOExtension
+from pystac.extensions.projection import ProjectionExtension
 
 from stactools.core.io import ReadHrefModifier
 from stactools.core.projection import transform_from_bbox
@@ -67,20 +69,21 @@ def create_item(
     # --Extensions--
 
     # eo
-
-    item.ext.enable('eo')
-    item.ext.eo.cloud_cover = granule_metadata.cloudiness_percentage
+    EOExtension.add_to(item)
+    eo = EOExtension.ext(item)
+    eo.cloud_cover = granule_metadata.cloudiness_percentage
 
     # sat
-
-    item.ext.enable('sat')
-    item.ext.sat.orbit_state = OrbitState(product_metadata.orbit_state.lower())
-    item.ext.sat.relative_orbit = product_metadata.relative_orbit
+    SatExtension.add_to(item)
+    sat = SatExtension.ext(item)
+    sat.orbit_state = OrbitState(product_metadata.orbit_state.lower())
+    sat.relative_orbit = product_metadata.relative_orbit
 
     # proj
-    item.ext.enable('projection')
-    item.ext.projection.epsg = granule_metadata.epsg
-    if item.ext.projection.epsg is None:
+    ProjectionExtension.add_to(item)
+    projection = ProjectionExtension.ext(item)
+    projection.epsg = granule_metadata.epsg
+    if projection.epsg is None:
         raise ValueError(
             f'Could not determine EPSG code for {granule_href}; which is required.'
         )
@@ -166,9 +169,10 @@ def image_asset_from_href(
                              media_type=asset_media_type,
                              title='True color preview',
                              roles=['data'])
-        item.ext.eo.set_bands([
+        asset_eo = EOExtension.ext(asset)
+        asset_eo.bands = [
             SENTINEL_BANDS['B04'], SENTINEL_BANDS['B03'], SENTINEL_BANDS['B02']
-        ], asset)
+        ]
         return ('preview', asset)
 
     # Extract gsd and proj info
@@ -178,9 +182,10 @@ def image_asset_from_href(
 
     def set_asset_properties(asset):
         item.common_metadata.set_gsd(gsd, asset)
-        item.ext.projection.set_shape(shape, asset)
-        item.ext.projection.set_bbox(proj_bbox, asset)
-        item.ext.projection.set_transform(transform, asset)
+        asset_projection = ProjectionExtension.ext(asset)
+        asset_projection.shape = shape
+        asset_projection.bbox = proj_bbox
+        asset_projection.transform = transform
 
     # Handle band image
 
@@ -192,7 +197,8 @@ def image_asset_from_href(
                              media_type=asset_media_type,
                              title=band.description,
                              roles=['data'])
-        item.ext.eo.set_bands([SENTINEL_BANDS[band_id]], asset)
+        asset_eo = EOExtension.ext(asset)
+        asset_eo.bands = [SENTINEL_BANDS[band_id]]
         set_asset_properties(asset)
         return (band_id, asset)
 
@@ -204,9 +210,10 @@ def image_asset_from_href(
                              media_type=asset_media_type,
                              title='True color image',
                              roles=['data'])
-        item.ext.eo.set_bands([
+        asset_eo = EOExtension.ext(asset)
+        asset_eo.bands = [
             SENTINEL_BANDS['B04'], SENTINEL_BANDS['B03'], SENTINEL_BANDS['B02']
-        ], asset)
+        ]
         set_asset_properties(asset)
         return (f'visual-{asset_href[-7:-4]}', asset)
 

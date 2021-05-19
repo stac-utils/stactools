@@ -2,6 +2,7 @@ import os
 import xml.etree.ElementTree as ET
 
 import pystac
+from pystac.extensions.projection import ProjectionExtension
 from pystac.utils import str_to_datetime
 from shapely.geometry import box, mapping, shape
 
@@ -65,8 +66,9 @@ def create_item(metadata_href):
     item.common_metadata.providers = [COPERNICUS_PROVIDER]
 
     # proj
-    item.ext.enable('projection')
-    item.ext.projection.epsg = epsg
+    ProjectionExtension.add_to(item)
+    projection = ProjectionExtension.ext(item)
+    projection.epsg = epsg
 
     # Tif
     item.add_asset(

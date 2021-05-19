@@ -86,7 +86,7 @@ class LandsatTest(CliTestCase):
         This is not fully implemented, so it fails"""
         item = transform_mtl_to_stac(self.landsat_mtl)
         # We expect failure until it is fully implemented
-        with self.assertRaises(pystac.validation.STACValidationError):
+        with self.assertRaises(pystac.STACValidationError):
             item.validate()
 
     def test_date_parse(self):

@@ -1,6 +1,8 @@
 import datetime
 import unittest
 
+from pystac.extensions.projection import ProjectionExtension
+
 from tests.utils import TestData
 from stactools.threedep import stac
 from stactools.threedep.constants import USGS_FTP_BASE
@@ -91,10 +93,10 @@ class CreateItemTest(unittest.TestCase):
                          ("https://prd-tnm.s3.amazonaws.com/StagedProducts"
                           "/Elevation/1/TIFF/n41w106/USGS_1_n41w106.xml"))
 
-        item.ext.enable("projection")
-        self.assertEqual(item.ext.projection.epsg, 5498)
-        self.assertEqual(item.ext.projection.shape, [3612, 3612])
-        self.assertEqual(item.ext.projection.transform, [
+        projection = ProjectionExtension.ext(item)
+        self.assertEqual(projection.epsg, 5498)
+        self.assertEqual(projection.shape, [3612, 3612])
+        self.assertEqual(projection.transform, [
             0.00027777778, 0.0, -106.001666667082, 0.0, -0.00027777778,
             41.0016666667842, 0.0, 0.0, 1.0
         ])

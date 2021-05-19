@@ -1,8 +1,9 @@
 import click
 import os.path
 
-from pystac import Catalog, Collection, Extent, CatalogType, STAC_IO
+from pystac import Catalog, Collection, Extent, CatalogType
 
+from stactools.core import io
 from stactools.threedep.constants import (PRODUCTS, DESCRIPTION, USGS_PROVIDER,
                                           USGS_FTP_BASE, USGS_3DEP_ID)
 from stactools.threedep import utils, stac
@@ -111,7 +112,7 @@ def create_threedep_command(cli):
                                          base=USGS_FTP_BASE)
                 if not quiet:
                     print("{} -> {}".format(source_path, path))
-                text = STAC_IO.read_text(source_path)
+                text = io.read_text(source_path)
                 with open(path, "w") as f:
                     f.write(text)
 

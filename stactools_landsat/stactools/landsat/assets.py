@@ -2,6 +2,7 @@ from typing import List, Optional
 
 import pystac
 from pystac.extensions.eo import Band
+from pystac.extensions.projection import ProjectionExtension
 
 from stactools.landsat.constants import (L8_SR_BANDS, L8_SP_BANDS)
 from stactools.landsat.mtl_metadata import MtlMetadata
@@ -75,13 +76,13 @@ class AssetDef:
             asset.properties["eo:bands"] = [b.to_dict() for b in self.bands]
 
         # projection
+        projection = ProjectionExtension.ext(asset)
         if self.is_sr or self.is_qa:
-            item.ext.projection.set_shape(mtl_metadata.sr_shape, asset)
-            item.ext.projection.set_transform(mtl_metadata.sr_transform, asset)
+            projection.shape = mtl_metadata.sr_shape
+            projection.transform = mtl_metadata.sr_transform
         if self.is_thermal:
-            item.ext.projection.set_shape(mtl_metadata.thermal_shape, asset)
-            item.ext.projection.set_transform(mtl_metadata.thermal_transform,
-                                              asset)
+            projection.shape = mtl_metadata.thermal_shape
+            projection.transform = mtl_metadata.thermal_transform
 
         item.add_asset(self.key, asset)
 

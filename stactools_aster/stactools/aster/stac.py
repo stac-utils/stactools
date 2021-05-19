@@ -3,6 +3,10 @@ import os
 from typing import Optional
 
 import pystac
+from pystac.extensions.eo import EOExtension
+from pystac.extensions.projection import ProjectionExtension
+from pystac.extensions.sat import SatExtension
+from pystac.extensions.view import ViewExtension
 import rasterio as rio
 
 from stactools.core.io import ReadHrefModifier
@@ -55,11 +59,13 @@ def _add_cog_assets(
                                     title=title_for(sensor))
 
         # Set bands
-        item.ext.eo.set_bands(sensors_to_bands[sensor], sensor_asset)
+        eo = EOExtension.ext(sensor_asset)
+        eo.bands = sensors_to_bands[sensor]
 
         # Set view off_nadir
+        view = ViewExtension.ext(sensor_asset)
         if sensor in pointing_angles:
-            item.ext.view.off_nadir = abs(pointing_angles[sensor])
+            view.off_nadir = abs(pointing_angles[sensor])
 
         # Open COG headers to get proj info
         cog_read_href = cog_href
@@ -71,9 +77,10 @@ def _add_cog_assets(
             proj_bbox = list(ds.bounds)
             transform = list(ds.transform)
 
-            item.ext.projection.set_shape(image_shape, sensor_asset)
-            item.ext.projection.set_bbox(proj_bbox, sensor_asset)
-            item.ext.projection.set_transform(transform, sensor_asset)
+            projection = ProjectionExtension.ext(sensor_asset)
+            projection.shape = image_shape
+            projection.bbox = proj_bbox
+            projection.transform = transform
 
         item.add_asset(sensor, sensor_asset)
 
@@ -121,30 +128,34 @@ def create_item(xml_href: str,
     item.common_metadata.instruments = [ASTER_INSTRUMENT]
 
     # eo
-    item.ext.enable('eo')
-    item.ext.eo.cloud_cover = xml_metadata.cloud_cover
+    EOExtension.add_to(item)
+    eo = EOExtension.ext(item)
+    eo.cloud_cover = xml_metadata.cloud_cover
 
     # sat
-    item.ext.enable('sat')
-    item.ext.sat.orbit_state = xml_metadata.orbit_state
+    SatExtension.add_to(item)
+    sat = SatExtension.ext(item)
+    sat.orbit_state = xml_metadata.orbit_state
 
     # view
-    item.ext.enable('view')
-    item.ext.view.sun_azimuth = xml_metadata.sun_azimuth
+    ViewExtension.add_to(item)
+    view = ViewExtension.ext(item)
+    view.sun_azimuth = xml_metadata.sun_azimuth
     sun_elevation = xml_metadata.sun_elevation
     # Sun elevation can be negative; if so, will break validation; leave out.
     # See https://github.com/radiantearth/stac-spec/issues/853
     # This is fixed in 1.0.0-RC1; store as an aster property
     #  to be updated once upgrade to 1.0.0-RC1 happens.
     if sun_elevation >= 0.0:
-        item.ext.view.sun_elevation = sun_elevation
+        view.sun_elevation = sun_elevation
     else:
-        item.ext.view.sun_elevation = 0.0
+        view.sun_elevation = 0.0
         item.properties['aster:sun_elevation'] = str(sun_elevation)
 
     # proj
-    item.ext.enable('projection')
-    item.ext.projection.epsg = xml_metadata.epsg
+    ProjectionExtension.add_to(item)
+    projection = ProjectionExtension.ext(item)
+    projection.epsg = xml_metadata.epsg
 
     # ASTER-specific properties
     item.properties.update(xml_metadata.aster_properties)
@@ -174,7 +185,8 @@ def create_item(xml_href: str,
                                  roles=['data'],
                                  title="ASTER L1T 003 HDF-EOS")
 
-        item.ext.eo.set_bands(ASTER_BANDS, hdf_asset)
+        asset_eo = EOExtension.ext(hdf_asset)
+        asset_eo.bands = ASTER_BANDS
 
         item.add_asset(HDF_ASSET_KEY, hdf_asset)
 

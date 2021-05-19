@@ -1,6 +1,7 @@
 from typing import Optional
 
 from pystac import Item
+from pystac.extensions.projection import ProjectionExtension
 from shapely.geometry import shape
 
 from stactools.core.io import ReadHrefModifier
@@ -44,7 +45,8 @@ def create_item_from_metadata(metadata: Metadata, base: DEFAULT_BASE) -> Item:
     item.assets["metadata"] = metadata.metadata_asset(base)
     item.assets["thumbnail"] = metadata.thumbnail_asset(base)
     item.assets["gpkg"] = metadata.gpkg_asset(base)
-    item.ext.enable("projection")
-    item.ext.projection.apply(**metadata.projection_extension_dict)
+    ProjectionExtension.add_to(item)
+    projection = ProjectionExtension.ext(item)
+    projection.apply(**metadata.projection_extension_dict)
     item.properties["threedep:region"] = metadata.region
     return item

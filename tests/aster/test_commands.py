@@ -3,6 +3,7 @@ from tempfile import TemporaryDirectory
 from typing import cast
 
 import pystac
+from pystac.extensions.projection import ProjectionExtension
 import rasterio as rio
 from shapely.geometry import box, shape
 
@@ -130,10 +131,12 @@ class CreateItemTest(CliTestCase):
                 ]))
 
             # Check that the proj bbox and item geom align
-            crs = f'epsg:{item.ext.projection.epsg}'
+            projection = ProjectionExtension.ext(item)
+            crs = f'epsg:{projection.epsg}'
             for asset_key in [VNIR_SENSOR, SWIR_SENSOR, TIR_SENSOR]:
-                proj_bbox_shp = box(
-                    *item.ext.projection.get_bbox(item.assets[asset_key]))
+                asset_projection = ProjectionExtension.ext(
+                    item.assets[asset_key])
+                proj_bbox_shp = box(*asset_projection.bbox)
                 projected_shp = shape(
                     reproject_geom('epsg:4326', crs, item.geometry))
                 self.assertTrue(proj_bbox_shp.covers(projected_shp))

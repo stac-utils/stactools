@@ -1,8 +1,11 @@
 import datetime
-
 import dateutil.parser
+
 import rasterio
 from pystac import Item, Link, MediaType, STACError
+from pystac.extensions.eo import EOExtension
+from pystac.extensions.projection import ProjectionExtension
+from pystac.extensions.view import ViewExtension
 from rasterio import RasterioIOError
 from shapely.geometry import box, mapping, shape
 
@@ -59,9 +62,9 @@ def transform_mtl_to_stac(metadata: dict) -> Item:
     ]
 
     # TODO: implement these three extensions
-    item.ext.enable("eo")
-    item.ext.enable("view")
-    item.ext.enable("projection")
+    EOExtension.add_to(item)
+    ViewExtension.add_to(item)
+    ProjectionExtension.add_to(item)
 
     return item
 
@@ -79,7 +82,7 @@ def transform_stac_to_stac(item: Item,
     item.set_root(None)
 
     # Remove USGS extension and add back eo
-    item.ext.enable("eo")
+    EOExtension.add_to(item)
 
     # Add and update links
     if self_link:
@@ -111,19 +114,21 @@ def transform_stac_to_stac(item: Item,
         )
 
     # Handle view extension
-    item.ext.enable("view")
+    ViewExtension.add_to(item)
+    view = ViewExtension.ext(item)
     if (item.properties.get("eo:off_nadir")
             or item.properties.get("eo:off_nadir") == 0):
-        item.ext.view.off_nadir = item.properties.pop("eo:off_nadir")
+        view.off_nadir = item.properties.pop("eo:off_nadir")
     elif (item.properties.get("view:off_nadir")
           or item.properties.get("view:off_nadir") == 0):
-        item.ext.view.off_nadir = item.properties.pop("view:off_nadir")
+        view.off_nadir = item.properties.pop("view:off_nadir")
     else:
         STACError("eo:off_nadir or view:off_nadir is a required property")
 
     if enable_proj:
         # Enabled projection
-        item.ext.enable("projection")
+        ProjectionExtension.add_to(item)
+        projection = ProjectionExtension.ext(item)
 
         obtained_shape = None
         obtained_transform = None
@@ -148,13 +153,13 @@ def transform_stac_to_stac(item: Item,
                             "Failed loading geotiff, so not handling proj fields"
                         ) from io_error
 
-                item.ext.projection.set_transform(obtained_transform,
-                                                  asset=asset)
-                item.ext.projection.set_shape(obtained_shape, asset=asset)
+                asset_projection = ProjectionExtension(asset)
+                asset_projection.transform = obtained_transform
+                asset_projection.shape = obtained_shape
                 asset.media_type = MediaType.COG
 
         # Now we have the info, we can make the fields
-        item.ext.projection.epsg = crs
+        projection.epsg = crs
 
     # Remove .TIF from asset names
     item.assets = {

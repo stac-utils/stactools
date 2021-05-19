@@ -1,4 +1,4 @@
-pystac[validation]==0.5.6
+pystac[validation]==1.0.0b2
 aiohttp==3.7.3
 fsspec==0.8.4
 requests==2.25.0

@@ -1,6 +1,8 @@
 import os
 
 import pystac
+from pystac.extensions.eo import EOExtension
+from pystac.extensions.projection import ProjectionExtension
 from pystac.utils import str_to_datetime
 import rasterio as rio
 from shapely.geometry import box, mapping, shape
@@ -69,8 +71,9 @@ def create_item(tif_href, additional_providers=None):
     item.common_metadata.title = tags.pop('title')
 
     # proj
-    item.ext.enable('projection')
-    item.ext.projection.epsg = int(
+    ProjectionExtension.add_to(item)
+    projection = ProjectionExtension.ext(item)
+    projection.epsg = int(
         tags.pop('delivered_product_crs').replace('WGS84 (EPSG:',
                                                   '').replace(')', ''))
 
@@ -85,8 +88,9 @@ def create_item(tif_href, additional_providers=None):
         common_name=band_tags.pop('short_name'),
         description=long_name)
 
-    item.ext.enable('eo')
-    item.ext.eo.bands = [band]
+    EOExtension.add_to(item)
+    eo = EOExtension.ext(item)
+    eo.bands = [band]
 
     # Tif
     item.add_asset(

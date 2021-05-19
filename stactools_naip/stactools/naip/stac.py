@@ -4,10 +4,14 @@ from typing import List, Optional
 import dateutil.parser
 import pystac
 from pystac.utils import str_to_datetime
+from pystac.extensions.eo import EOExtension
+from pystac.extensions.projection import ProjectionExtension
+from pystac.extensions.item_assets import ItemAssetsExtension
 from shapely.geometry import shape, box, mapping
 import rasterio as rio
 
 from stactools.core.projection import reproject_geom
+from stactools.core import io
 from stactools.naip import constants
 from stactools.naip.utils import parse_fgdc_metadata
 
@@ -48,7 +52,6 @@ def create_collection(seasons: List[int]) -> pystac.Collection:
         license=constants.NAIP_LICENSE,
         providers=[constants.USDA_PROVIDER],
         extent=extent,
-        stac_extensions=['item-assets'],
         extra_fields={
             'item_assets': {
                 'image': {
@@ -59,6 +62,7 @@ def create_collection(seasons: List[int]) -> pystac.Collection:
                 },
             }
         })
+    ItemAssetsExtension.add_to(collection)
 
     return collection
 
@@ -102,7 +106,7 @@ def create_item(state,
                               precision=6)
 
     if fgdc_metadata_href is not None:
-        fgdc_metadata_text = pystac.STAC_IO.read_text(fgdc_metadata_href)
+        fgdc_metadata_text = io.read_text(fgdc_metadata_href)
         fgdc = parse_fgdc_metadata(fgdc_metadata_text)
     else:
         fgdc = {}
@@ -140,14 +144,15 @@ def create_item(state,
     item.common_metadata.gsd = gsd
 
     # eo, for asset bands
-    item.ext.enable('eo')
+    EOExtension.add_to(item)
 
     # proj
-    item.ext.enable('projection')
-    item.ext.projection.epsg = epsg
-    item.ext.projection.shape = image_shape
-    item.ext.projection.bbox = original_bbox
-    item.ext.projection.transform = transform
+    ProjectionExtension.add_to(item)
+    projection = ProjectionExtension.ext(item)
+    projection.epsg = epsg
+    projection.shape = image_shape
+    projection.bbox = original_bbox
+    projection.transform = transform
 
     # COG
     item.add_asset(
@@ -177,6 +182,7 @@ def create_item(state,
                          roles=['thumbnail'],
                          title='Thumbnail'))
 
-    item.ext.eo.set_bands(constants.NAIP_BANDS, item.assets['image'])
+    eo = EOExtension.ext(item.assets["image"])
+    eo.bands = constants.NAIP_BANDS
 
     return item

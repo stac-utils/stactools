@@ -3,6 +3,7 @@ from tempfile import TemporaryDirectory
 from typing import cast
 
 import pystac
+from pystac.extensions.projection import ProjectionExtension
 from pystac.utils import is_absolute_href
 from shapely.geometry import box, shape, mapping
 
@@ -25,8 +26,8 @@ class CreateItemTest(CliTestCase):
             proj_bbox = item.ext.projection.bbox
             proj_bbox_shp = box(*proj_bbox)
             reproj_bbox_shp = shape(
-                reproject_geom(f"epsg:{item.ext.projection.epsg}", "epsg:4326",
-                               mapping(proj_bbox_shp)))
+                reproject_geom(f"epsg:{ProjectionExtension(item).epsg}",
+                               "epsg:4326", mapping(proj_bbox_shp)))
 
             self.assertLess((reproj_bbox_shp - bbox_shp).area,
                             0.0001 * reproj_bbox_shp.area)

@@ -3,8 +3,9 @@ from datetime import datetime
 
 import pystac
 from pystac import (Catalog, Item, Asset, Extent, TemporalExtent,
-                    SpatialExtent, MediaType, Extensions)
-from pystac.extensions.label import (LabelOverview, LabelClasses, LabelCount)
+                    SpatialExtent, MediaType)
+from pystac.extensions.label import (LabelOverview, LabelClasses, LabelCount,
+                                     LabelExtension)
 
 from tests.utils.test_data import TestData
 
@@ -119,19 +120,18 @@ class TestCases:
                           datetime=datetime.utcnow(),
                           properties={})
 
-        label_item.ext.enable(Extensions.LABEL)
-        label_item.ext.label.apply(label_description='ML Labels',
-                                   label_type='vector',
-                                   label_properties=['label'],
-                                   label_classes=[
-                                       LabelClasses.create(
-                                           classes=['one', 'two'],
-                                           name='label')
-                                   ],
-                                   label_tasks=['classification'],
-                                   label_methods=['manual'],
-                                   label_overviews=overviews)
-        label_item.ext.label.add_source(image_item, assets=['ortho'])
+        label_extension = LabelExtension.ext(label_item)
+        label_extension.apply(label_description='ML Labels',
+                              label_type='vector',
+                              label_properties=['label'],
+                              label_classes=[
+                                  LabelClasses.create(classes=['one', 'two'],
+                                                      name='label')
+                              ],
+                              label_tasks=['classification'],
+                              label_methods=['manual'],
+                              label_overviews=overviews)
+        label_extension.add_source(image_item, assets=['ortho'])
 
         root_cat.add_item(image_item)
         root_cat.add_item(label_item)

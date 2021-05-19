@@ -3,11 +3,14 @@ from copy import deepcopy
 import json
 import logging
 
+from pystac.extensions.projection import ProjectionExtension
+
 import fsspec
 import pystac
 from pystac.link import Link
 from pystac.utils import (str_to_datetime, make_absolute_href)
-from pystac.extensions.eo import Band
+from pystac.extensions.eo import Band, EOExtension
+from pystac.extensions.view import ViewExtension
 from shapely.geometry import shape
 
 from stactools.planet import PLANET_PROVIDER
@@ -114,17 +117,19 @@ class PlanetItem:
             item.common_metadata.instruments = [instrument]
 
         # eo
-        item.ext.enable('eo')
+        EOExtension.add_to(item)
+        eo = EOExtension.ext(item)
         # STAC uses 0-100, planet 0-1
-        item.ext.eo.cloud_cover = props.pop('cloud_cover') * 100
+        eo.cloud_cover = props.pop('cloud_cover') * 100
 
         # view
-        item.ext.enable('view')
-        item.ext.view.off_nadir = props.pop('view_angle')
+        ViewExtension.add_to(item)
+        view = ViewExtension.ext(item)
+        view.off_nadir = props.pop('view_angle')
         if 'satellite_azimuth' in props:
-            item.ext.view.azimuth = props.pop('satellite_azimuth')
-        item.ext.view.sun_azimuth = props.pop('sun_azimuth')
-        item.ext.view.sun_elevation = props.pop('sun_elevation')
+            view.azimuth = props.pop('satellite_azimuth')
+        view.sun_azimuth = props.pop('sun_azimuth')
+        view.sun_elevation = props.pop('sun_elevation')
 
         # Add additional properties with Planet extension designation.
         whitelisted_props = [
@@ -234,7 +239,8 @@ class PlanetItem:
                             PSB_BANDS['BLUE']
                         ]
                 if bands is not None:
-                    item.ext.eo.set_bands(bands, asset)
+                    asset_eo = EOExtension.ext(asset)
+                    asset_eo.bands = bands
 
             item.add_asset(key, asset)
 
@@ -245,13 +251,14 @@ class PlanetItem:
 
         # proj
         if 'epsg_code' in props or geotransform is not None:
-            item.ext.enable('projection')
+            ProjectionExtension.add_to(item)
+            projection = ProjectionExtension.ext(item)
             crs = crs or props.pop('epsg_code')
             if crs is not None:
-                item.ext.projection.epsg = crs
+                projection.epsg = crs
             if geotransform is not None:
-                item.ext.projection.transform = geotransform
-                item.ext.projection.shape = image_shape
+                projection.transform = geotransform
+                projection.shape = image_shape
 
         if self.metadata_href:
             item.add_asset(
