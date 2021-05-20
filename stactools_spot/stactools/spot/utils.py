@@ -4,9 +4,8 @@ from urllib.parse import urlparse
 
 import boto3
 
-from pyproj import Proj, Transformer, transform
 from pystac import (
-    STAC_IO,
+    StacIO,
     Catalog,
     Collection,
     Extent,
@@ -19,7 +18,7 @@ from pystac import (
 
 def read_remote_stacs(uri):
     """
-    Reads STACs from a remote location. To be used to set STAC_IO
+    Reads STACs from a remote location. To be used to set StacIO
     Defaults to local storage.
     """
     parsed = urlparse(uri)
@@ -34,7 +33,7 @@ def read_remote_stacs(uri):
             stac = json.loads(url.read().decode())
             return stac
     else:
-        return STAC_IO.default_read_text_method(uri)
+        return StacIO.default(uri)
 
 
 def write_remote_stacs(uri, txt):
@@ -49,7 +48,7 @@ def write_remote_stacs(uri, txt):
         s3 = boto3.resource("s3")
         s3.Object(bucket, key).put(Body=txt)
     else:
-        STAC_IO.default_write_text_method(uri, txt)
+        StacIO.default(uri, txt)
 
 
 def bbox(f):
@@ -57,14 +56,14 @@ def bbox(f):
     return min(x), min(y), max(x), max(y)
 
 
-def transform_geom(src_crs, dest_crs, geom):
+def transform_geom(transformer, geom):
     """
     Transform the geometry of a given feature
     Allow multipolygons
     """
     new_coords = []
     for ring in geom:
-        x2, y2 = transform(src_crs, dest_crs, *zip(*ring))
+        x2, y2 = transformer.transform(*zip(*ring))
         new_coords.append(list(zip(y2, x2)))
 
     return new_coords

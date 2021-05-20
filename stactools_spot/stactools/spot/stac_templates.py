@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from pystac import (
-    STAC_IO,
+    StacIO,
     Catalog,
     Collection,
     Extent,

@@ -2,9 +2,9 @@ import os
 from datetime import datetime
 
 import fiona
-from pyproj import Proj, Transformer, transform
+from pyproj import crs, Transformer
 from pystac import (
-    STAC_IO,
+    StacIO,
     Asset,
     Catalog,
     CatalogType,
@@ -25,8 +25,8 @@ from stactools.spot.utils import (
     write_remote_stacs
     )
 
-STAC_IO.read_text_method = read_remote_stacs
-STAC_IO.write_text_method = write_remote_stacs
+StacIO.read_text = read_remote_stacs
+StacIO.write_text = write_remote_stacs
 
 
 def create_item(name, feature, collection):
@@ -54,13 +54,13 @@ def build_items(index_geom, GeobaseSTAC):
     Build the STAC items
     """
     with fiona.open(index_geom) as src:
-        src_crs = Proj(src.crs)
-        dest_crs = Proj("WGS84")
+        src_crs = crs.CRS(src.crs)
+        dest_crs = crs.CRS("WGS84")
 
         extent = box(*src.bounds)
 
-        project = Transformer.from_proj(src_crs, dest_crs)
-        catalog_bbox = shapely_transform(project.transform, extent)
+        transformer = Transformer.from_crs(src_crs, dest_crs)
+        catalog_bbox = shapely_transform(transformer.transform, extent)
 
         # build spatial extent for collection
         ortho_collection = GeobaseSTAC.get_child("canada_spot_orthoimages")
@@ -71,8 +71,8 @@ def build_items(index_geom, GeobaseSTAC):
         count = 0
         for f in src:
             feature_out = f.copy()
-
-            new_coords = transform_geom(src_crs, dest_crs, f["geometry"]["coordinates"])
+            
+            new_coords = transform_geom(transformer, f["geometry"]["coordinates"])
             feature_out["geometry"]["coordinates"] = new_coords
 
             name = feature_out["properties"]["NAME"]
