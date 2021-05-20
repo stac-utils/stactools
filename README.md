@@ -80,6 +80,7 @@ See the [documentation page](https://stactools.readthedocs.io/en/latest/) for th
 | `stactools_landsat`           | Methods and commands for working with landsat data        |
 | `stactools_sentinel2`           | Methods and commands for working with Sentinel 2 data        |
 | `stactools_threedep`          | Methods and commands for working with 3DEP (formerly NED) elevation data        |
+| `stactools_spot`          | Methods and commands for working with SPOT data        |
 | `stactools_browse`            | Contains a command for launching stac-browser against a local STAC |
 
 Subpackages are symlinked to the `stactools` directory in this repo to allow them to be importable for python running at the top level directory of the repository clone.
