@@ -3,6 +3,7 @@ from imp import load_source
 from setuptools import setup, find_namespace_packages
 from glob import glob
 import io
+from os.path import (basename, splitext)
 
 name = 'stactools_spot'
 description = ("Subpackage for working with SPOT data of stactools, "
@@ -12,8 +13,6 @@ __version__ = load_source(
     'stactools.spot.version',
     os.path.join(os.path.dirname(__file__),
                  'stactools/spot/version.py')).__version__
-
-from os.path import (basename, splitext)
 
 here = os.path.abspath(os.path.dirname(__file__))
 

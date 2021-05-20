@@ -3,7 +3,6 @@ import logging
 import click
 import pystac
 
-from stactools import core
 from stactools.spot.stac import build_items
 from stactools.spot.stac_templates import build_catalog
 
@@ -18,7 +17,7 @@ def create_spot_command(cli):
         pass
 
     @spot.command('convert-index',
-                    short_help='Convert SPOT index shapefile to STAC catalog')
+                  short_help='Convert SPOT index shapefile to STAC catalog')
     @click.argument('index')
     @click.argument('root_href')
     @click.option('-c',

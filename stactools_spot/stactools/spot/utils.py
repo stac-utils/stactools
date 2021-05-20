@@ -4,16 +4,7 @@ from urllib.parse import urlparse
 
 import boto3
 
-from pystac import (
-    StacIO,
-    Catalog,
-    Collection,
-    Extent,
-    Link,
-    Provider,
-    SpatialExtent,
-    TemporalExtent,
-)
+from pystac import StacIO
 
 
 def read_remote_stacs(uri):

@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from pystac import (
-    StacIO,
     Catalog,
     Collection,
     Extent,
@@ -13,12 +12,10 @@ from pystac import (
 
 SPOT_SENSOR = {"S4": "SPOT 4", "S5": "SPOT 5"}
 
-GeobaseCatalog = Catalog(
-    id="Geobase", 
-    description="STAC Catalog for Geobase", 
-    title=None, 
-    stac_extensions=None
-)
+GeobaseCatalog = Catalog(id="Geobase",
+                         description="STAC Catalog for Geobase",
+                         title=None,
+                         stac_extensions=None)
 
 SpotProviders = [
     Provider(
@@ -27,22 +24,18 @@ SpotProviders = [
         ["licensor", "processor"],
         "www.geobase.ca",
     ),
-    Provider("Sparkgeo", "info@sparkegeo.com", ["processor", "host"], "www.sparkgeo.com"),
-    Provider(
-        "PCI Geomatics", "info@pci.com", ["processor", "host"], "www.pcigeomatics.com"
-    ),
+    Provider("Sparkgeo", "info@sparkegeo.com", ["processor", "host"],
+             "www.sparkgeo.com"),
+    Provider("PCI Geomatics", "info@pci.com", ["processor", "host"],
+             "www.pcigeomatics.com"),
 ]
 
 SpotExtents = Extent(
     SpatialExtent([[0.0, 0.0, 0.0, 0.0]]),
-    TemporalExtent(
-        [
-            [
-                datetime.strptime("2005-01-01", "%Y-%m-%d"),
-                datetime.strptime("2010-01-01", "%Y-%m-%d"),
-            ]
-        ]
-    ),
+    TemporalExtent([[
+        datetime.strptime("2005-01-01", "%Y-%m-%d"),
+        datetime.strptime("2010-01-01", "%Y-%m-%d"),
+    ]]),
 )
 
 OrthoCollection = Collection(

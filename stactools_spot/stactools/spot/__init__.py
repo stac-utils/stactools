@@ -1,6 +1,5 @@
 import stactools.core
 
-
 stactools.core.use_fsspec()
 
 

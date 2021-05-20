@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 
 import fiona
@@ -6,24 +5,15 @@ from pyproj import crs, Transformer
 from pystac import (
     StacIO,
     Asset,
-    Catalog,
-    CatalogType,
-    Collection,
     Item,
     MediaType,
     SpatialExtent,
-    utils,
 )
 from shapely.geometry import box
 from shapely.ops import transform as shapely_transform
 from stactools.spot.geobase_ftp import GeobaseSpotFTP
-from stactools.spot.stac_templates import build_catalog
-from stactools.spot.utils import (
-    bbox, 
-    read_remote_stacs, 
-    transform_geom, 
-    write_remote_stacs
-    )
+from stactools.spot.utils import (bbox, read_remote_stacs, transform_geom,
+                                  write_remote_stacs)
 
 StacIO.read_text = read_remote_stacs
 StacIO.write_text = write_remote_stacs
@@ -64,15 +54,17 @@ def build_items(index_geom, GeobaseSTAC):
 
         # build spatial extent for collection
         ortho_collection = GeobaseSTAC.get_child("canada_spot_orthoimages")
-        ortho_collection.extent.spatial = SpatialExtent([list(catalog_bbox.bounds)])
+        ortho_collection.extent.spatial = SpatialExtent(
+            [list(catalog_bbox.bounds)])
 
         geobase = GeobaseSpotFTP()
 
         count = 0
         for f in src:
             feature_out = f.copy()
-            
-            new_coords = transform_geom(transformer, f["geometry"]["coordinates"])
+
+            new_coords = transform_geom(transformer,
+                                        f["geometry"]["coordinates"])
             feature_out["geometry"]["coordinates"] = new_coords
 
             name = feature_out["properties"]["NAME"]
@@ -81,7 +73,9 @@ def build_items(index_geom, GeobaseSTAC):
 
             for f in geobase.list_contents(name):
                 # Add data to the asset
-                spot_file = Asset(href=f, title=None, media_type="application/zip")
+                spot_file = Asset(href=f,
+                                  title=None,
+                                  media_type="application/zip")
 
                 file_key = f[-13:-4]  # image type
                 new_item.add_asset(file_key, spot_file)
@@ -100,5 +94,5 @@ def build_items(index_geom, GeobaseSTAC):
 
             count += 1
             print(f"{count}... {new_item.id}")
-    
+
     return GeobaseSTAC
