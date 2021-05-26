@@ -46,6 +46,34 @@ SKYSAT_BANDS = {
                 full_width_half_max=152)
 }
 
+PSB_BANDS = {
+    'BLUE':
+    Band.create('Blue',
+                common_name='blue',
+                center_wavelength=490,
+                full_width_half_max=50),
+    'GREEN':
+    Band.create('Green II',
+                common_name='green',
+                center_wavelength=565,
+                full_width_half_max=46),
+    'RED':
+    Band.create('Red',
+                common_name='red',
+                center_wavelength=665,
+                full_width_half_max=31),
+    'REDEDGE':
+    Band.create('Red edge I',
+                common_name='rededge',
+                center_wavelength=705,
+                full_width_half_max=15),
+    'NIR':
+    Band.create('NIR',
+                common_name='nir',
+                center_wavelength=865,
+                full_width_half_max=40)
+}
+
 
 class PlanetItem:
     def __init__(self,
@@ -98,7 +126,7 @@ class PlanetItem:
         item.ext.view.sun_azimuth = props.pop('sun_azimuth')
         item.ext.view.sun_elevation = props.pop('sun_elevation')
 
-        # Add all additional properties with Planet extension designation.
+        # Add additional properties with Planet extension designation.
         whitelisted_props = [
             'anomalous_pixels', 'ground_control', 'item_type',
             'pixel_resolution', 'quality_category', 'strip_id',
@@ -115,6 +143,10 @@ class PlanetItem:
         item.add_link(via_link)
 
         geotransform = None
+        crs = None
+        image_shape = None
+        thumbnail_created = False
+        analytic_image_href = None
         for planet_asset in self.item_assets:
             href = make_absolute_href(planet_asset['path'],
                                       start_href=self.base_dir,
@@ -126,43 +158,30 @@ class PlanetItem:
             bundle_type = planet_asset['annotations']['planet/bundle_type']
 
             # Planet data is delivered as COGs
-            if media_type == 'image/tiff' and asset_type not in [
-                    "udm", "udm2"
-            ]:
+            if media_type == 'image/tiff':
+                if "udm2" not in asset_type and "udm" in asset_type:
+                    continue  # do not process udm
+                roles = ['data']
                 media_type = pystac.MediaType.COG
-                roles = ['visual']
-                thumbnail_path = f"{os.path.splitext(href)[0]}.thumbnail.png"
-                with rasterio.open(href) as dataset:
-                    height, width = dataset.shape
-                    geotransform = dataset.transform
-                    if width > height:
-                        width, height = 256, int(height / width * 256)
-                    else:
-                        width, height = int(width / height * 256), 256
-
-                    profile = dataset.profile
-                    profile.update(driver='PNG')
-                    profile.update(width=width)
-                    profile.update(height=height)
+                if "udm2" in asset_type:
+                    roles = ['metadata', 'snow-ice', 'cloud', 'cloud-shadow']
+                else:
+                    if geotransform is None:
+                        with rasterio.open(href) as dataset:
+                            geotransform = dataset.transform
+                            crs = dataset.crs.to_epsg()
+                            height, width = dataset.shape
+                            image_shape = [height, width]
 
                     if "analytic" in asset_type:
-                        data = dataset.read(indexes=[3, 2, 1],
-                                            out_shape=(3, height, width),
-                                            resampling=Resampling.cubic)
-                        profile.update(count=3)
-                    else:
-                        data = dataset.read(out_shape=(int(dataset.count),
-                                                       height, width),
-                                            resampling=Resampling.cubic)
+                        analytic_image_href = href
+                    elif "visual" in asset_type:
+                        roles.append('visual')
+                        self._create_thumbnail(href, item, False)
+                        thumbnail_created = True
 
-                    with rasterio.open(thumbnail_path, 'w', **profile) as dst:
-                        dst.write(data)
-
-                item.add_asset(
-                    'thumbnail',
-                    pystac.Asset(href=thumbnail_path,
-                                 media_type=pystac.MediaType.PNG,
-                                 roles=['thumbnail']))
+                    if "_sr" in asset_type:
+                        roles.append('reflectance')
             else:
                 roles = ['metadata']
 
@@ -173,14 +192,11 @@ class PlanetItem:
             if asset_type != bundle_type:
                 key = '{}:{}'.format(bundle_type, asset_type)
 
-            item.add_asset(
-                key, pystac.Asset(href=href,
-                                  media_type=media_type,
-                                  roles=roles))
-            asset = pystac.Asset(href=href, media_type=media_type)
+            asset = pystac.Asset(href=href, media_type=media_type, roles=roles)
 
             if media_type == pystac.MediaType.COG:
                 # add bands to asset
+                bands = None
                 if item_type.startswith('SkySat'):
                     if "panchro" in asset_type:
                         bands = [SKYSAT_BANDS['PAN']]
@@ -189,22 +205,53 @@ class PlanetItem:
                             SKYSAT_BANDS['BLUE'], SKYSAT_BANDS['GREEN'],
                             SKYSAT_BANDS['RED'], SKYSAT_BANDS['NIR']
                         ]
-                    else:
+                    elif "visual" in asset_type:
                         bands = [
                             SKYSAT_BANDS['RED'], SKYSAT_BANDS['GREEN'],
                             SKYSAT_BANDS['BLUE']
                         ]
+                elif item_type.startswith("PS"):
+                    if "5b" in asset_type:
+                        bands = [
+                            PSB_BANDS['BLUE'], PSB_BANDS['GREEN'],
+                            PSB_BANDS['RED'], PSB_BANDS['REDEDGE'],
+                            PSB_BANDS['NIR']
+                        ]
+                    elif "analytic" in asset_type:
+                        if item_type == "PSScene3Band":
+                            bands = [
+                                PSB_BANDS['RED'], PSB_BANDS['GREEN'],
+                                PSB_BANDS['BLUE']
+                            ]
+                        else:
+                            bands = [
+                                PSB_BANDS['BLUE'], PSB_BANDS['GREEN'],
+                                PSB_BANDS['RED'], PSB_BANDS['NIR']
+                            ]
+                    elif "visual" in asset_type:
+                        bands = [
+                            PSB_BANDS['RED'], PSB_BANDS['GREEN'],
+                            PSB_BANDS['BLUE']
+                        ]
+                if bands is not None:
                     item.ext.eo.set_bands(bands, asset)
 
             item.add_asset(key, asset)
 
+        # If no thumbnail has been generated from a visual asset, we use an
+        # analytic one if available.
+        if not thumbnail_created and analytic_image_href is not None:
+            self._create_thumbnail(analytic_image_href, item, True)
+
         # proj
-        if 'epsg_code' in props:
+        if 'epsg_code' in props or geotransform is not None:
             item.ext.enable('projection')
-            item.ext.projection.epsg = props.pop('epsg_code')
+            crs = crs or props.pop('epsg_code')
+            if crs is not None:
+                item.ext.projection.epsg = crs
             if geotransform is not None:
                 item.ext.projection.transform = geotransform
-                item.ext.projection.shape = [height, width]
+                item.ext.projection.shape = image_shape
 
         if self.metadata_href:
             item.add_asset(
@@ -214,6 +261,38 @@ class PlanetItem:
                              roles=['metadata']))
 
         return item
+
+    def _create_thumbnail(self, href, item, is_analytic):
+        with rasterio.open(href) as dataset:
+            height, width = dataset.shape
+            if width > height:
+                thumbwidth = 256
+                thumbheight = int(height / width * 256)
+            else:
+                thumbwidth = int(width / height * 256)
+                thumbheight = 256
+
+            profile = dataset.profile
+            profile.update(driver='PNG', width=thumbwidth, height=thumbheight)
+
+            if is_analytic:
+                data = dataset.read(indexes=[3, 2, 1],
+                                    out_shape=(3, thumbheight, thumbwidth),
+                                    resampling=Resampling.cubic)
+                profile.update(count=3)
+            else:
+                data = dataset.read(out_shape=(int(dataset.count), thumbheight,
+                                               thumbwidth),
+                                    resampling=Resampling.cubic)
+
+        thumbnail_path = f"{os.path.splitext(href)[0]}.thumbnail.png"
+        with rasterio.open(thumbnail_path, 'w', **profile) as dst:
+            dst.write(data)
+        item.add_asset(
+            'thumbnail',
+            pystac.Asset(href=thumbnail_path,
+                         media_type=pystac.MediaType.PNG,
+                         roles=['thumbnail']))
 
     @classmethod
     def from_file(cls, uri, assets, base_dir):

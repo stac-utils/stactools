@@ -117,7 +117,7 @@
             "eo:bands": [
                 0
             ],
-            "href": "https://landsatlook.usgs.gov/data/collection02/level-2/standard/etm/2007/167/064/LE07_L2SP_167064_20070321_20200913_02_T1/LE07_L2SP_167064_20070321_20200913_02_T1_SR_B1.TIF"
+            "href": "tests/data-files/landsat/LC08_L2SR_081119_20200101_20200823_02_T2_SR_B2_small.TIF"
         },
         "SR_B2.TIF": {
             "title": "Green Band (B2)",
