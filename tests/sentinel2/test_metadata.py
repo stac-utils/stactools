@@ -49,7 +49,7 @@ class Sentinel2MetadataTest(unittest.TestCase):
             's2:unclassified_percentage': 0.0,
             's2:medium_proba_clouds_percentage': 14.61311,
             's2:high_proba_clouds_percentage': 24.183494,
-            's2:thin_sirrus_percentage': 12.783723,
+            's2:thin_cirrus_percentage': 12.783723,
             's2:snow_ice_percentage': 0.0,
             's2:mean_solar_zenith': 32.707073851362,
             's2:mean_solar_azimuth': 62.3286549448294

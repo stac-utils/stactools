@@ -149,7 +149,7 @@ class GranuleMetadata:
                 float,
                 self._image_content_node.find_text(
                     'HIGH_PROBA_CLOUDS_PERCENTAGE')),
-            's2:thin_sirrus_percentage':
+            's2:thin_cirrus_percentage':
             map_opt(
                 float,
                 self._image_content_node.find_text('THIN_CIRRUS_PERCENTAGE')),
