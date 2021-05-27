@@ -189,18 +189,34 @@ def image_asset_from_href(
     band_id_search = re.search(r'_(B\w{2})', asset_href)
     if band_id_search is not None:
         band_id, href_res = os.path.splitext(asset_href)[0].split('_')[-2:]
-        asset_res = int(href_res.replace('m', ''))
         band = SENTINEL_BANDS[band_id]
+
+        # Get the asset resolution from the file name.
+        # If the asset resolution is the band GSD, then
+        # include the gsd information for that asset. Otherwise,
+        # do not include the GSD information in the asset
+        # as this may be confusing for users given that the
+        # raster spatial resolution and gsd will differ.
+        # See https://github.com/radiantearth/stac-spec/issues/1096
+        asset_res = int(href_res.replace('m', ''))
+        band_gsd: Optional[int] = None
         if asset_res == BANDS_TO_RESOLUTIONS[band_id][0]:
             asset_key = band_id
+            band_gsd = asset_res
         else:
+            # If this isn't the default resolution, use the raster
+            # resolution in the asset key.
+            # TODO: Use the raster extension and spatial_resolution
+            # property to encode the spatial resolution of all assets.
             asset_key = f'{band_id}_{asset_res}m'
+
         asset = pystac.Asset(href=asset_href,
                              media_type=asset_media_type,
                              title=f'{band.description} - {href_res}',
                              roles=['data'])
+
         item.ext.eo.set_bands([SENTINEL_BANDS[band_id]], asset)
-        set_asset_properties(asset, band_gsd=BANDS_TO_RESOLUTIONS[band_id][0])
+        set_asset_properties(asset, band_gsd=band_gsd)
         return (asset_key, asset)
 
     # Handle auxiliary images
