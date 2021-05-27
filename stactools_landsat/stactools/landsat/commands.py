@@ -52,7 +52,6 @@ def create_landsat_command(cli):
     @click.option(
         "--enable-proj",
         "-p",
-        default=True,
         is_flag=True,
         help="Enable the proj extension. Requires access to blue band.")
     @click.option("--dst", "-d", help="Output directory")

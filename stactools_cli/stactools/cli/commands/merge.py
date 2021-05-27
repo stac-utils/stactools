@@ -32,8 +32,7 @@ def create_merge_command(cli):
     @cli.command('merge', short_help='Merge items from one STAC into another.')
     @click.argument('source_catalog')
     @click.argument('target_catalog')
-    @click.option('-c',
-                  '--collection',
+    @click.option('--collection',
                   help=("The collection ID to merge into. If not set, will "
                         "merge into the root catalog or collection."))
     @click.option('-a',

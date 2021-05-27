@@ -89,12 +89,14 @@ class CreateItemTest(CliTestCase):
                     'AST_L1T_00305032000040446_20150409135350_78838-TIR.tif'
                 ]))
 
-            # Check band names
+            # Check band names, and that there is variable data
             for cog in cogs:
                 sensor = os.path.splitext(cog)[0].split('-')[-1]
                 with rio.open(os.path.join(tmp_dir, cog)) as ds:
                     for band_name in ds.descriptions:
                         self.assertTrue(sensor in band_name)
+
+                    self.assertTrue(ds.read().any())
 
             vnir_cog_fname = next(c for c in cogs if 'VNIR' in c)
             swir_cog_fname = next(c for c in cogs if 'SWIR' in c)

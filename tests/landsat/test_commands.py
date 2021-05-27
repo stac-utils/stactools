@@ -1,5 +1,6 @@
 import datetime
 import json
+import os.path
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -8,15 +9,16 @@ from stactools.landsat.commands import create_landsat_command
 from stactools.landsat.utils import (_parse_date, stac_api_to_stac,
                                      transform_mtl_to_stac,
                                      transform_stac_to_stac)
+
 from tests.utils import CliTestCase, TestData
 
 TEST_FOLDER = Path(TestData.get_path("data-files/landsat"))
 ALL_EXAMPLES = [
     "LC08_L2SR_081119_20200101_20200823_02_T2_SR_stac.json",
     "LC08_L2SP_030034_20201111_20201212_02_T1_SR_stac.json",
+    "LC08_L2SR_232122_20191218_20201023_02_T2_SR_stac.json",
     "LE07_L2SP_167064_20070321_20200913_02_T1_SR_stac.json",
     "LT05_L2SP_201034_19860504_20200917_02_T1_SR_stac.json",
-    "LC08_L2SR_232122_20191218_20201023_02_T2_SR_stac.json",
 ]
 
 
@@ -26,9 +28,6 @@ class LandsatTest(CliTestCase):
 
     landsat_stac_files = [str(TEST_FOLDER / f) for f in ALL_EXAMPLES]
     landsat_mtl_file = TEST_FOLDER / "LC08_L2SR_081119_20200101_20200823_02_T2_MTL.json"
-    landsat_stac_api = (
-        "https://landsatlook.usgs.gov/sat-api/collections/"
-        "landsat-c2l2-sr/items/LC08_L2SR_081119_20200101_20200823_02_T2")
 
     @property
     def landsat_stac(self):
@@ -50,9 +49,37 @@ class LandsatTest(CliTestCase):
             item = transform_stac_to_stac(pystac.Item.from_file(stac_file))
             item.validate()
 
+    def test_transform_static_stac_asset_not_available(self):
+        """Raises an exception when geotiff asset isn't available"""
+
+        for stac_file in self.landsat_stac_files:
+            item = pystac.Item.from_file(stac_file)
+            for asset in item.assets.values():
+                # Replace a valid local file for an invalid url forcing an exception
+                asset.href = asset.href.replace(
+                    'LC08_L2SR_081119_20200101_20200823_02_T2_SR_B2_small.TIF',
+                    "just/an/invalid/url.json")
+            with self.assertRaises(pystac.STACError):
+                transform_stac_to_stac(item)
+
+    def test_transform_static_stac_missing_asset_b2_b10(self):
+        """It has to be able to gather the right information from any geotiff files"""
+
+        for stac_file in self.landsat_stac_files:
+            item = pystac.Item.from_file(stac_file)
+
+            if item.assets.get("SR_B2.TIF"):
+                item.assets.pop("SR_B2.TIF")
+
+            if item.assets.get("ST_B10.TIF"):
+                item.assets.pop("ST_B10.TIF")
+
+            item = transform_stac_to_stac(item)
+            item.validate()
+
     def test_transform_dynamic_stac(self):
         """Convert a URI of a STAC 0.7.0 document to a STAC 1.0.0.beta.2 document"""
-        item = stac_api_to_stac(self.landsat_stac_api)
+        item = stac_api_to_stac(self.landsat_stac_files[0])
         item.validate()
 
     def test_transform_mtl(self):
@@ -87,6 +114,7 @@ class LandsatTest(CliTestCase):
                              0,
                              msg='\n{}'.format(result.output))
 
-            output_stac_file = Path(
-                tmp_dir) / "LC08_L2SR_081119_20200101_20200823_02_T2.json"
-            assert output_stac_file.is_file()
+            output_stac_file = os.path.join(
+                tmp_dir, "LC08_L2SR_081119_20200101_20200823_02_T2.json")
+            item = pystac.Item.from_file(output_stac_file)
+            self.assertEqual(item.ext.projection.epsg, 3031)

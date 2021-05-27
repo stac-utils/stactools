@@ -58,6 +58,10 @@ class CreateItemTest(CliTestCase):
 
                     item.validate()
 
+                    import json
+                    with open('s2-item.py', 'w') as f:
+                        json.dump(item.to_dict(), f, indent=2)
+
                     bands_seen = set()
                     bands_to_assets = defaultdict(list)
 
@@ -93,10 +97,12 @@ class CreateItemTest(CliTestCase):
                             self.assertEqual(href_band, band_name)
                             if len(asset_split) == 1:
                                 self.assertEqual(asset_res, resolutions[0])
+                                self.assertIn('gsd', asset.properties)
                                 resolutions_seen[band_name].append(asset_res)
                             else:
                                 self.assertNotEqual(asset_res, resolutions[0])
                                 self.assertIn(asset_res, resolutions)
+                                self.assertNotIn('gsd', asset.properties)
                                 resolutions_seen[band_name].append(asset_res)
 
                     self.assertEqual(set(resolutions_seen.keys()),
