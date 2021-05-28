@@ -24,7 +24,6 @@ def create_item(tif_href, additional_providers=None):
 
     with rio.open(tif_href) as f:
         tags = f.tags()
-        band_tags = f.tags(1)
         bounds = f.bounds
 
     # Item id
@@ -80,17 +79,6 @@ def create_item(tif_href, additional_providers=None):
     # Extra fields
     for k, v in tags.items():
         item.extra_fields[k] = v
-
-    # Bands
-    long_name = band_tags.pop('long_name')
-    band = pystac.extensions.eo.Band.create(
-        name=long_name,
-        common_name=band_tags.pop('short_name'),
-        description=long_name)
-
-    EOExtension.add_to(item)
-    eo = EOExtension.ext(item)
-    eo.bands = [band]
 
     # Tif
     item.add_asset(
