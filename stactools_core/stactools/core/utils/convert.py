@@ -17,4 +17,4 @@ def cogify(infile: str,
         args.extend(extra_args)
     args.append(infile)
     args.append(outfile)
-    call(args)
+    return call(args)
