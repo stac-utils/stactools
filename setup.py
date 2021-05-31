@@ -36,7 +36,7 @@ subpackages = [
     Subpackage('planet', is_extra=True),
     Subpackage('threedep', is_extra=True),
     Subpackage('browse', is_extra=True),
-    Subpackage('sentinel2', is_extra=True)
+    Subpackage('sentinel2', is_extra=True),
     Subpackage('spot', is_extra=True)
 ]
 
