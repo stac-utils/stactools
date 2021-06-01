@@ -14,12 +14,10 @@ from stactools.sentinel2.safe_manifest import SafeManifest
 from stactools.sentinel2.product_metadata import ProductMetadata
 from stactools.sentinel2.granule_metadata import GranuleMetadata
 from stactools.sentinel2.utils import extract_gsd
-from stactools.sentinel2.constants import (DATASTRIP_METADATA_ASSET_KEY,
-                                           SENTINEL_PROVIDER, SENTINEL_LICENSE,
-                                           SENTINEL_BANDS,
-                                           SENTINEL_INSTRUMENTS,
-                                           SENTINEL_CONSTELLATION,
-                                           INSPIRE_METADATA_ASSET_KEY)
+from stactools.sentinel2.constants import (
+    BANDS_TO_RESOLUTIONS, DATASTRIP_METADATA_ASSET_KEY, SENTINEL_PROVIDER,
+    SENTINEL_LICENSE, SENTINEL_BANDS, SENTINEL_INSTRUMENTS,
+    SENTINEL_CONSTELLATION, INSPIRE_METADATA_ASSET_KEY)
 
 logger = logging.getLogger(__name__)
 
@@ -176,12 +174,14 @@ def image_asset_from_href(
         return ('preview', asset)
 
     # Extract gsd and proj info
-    gsd = extract_gsd(asset_href)
-    shape = list(resolution_to_shape[int(gsd)])
+    filename_gsd = extract_gsd(asset_href)
+    shape = list(resolution_to_shape[int(filename_gsd)])
     transform = transform_from_bbox(proj_bbox, shape)
 
-    def set_asset_properties(asset):
-        item.common_metadata.set_gsd(gsd, asset)
+    def set_asset_properties(asset: pystac.Asset,
+                             band_gsd: Optional[int] = None):
+        if band_gsd:
+            item.common_metadata.set_gsd(band_gsd, asset)
         asset_projection = ProjectionExtension.ext(asset)
         asset_projection.shape = shape
         asset_projection.bbox = proj_bbox
@@ -189,18 +189,38 @@ def image_asset_from_href(
 
     # Handle band image
 
-    band_id_search = re.search(r'_(B\w{2})_', asset_href)
+    band_id_search = re.search(r'_(B\w{2})', asset_href)
     if band_id_search is not None:
-        band_id = band_id_search.group(1)
+        band_id, href_res = os.path.splitext(asset_href)[0].split('_')[-2:]
         band = SENTINEL_BANDS[band_id]
+
+        # Get the asset resolution from the file name.
+        # If the asset resolution is the band GSD, then
+        # include the gsd information for that asset. Otherwise,
+        # do not include the GSD information in the asset
+        # as this may be confusing for users given that the
+        # raster spatial resolution and gsd will differ.
+        # See https://github.com/radiantearth/stac-spec/issues/1096
+        asset_res = int(href_res.replace('m', ''))
+        band_gsd: Optional[int] = None
+        if asset_res == BANDS_TO_RESOLUTIONS[band_id][0]:
+            asset_key = band_id
+            band_gsd = asset_res
+        else:
+            # If this isn't the default resolution, use the raster
+            # resolution in the asset key.
+            # TODO: Use the raster extension and spatial_resolution
+            # property to encode the spatial resolution of all assets.
+            asset_key = f'{band_id}_{asset_res}m'
+
         asset = pystac.Asset(href=asset_href,
                              media_type=asset_media_type,
-                             title=band.description,
+                             title=f'{band.description} - {href_res}',
                              roles=['data'])
         asset_eo = EOExtension.ext(asset)
         asset_eo.bands = [SENTINEL_BANDS[band_id]]
-        set_asset_properties(asset)
-        return (band_id, asset)
+        set_asset_properties(asset, band_gsd=band_gsd)
+        return (asset_key, asset)
 
     # Handle auxiliary images
 

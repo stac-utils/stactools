@@ -102,8 +102,8 @@ class CreateItemTest(CliTestCase):
                         os.path.join(original_dir,
                                      os.path.basename(stac_path)))
                     convert_cmd = [
-                        'landsat', 'convert', '--stac', stac_path,
-                        '--enable-proj', '--dst', convert_dir
+                        'landsat', 'convert', '--stac', stac_path, '--dst',
+                        convert_dir
                     ]
                     self.run_command(convert_cmd)
 

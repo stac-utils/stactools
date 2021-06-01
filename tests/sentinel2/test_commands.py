@@ -1,3 +1,4 @@
+from collections import defaultdict
 import os
 from tempfile import TemporaryDirectory
 
@@ -9,7 +10,7 @@ from shapely.geometry import box, shape, mapping
 
 from stactools.core.projection import reproject_geom
 from stactools.sentinel2.commands import create_sentinel2_command
-from stactools.sentinel2.constants import SENTINEL_BANDS
+from stactools.sentinel2.constants import BANDS_TO_RESOLUTIONS, SENTINEL_BANDS
 from tests.utils import (TestData, CliTestCase)
 
 
@@ -59,14 +60,57 @@ class CreateItemTest(CliTestCase):
 
                     item.validate()
 
-                    bands_seen = set()
+                    import json
+                    with open('s2-item.py', 'w') as f:
+                        json.dump(item.to_dict(), f, indent=2)
 
-                    for asset in item.assets.values():
+                    bands_seen = set()
+                    bands_to_assets = defaultdict(list)
+
+                    for key, asset in item.assets.items():
                         self.assertTrue(is_absolute_href(asset.href))
                         bands = EOExtension.ext(asset).bands
                         if bands is not None:
                             bands_seen |= set(b.name for b in bands)
+                            if key.split('_')[0] in SENTINEL_BANDS:
+                                for b in bands:
+                                    bands_to_assets[b.name].append(
+                                        (key, asset))
 
                     self.assertEqual(bands_seen, set(SENTINEL_BANDS.keys()))
+
+                    # Check that multiple resolutions exist for assets that
+                    # have them, and that they are named such that the highest
+                    # resolution asset is the band name, and others are
+                    # appended with the resolution.
+
+                    resolutions_seen = defaultdict(list)
+
+                    for band_name, assets in bands_to_assets.items():
+                        for (asset_key, asset) in assets:
+                            resolutions = BANDS_TO_RESOLUTIONS[band_name]
+
+                            asset_split = asset_key.split('_')
+                            self.assertLessEqual(len(asset_split), 2)
+
+                            href_band, href_res = os.path.splitext(
+                                asset.href)[0].split('_')[-2:]
+                            asset_res = int(href_res.replace('m', ''))
+                            self.assertEqual(href_band, band_name)
+                            if len(asset_split) == 1:
+                                self.assertEqual(asset_res, resolutions[0])
+                                self.assertIn('gsd', asset.properties)
+                                resolutions_seen[band_name].append(asset_res)
+                            else:
+                                self.assertNotEqual(asset_res, resolutions[0])
+                                self.assertIn(asset_res, resolutions)
+                                self.assertNotIn('gsd', asset.properties)
+                                resolutions_seen[band_name].append(asset_res)
+
+                    self.assertEqual(set(resolutions_seen.keys()),
+                                     set(BANDS_TO_RESOLUTIONS.keys()))
+                    for band in resolutions_seen:
+                        self.assertEqual(set(resolutions_seen[band]),
+                                         set(BANDS_TO_RESOLUTIONS[band]))
 
                     check_proj_bbox(item)

@@ -1,5 +1,6 @@
 import datetime
 import json
+import os.path
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -113,6 +114,7 @@ class LandsatTest(CliTestCase):
                              0,
                              msg='\n{}'.format(result.output))
 
-            output_stac_file = Path(
-                tmp_dir) / "LC08_L2SR_081119_20200101_20200823_02_T2.json"
-            assert output_stac_file.is_file()
+            output_stac_file = os.path.join(
+                tmp_dir, "LC08_L2SR_081119_20200101_20200823_02_T2.json")
+            item = pystac.Item.from_file(output_stac_file)
+            self.assertEqual(item.ext.projection.epsg, 3031)
