@@ -1,7 +1,6 @@
 import os
 
 import pystac
-from pystac.extensions.eo import EOExtension
 from pystac.extensions.projection import ProjectionExtension
 from pystac.utils import str_to_datetime
 import rasterio as rio
