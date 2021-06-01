@@ -102,7 +102,7 @@ If not using docker, it's recommended to use [virtualenv](https://virtualenv.pyp
 
 - Make sure [virtualenv](https://virtualenv.pypa.io/en/latest/installation.html) is installed
 - Run `virtualenv venv`
-- Activate the virtualenv with `source venv/bin/active`
+- Activate the virtualenv with `source venv/bin/activate`
 
 #### Installing development requirements
 
