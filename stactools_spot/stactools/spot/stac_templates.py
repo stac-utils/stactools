@@ -24,14 +24,12 @@ SpotProviders = [
         ["licensor", "processor"],
         "www.geobase.ca",
     ),
-    Provider("Sparkgeo", "info@sparkegeo.com", ["processor", "host"],
-             "www.sparkgeo.com"),
     Provider("PCI Geomatics", "info@pci.com", ["processor", "host"],
              "www.pcigeomatics.com"),
 ]
 
 SpotExtents = Extent(
-    SpatialExtent([[0.0, 0.0, 0.0, 0.0]]),
+    SpatialExtent([[-142.4631077,   40.9256035,  -51.9962756,   81.5210035]]),
     TemporalExtent([[
         datetime.strptime("2005-01-01", "%Y-%m-%d"),
         datetime.strptime("2010-01-01", "%Y-%m-%d"),
