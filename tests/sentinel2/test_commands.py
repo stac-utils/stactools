@@ -58,10 +58,6 @@ class CreateItemTest(CliTestCase):
 
                     item.validate()
 
-                    import json
-                    with open('s2-item.py', 'w') as f:
-                        json.dump(item.to_dict(), f, indent=2)
-
                     bands_seen = set()
                     bands_to_assets = defaultdict(list)
 
