@@ -29,7 +29,7 @@ SpotProviders = [
 ]
 
 SpotExtents = Extent(
-    SpatialExtent([[-142.4631077,   40.9256035,  -51.9962756,   81.5210035]]),
+    SpatialExtent([[-142.4631077, 40.9256035, -51.9962756, 81.5210035]]),
     TemporalExtent([[
         datetime.strptime("2005-01-01", "%Y-%m-%d"),
         datetime.strptime("2010-01-01", "%Y-%m-%d"),
