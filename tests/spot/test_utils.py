@@ -1,8 +1,5 @@
 from collections import OrderedDict
-import unittest
 import fiona
-
-from tests.utils import TestData
 
 # Test cases, file names to keys and values that should exist.
 schema = {
