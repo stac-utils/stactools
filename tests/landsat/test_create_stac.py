@@ -5,6 +5,7 @@ from typing import cast
 import pystac
 from pystac.utils import is_absolute_href
 from shapely.geometry import box, shape, mapping
+import rasterio
 
 from stactools.core.projection import reproject_geom
 from stactools.landsat.assets import SR_ASSET_DEFS, THERMAL_ASSET_DEFS
@@ -19,10 +20,11 @@ class CreateItemTest(CliTestCase):
         return [create_landsat_command]
 
     def test_create_item(self):
-        def check_proj_bbox(item):
+        def check_proj_bbox(item, tif_bounds):
             bbox = item.bbox
             bbox_shp = box(*bbox)
             proj_bbox = item.ext.projection.bbox
+            self.assertEqual(proj_bbox, list(tif_bounds))
             proj_bbox_shp = box(*proj_bbox)
             reproj_bbox_shp = shape(
                 reproject_geom(f"epsg:{item.ext.projection.epsg}", "epsg:4326",
@@ -33,6 +35,10 @@ class CreateItemTest(CliTestCase):
 
         for mtl_path in TEST_MTL_PATHS:
             with self.subTest(mtl_path):
+                base_path = "_".join(mtl_path.split("_")[:-1])
+                tif_path = f"{base_path}_SR_B3.TIF"
+                with rasterio.open(tif_path) as dataset:
+                    tif_bounds = dataset.bounds
                 with TemporaryDirectory() as tmp_dir:
                     cmd = [
                         'landsat', 'create-item', '--mtl', mtl_path,
@@ -64,7 +70,7 @@ class CreateItemTest(CliTestCase):
                     else:
                         self.assertEqual(bands_seen, set(L8_SR_BANDS.keys()))
 
-                    check_proj_bbox(item)
+                    check_proj_bbox(item, tif_bounds)
 
     def test_convert_and_create_agree(self):
         def get_item(output_dir: str) -> pystac.Item:
