@@ -43,7 +43,7 @@ OrthoCollection = Collection(
     title=None,
     stac_extensions=None,
     license="Proprietery",
-    keywords="SPOT, Geobase, orthoimages",
+    keywords=["SPOT", "Geobase", "orthoimages"],
     providers=SpotProviders,
 )
 
