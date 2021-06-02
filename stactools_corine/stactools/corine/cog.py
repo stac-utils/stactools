@@ -1,31 +1,13 @@
 import logging
 import os
-from subprocess import Popen, PIPE, STDOUT
 
 import pystac
 
+from stactools.core.utils.convert import cogify
 from stactools.corine.constants import (ITEM_COG_IMAGE_NAME,
                                         ITEM_TIF_IMAGE_NAME)
 
 logger = logging.getLogger(__name__)
-
-
-def call(command):
-    def log_subprocess_output(pipe):
-        for line in iter(pipe.readline, b''):  # b'\n'-separated lines
-            logger.info(line.decode("utf-8").strip('\n'))
-
-    process = Popen(command, stdout=PIPE, stderr=STDOUT)
-    with process.stdout:
-        log_subprocess_output(process.stdout)
-    return process.wait()  # 0 means success
-
-
-def cogify(input_path, output_path):
-    call([
-        'gdal_translate', '-of', 'COG', '-co', 'compress=deflate', input_path,
-        output_path
-    ])
 
 
 def _create_cog(item, cog_directory):
