@@ -1,5 +1,8 @@
 import unittest
 
+from shapely.geometry import box, mapping, shape
+
+from stactools.core.projection import reproject_geom
 from stactools.sentinel2.safe_manifest import SafeManifest
 from stactools.sentinel2.product_metadata import ProductMetadata
 from stactools.sentinel2.granule_metadata import GranuleMetadata
@@ -16,10 +19,10 @@ class Sentinel2MetadataTest(unittest.TestCase):
         manifest = SafeManifest(manifest_path)
 
         product_metadata = ProductMetadata(manifest.product_metadata_href)
-        granulemetadata = GranuleMetadata(manifest.granule_metadata_href)
+        granule_metadata = GranuleMetadata(manifest.granule_metadata_href)
 
         s2_props = product_metadata.metadata_dict
-        s2_props.update(granulemetadata.metadata_dict)
+        s2_props.update(granule_metadata.metadata_dict)
 
         expected = {
             # From product metadata
@@ -59,4 +62,29 @@ class Sentinel2MetadataTest(unittest.TestCase):
             self.assertIn(k, s2_props)
             self.assertEqual(s2_props[k], v)
 
-        self.assertEqual(granulemetadata.cloudiness_percentage, 51.580326)
+        self.assertEqual(granule_metadata.cloudiness_percentage, 51.580326)
+
+    def test_footprint_containing_geom_with_z_dimension(self):
+        product_md_path = TestData.get_path(
+            'data-files/sentinel2/S2A_MSIL2A_20150826T185436_N0212_R070'
+            '_T11SLT_20210412T023147/MTD_MSIL2A.xml')
+        granule_md_path = TestData.get_path(
+            'data-files/sentinel2/S2A_MSIL2A_20150826T185436_N0212_R070'
+            '_T11SLT_20210412T023147/MTD_TL.xml')
+        product_metadata = ProductMetadata(product_md_path)
+        granule_metadata = GranuleMetadata(granule_md_path)
+
+        footprint = shape(product_metadata.geometry)
+
+        proj_bbox = granule_metadata.proj_bbox
+        epsg = granule_metadata.epsg
+
+        proj_box = box(*proj_bbox)
+        ll_proj_box = shape(
+            reproject_geom(f"epsg:{epsg}", "epsg:4326", mapping(proj_box)))
+
+        # Test that the bboxes roughly match by ensuring the difference
+        # is less than 5% of total area of the reprojected proj bbox.
+        self.assertTrue(
+            footprint.envelope.difference(ll_proj_box).area < (
+                ll_proj_box.area * 0.05))
