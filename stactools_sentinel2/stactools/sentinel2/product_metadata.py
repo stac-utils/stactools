@@ -69,8 +69,11 @@ class ProductMetadata:
                 ProductMetadataError(
                     f'Cannot parse footprint from product metadata at {self.href}'
                 )
+
+            # Some coordinates contain a 0 z dimension for some reason;
+            # filter those out
             footprint_coords = [
-                float(c) for c in footprint_text.split(' ') if c
+                float(c) for c in footprint_text.split(' ') if c and c != '0'
             ]
             footprint_points = [
                 p[::-1] for p in list(zip(*[iter(footprint_coords)] * 2))
