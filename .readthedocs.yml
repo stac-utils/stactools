@@ -17,23 +17,3 @@ python:
   version: 3.8
   install:
     - requirements: requirements-dev.txt
-    - method: pip
-      path: stactools_core/
-    - method: pip
-      path: stactools_cli/
-    - method: pip
-      path: stactools_aster/
-    - method: pip
-      path: stactools_corine/
-    - method: pip
-      path: stactools_cgls_lc100/
-    - method: pip
-      path: stactools_landsat/
-    - method: pip
-      path: stactools_planet/
-    - method: pip
-      path: stactools_threedep/
-    - method: pip
-      path: stactools_browse/
-    - method: pip
-      path: stactools_sentinel2/

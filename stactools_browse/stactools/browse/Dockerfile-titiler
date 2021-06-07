@@ -1,5 +1,0 @@
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8
-
-ENV CURL_CA_BUNDLE /etc/ssl/certs/ca-certificates.crt
-
-RUN pip install titiler==0.1.0a14

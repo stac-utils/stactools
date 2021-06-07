@@ -6,9 +6,6 @@ if [[ -n "${CI}" ]]; then
     set -x
 fi
 
-# Import shared variables
-source ./scripts/env
-
 function usage() {
     echo -n \
         "Usage: $(basename "$0")
@@ -20,16 +17,8 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
-        # Install/upgrade dependencies
         python -m pip install --upgrade pip
+        pip install .
         pip install -r requirements-dev.txt
-
-        for PACKAGE_DIR in "${STACTOOLS_SUBPACKAGE_DIRS[@]}"
-        do
-            pushd ./${PACKAGE_DIR}
-            pip install -r requirements.txt
-            popd
-
-        done
     fi
 fi

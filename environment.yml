@@ -1,0 +1,6 @@
+name: stactools
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - gdal

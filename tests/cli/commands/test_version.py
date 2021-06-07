@@ -1,5 +1,5 @@
 from pystac.version import get_stac_version
-from stactools.core.version import __version__
+from stactools.core import __version__
 from stactools.cli.commands.version import create_version_command
 
 from tests.utils import CliTestCase

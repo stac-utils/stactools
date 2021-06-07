@@ -9,16 +9,13 @@ fi
 function usage() {
     echo -n \
         "Usage: $(basename "$0")
-Runs CI in the dev docker container.
+Runs CI in the docker dev container.
 "
 }
 
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
-    # Build containers
     ./docker/build
-
     docker run --rm \
-        -v `pwd`:/opt/src \
-        --entrypoint /opt/src/scripts/cibuild \
+        --entrypoint /src/stactools/scripts/cibuild \
         stactools-dev:latest
 fi

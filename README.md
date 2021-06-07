@@ -3,11 +3,14 @@
 [![Documentation](https://readthedocs.org/projects/stactools/badge/?version=latest)](https://stactools.readthedocs.io/en/latest/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-`stactools` is a command line tool and library for working with [STAC](https://stacspec.org) based on [PySTAC](https://github.com/stac-utils/pystac).
+`stactools` is a command line tool and library for working with [STAC](https://stacspec.org).
+It is based on [PySTAC](https://github.com/stac-utils/pystac).
+
+This is the core `stactools` repository, which provides a basic command line interface (CLI) and API for working with STAC catalogs.
+There are a suite of packages available in other repositories for working with a variety of datasets and for doing more complicated oprations on STAC data.
+See [packages](#packages) for more information.
 
 ## Installation
-
-### Installing the base package
 
 
 ```bash
@@ -22,39 +25,6 @@ From source repository:
 > pip install .
 ```
 
-To install stactools with all subpackages, use:
-
-```bash
-> git clone https://github.com/stac-utils/stactools.git
-> cd stactools
-> pip install .[all]
-```
-
-### Installing additional subpackages and plugins
-
-`stactools` is composed of a namespace package with individual sub-packages installable on their own. This allows users to install only the parts of stactools that they need, and for new plugins with heavy dependencies to be developed without effecting the overall
-
-```bash
-> pip install stactools[all]
-```
-
-to install
-
-```bash
-> pip install stactools_planet
-```
-
-```bash
-> pip install stactools[planet]
-```
-
-
-| install command                    | description                                                         |
-| ---------------------------------- | ------------------------------------------------------------------- |
-| pip install stactools[all]         | Installs all available subpackages contained in the stac-tools repo |
-| pip install stactools[planet]      | Installs the `planet` subpackage for working with planet data       |
-
-
 ## Running
 
 ```
@@ -65,30 +35,50 @@ to install
 
 See the [documentation page](https://stactools.readthedocs.io/en/latest/) for the latest docs.
 
-## Sub-packages
+## Packages
 
-`stactools` is comprised of subpackages that provide library and CLI functionality. Below is a list of available subpackages.
+`stactools` is comprised of many other sub-packages that provide library and CLI functionality.
+Officially supported packages are hosted in the Github `stactools-packages` organization, and other subpackages may be available from other sources.
+Below is a list of officially supported packages and their current build status.
+Each package can be installed via `pip install stactools-{package}`, e.g. `pip install stactools-landsat`.
+Third-party packages can be installed in the same way, or, if they are not on PyPI, directly from the source repository, e.g. `pip install /path/to/my/code/stactools-greatdata`.
 
-| subpackage                    | description                                                                     |
-| ------------------------------| ------------------------------------------------------------------------------- |
-| `stactools_core`              | Contains core library functionality that is used across the other projects      |
-| `stactools_cli`               | Contains the command line interface (cli) for running the `stactools` command   |
-| `stactools_aster`             | Methods and commands for working with ASTER data                 |
-| `stactools_corine`            | Methods and commands for working with CORINE Land Cover data                 |
-| `stactools_cgls_lc100`        | Methods and commands for working with Copernicus Global Land Cover Layers                 |
-| `stactools_planet`            | Methods and commands for working with planet data                |
-| `stactools_landsat`           | Methods and commands for working with landsat data        |
-| `stactools_sentinel2`           | Methods and commands for working with Sentinel 2 data        |
-| `stactools_threedep`          | Methods and commands for working with 3DEP (formerly NED) elevation data        |
-| `stactools_browse`            | Contains a command for launching stac-browser against a local STAC |
+### Function packages
 
-Subpackages are symlinked to the `stactools` directory in this repo to allow them to be importable for python running at the top level directory of the repository clone.
+These extend the `stac` command line utility to provide additional funcionality.
+
+| name                                                                       | description                                                                                 | build status                                                                                                                                                                                                                |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [stactools-browse](https://github.com/stactools-packages/stactools-browse) | Launch [stac-browser](https://github.com/radiantearth/stac-browser) against a local catalog | [![CI](https://github.com/stactools-packages/stactools-browse/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/stactools-packages/stactools-browse/actions/workflows/continuous-integration.yml) |
+
+### Dataset packages
+
+These are designed to work with specific types of geospatial data.
+
+| name                                                                               | data type                                                                  | build status                                                                                                                                                                                                                        |
+| ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [stactools-aster](https://github.com/stactools-packages/stactools-aster)           | ASTER                                                                      |                                                                                                                                                                                                                                     |
+| [stactools-cgls_lc100](https://github.com/stactools-packages/stactools-cgls_lc100) | Copernicus Global Land Cover Layers                                        | [![CI](https://github.com/stactools-packages/stactools-cgls_lc100/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/stactools-packages/stactools-cgls_lc100/actions/workflows/continuous-integration.yml) |
+| [stactools-corine](https://github.com/stactools-packages/stactools-corine)         | CORINE Land Cover                                                          | [![CI](https://github.com/stactools-packages/stactools-corine/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/stactools-packages/stactools-corine/actions/workflows/continuous-integration.yml)         |
+| [stactools-landsat](https://github.com/stactools-packages/stactools-landsat)       | USGS LANDSAT                                                               | [![CI](https://github.com/stactools-packages/stactools-landsat/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/stactools-packages/stactools-landsat/actions/workflows/continuous-integration.yml)       |
+| [stactools-naip](https://github.com/stactools-packages/stactools-naip)             | USDA National Agriculture Imagery Program                                  | [![CI](https://github.com/stactools-packages/stactools-naip/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/stactools-packages/stactools-naip/actions/workflows/continuous-integration.yml)             |
+| [stactools-planet](https://github.com/stactools-packages/stactools-planet)         | Planet                                                                     | [![CI](https://github.com/stactools-packages/stactools-planet/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/stactools-packages/stactools-planet/actions/workflows/continuous-integration.yml)         |
+| [stactools-sentinel2](https://github.com/stactools-packages/stactools-sentinel2)   | Sentinel-2                                                                 | [![CI](https://github.com/stactools-packages/stactools-sentinel2/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/stactools-packages/stactools-sentinel2/actions/workflows/continuous-integration.yml)   |
+| [stactools-threedep](https://github.com/stactools-packages/stactools-threedep)     | USGS 3D Elevation Program (formerly the National Elevation Dataset or NED) | [![CI](https://github.com/stactools-packages/stactools-threedep/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/stactools-packages/stactools-threedep/actions/workflows/continuous-integration.yml)     |
 
 ## Developing
 
+Some packages require environments with more complex environments than can be set up just through pip.
+For example, the `stactools.aster` package uses rasterio functionality that required a GDAL enabled with the HDF4 format.
+Because of this, it's recommended to utilize docker or conda to ensure a consistent environment.
+
 ### Using docker
 
-Some subpackages require environments with more complex environments than can be set up just through pip. For example, the `stactools.aster` package uses rasterio functionality that required a GDAL enabled with the HDF4 format. Because of this, it's recommended to utilize the docker environment provided by this repository.
+Build the container with:
+
+```
+> docker/build
+```
 
 Once the container is built, you can run the `scripts/` scripts inside a docker console by running:
 
@@ -96,23 +86,44 @@ Once the container is built, you can run the `scripts/` scripts inside a docker 
 > docker/console
 ```
 
+A complete build and test can be run with:
+
+```
+> docker/cibuild
+```
+
+It is recommended to do a Docker CI build before submitting a pull request to ensure your changes will (likely) pass Github's CI.
+
+### Using conda
+
+[conda](https://docs.conda.io/en/latest/) is a useful tool for managing dependencies, both binary and Python-based.
+If you have conda installed, you can create a new environment for `stactools` development by running the following command from the top-level directory in this repo:
+
+```
+> conda env create -f environment.yml
+```
+
+Then activate the `stactools` environment:
+
+```
+> conda activate stactools
+```
+
+Finally, install `stactools` in editable mode and all development requirements:
+
+```
+> pip install -e .
+> pip install -r requirements-dev.txt
+```
+
 ### Using virtualenv
 
-If not using docker, it's recommended to use [virtualenv](https://virtualenv.pypa.io/en/latest/index.html) to keep isolate the python environment used to develop stactools. See virtualenv documentation for more detailed information, but as a shortcut here's some quick steps:
+If not using docker or conda, it's recommended to use [virtualenv](https://virtualenv.pypa.io/en/latest/index.html) to keep isolate the python environment used to develop `stactools`.
+See virtualenv documentation for more detailed information, but as a shortcut here's some quick steps:
 
 - Make sure [virtualenv](https://virtualenv.pypa.io/en/latest/installation.html) is installed
 - Run `virtualenv venv`
 - Activate the virtualenv with `source venv/bin/activate`
-
-#### Installing development requirements
-
-To install all the requirements for subpackages and the development requirements, use:
-
-```
-> scripts/update
-```
-
-Note that some packages might fail requirement installs because of required environment setup that cannot be controlled with pip-install. For instance, you may need to install rasterio with a GDAL that has non-standard formats enabled. You can avoid errors by installing the proper environment, by installing the failing requirements like rasterio manually, or by using the docker environment.
 
 ### Running the CLI against development code
 
@@ -148,39 +159,19 @@ or
 > ./scripts/test
 ```
 
-### Code quality checks
-
-stactools uses [flake8](http://flake8.pycqa.org/en/latest/) and [yapf](https://github.com/google/yapf) for code formatting and style checks.
-
-To run the flake8 style checks:
-
-```
-> flake8 stactools_* tests
-```
-
-To format code:
-
-```
-> yapf -ipr stactools_* tests
-```
-
-To check for spelling mistakes in modified files:
-
-```
-> git diff --name-only | xargs codespell -I .codespellignore -f
-```
-
-You can also run the `./docker/test` or `./scripts/test` script to check for linting, spelling, and run unit tests.
-
+The test script also runs lint and code quality checks.
 ### Documentation
 
-To build and serve the docs, all of the requirements must be installed with `scripts/update`. Make sure [Pandocs](https://pandoc.org/installing.html) is installed. Also make sure sphinx is available, which should be installed with `requirements-dev.txt`. You can also run the following in the docker container using
+To build and serve the docs, all of the requirements must be installed with `scripts/update`.
+Make sure [Pandoc](https://pandoc.org/installing.html) is installed.
+Also make sure sphinx is available, which should be installed with `requirements-dev.txt`.
+You can also run the following in the docker container using
 
 ```
 > docker/console
 ```
 
-To build the docs, you can use `make html`, and to build the docs and start a server that watches for changes, use `make livhtml`:
+To build the docs, you can use `make html`, and to build the docs and start a server that watches for changes, use `make livehtml`:
 
 ```
 > cd docs
@@ -192,17 +183,8 @@ If using `make livehtml`, once the server starts, navigate to [http://localhost:
 
 Use 'make' without arguments to see a list of available commands.
 
-### Adding a new sub-package
+### Adding a new package
 
-stactools is happy to take contributions of new subpackages for working with specific data types! Below is a list of steps to add a new subpackage:
-
-- Add the new subpackage as `stactools_{pkg}`, where `{pkg}` is a short name for the dataset the subpackage works with (e.g. "landsat")
-- Create a `setup.py`, `requirements.txt`, and `README.md` in the subpackage directory.
-- The code should exist in the `stactools/{pkg}/` directory in that package subdirectory. Note that the `stactools` does not have an __init__.py (look at the other subpackages for examples).
-- Add the subpackage to the appropriate variables in `scripts/env`
-- Add the subpackage requirements install section to
-`docker/Dockerfile`
-- Add the subpackage to the appropriate tables in the README.
-- Add documentation for the subpackage.
-- Add subpackage to .readthedocs.yml install
-- Add the subpackage to the `subpackages` list in the top-level `setup.py`, with `is_extra=True`. This will allow for an install of that specific subpackage with the pip extras syntax, e.g. `pip install stactools[aster]`.
+To create a new `stactools` package, use the [`stactools` package template](https://github.com/stactools-packages/template).
+`stactools` utilizes Python's [namespace packages](https://packaging.python.org/guides/packaging-namespace-packages/) to provide a suite of tools all under the `stactools` namespace.
+If you would like your package to be considered for inclusion as a core `stactools` package, please open an issue on this repository with a link to your package repository.
