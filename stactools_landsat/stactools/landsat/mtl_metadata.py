@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from pystac.utils import str_to_datetime
+from pyproj import Geod
 
 from stactools.core.utils import map_opt
 from stactools.core.projection import transform_from_bbox
@@ -90,31 +91,55 @@ class MtlMetadata:
             self._get_float("PROJECTION_ATTRIBUTES/CORNER_LL_LAT_PRODUCT"),
             self._get_float("PROJECTION_ATTRIBUTES/CORNER_LR_LAT_PRODUCT")
         ]
-
-        return [min(lons), min(lats), max(lons), max(lats)]
+        geod = Geod(ellps="WGS84")
+        offset = self.sr_gsd / 2
+        _, _, bottom_distance = geod.inv(lons[2], lats[2], lons[3], lats[3])
+        bottom_offset = offset * (lons[3] - lons[2]) / bottom_distance
+        _, _, top_distance = geod.inv(lons[0], lats[0], lons[1], lats[1])
+        top_offset = offset * (lons[1] - lons[0]) / top_distance
+        _, _, lat_distance = geod.inv(lons[0], lats[0], lons[2], lats[2])
+        lat_offset = offset * (lats[0] - lats[2]) / lat_distance
+        return [
+            min(lons) - bottom_offset,
+            min(lats) - lat_offset,
+            max(lons) + top_offset,
+            max(lats) + lat_offset
+        ]
 
     @property
     def proj_bbox(self) -> List[float]:
+        # USGS metadata provide bounds at the center of the pixel, but
+        # GDAL/rasterio transforms are to edge of pixel.
+        # https://github.com/stac-utils/stactools/issues/117
+        offset = self.sr_gsd / 2
         xs = [
             self._get_float(
-                "PROJECTION_ATTRIBUTES/CORNER_UL_PROJECTION_X_PRODUCT"),
+                "PROJECTION_ATTRIBUTES/CORNER_UL_PROJECTION_X_PRODUCT") -
+            offset,
             self._get_float(
-                "PROJECTION_ATTRIBUTES/CORNER_UR_PROJECTION_X_PRODUCT"),
+                "PROJECTION_ATTRIBUTES/CORNER_UR_PROJECTION_X_PRODUCT") +
+            offset,
             self._get_float(
-                "PROJECTION_ATTRIBUTES/CORNER_LL_PROJECTION_X_PRODUCT"),
+                "PROJECTION_ATTRIBUTES/CORNER_LL_PROJECTION_X_PRODUCT") -
+            offset,
             self._get_float(
-                "PROJECTION_ATTRIBUTES/CORNER_LR_PROJECTION_X_PRODUCT")
+                "PROJECTION_ATTRIBUTES/CORNER_LR_PROJECTION_X_PRODUCT") +
+            offset
         ]
 
         ys = [
             self._get_float(
-                "PROJECTION_ATTRIBUTES/CORNER_UL_PROJECTION_Y_PRODUCT"),
+                "PROJECTION_ATTRIBUTES/CORNER_UL_PROJECTION_Y_PRODUCT") +
+            offset,
             self._get_float(
-                "PROJECTION_ATTRIBUTES/CORNER_UR_PROJECTION_Y_PRODUCT"),
+                "PROJECTION_ATTRIBUTES/CORNER_UR_PROJECTION_Y_PRODUCT") +
+            offset,
             self._get_float(
-                "PROJECTION_ATTRIBUTES/CORNER_LL_PROJECTION_Y_PRODUCT"),
+                "PROJECTION_ATTRIBUTES/CORNER_LL_PROJECTION_Y_PRODUCT") -
+            offset,
             self._get_float(
-                "PROJECTION_ATTRIBUTES/CORNER_LR_PROJECTION_Y_PRODUCT")
+                "PROJECTION_ATTRIBUTES/CORNER_LR_PROJECTION_Y_PRODUCT") -
+            offset
         ]
 
         return [min(xs), min(ys), max(xs), max(ys)]
