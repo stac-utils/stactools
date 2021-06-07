@@ -25,11 +25,11 @@ Standard pip install
 
    pip install stactools
 
-To install all available sub-packages, use
+Core subpackages are available from PyPI:
 
 .. code-block:: console
 
-   pip install stactools[all]
+   pip install stactools-planet
 
 ``stactools`` Features
 ======================
@@ -54,4 +54,3 @@ Table of Contents
 
    api
    cli
-   tutorials

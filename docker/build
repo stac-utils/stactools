@@ -14,17 +14,12 @@ Build stactools containers. Must be run from the repository root
 "
 }
 
-function build_containers() {
-    echo "Building containers"
-    docker build -t stactools -f docker/Dockerfile .
-    docker build -t stactools-dev -f docker/Dockerfile-dev .
-}
-
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
-        build_containers
+        docker build -t stactools -f docker/Dockerfile .
+        docker build -t stactools-dev -f docker/Dockerfile-dev .
     fi
     exit
 fi

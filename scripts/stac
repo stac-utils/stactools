@@ -7,6 +7,5 @@ if [[ -n "${CI}" ]]; then
 fi
 
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
-
    python -m stactools.cli "$@"
 fi
