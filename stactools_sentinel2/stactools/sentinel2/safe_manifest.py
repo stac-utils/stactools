@@ -35,6 +35,8 @@ class SafeManifest:
         if file_path is None:
             return None
         else:
+            # Remove relative prefix that some paths have
+            file_path = file_path.strip("./")
             return os.path.join(self.granule_href, file_path)
 
     @property
