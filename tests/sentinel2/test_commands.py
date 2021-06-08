@@ -62,6 +62,10 @@ class CreateItemTest(CliTestCase):
                     bands_to_assets = defaultdict(list)
 
                     for key, asset in item.assets.items():
+                        # Ensure that there's no relative path parts
+                        # in the asset HREFs
+                        self.assertTrue('/./' not in asset.href)
+
                         self.assertTrue(is_absolute_href(asset.href))
                         bands = item.ext.eo.get_bands(asset)
                         if bands is not None:
