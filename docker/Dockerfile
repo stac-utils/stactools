@@ -32,10 +32,10 @@ RUN conda install -y python=3.8
 RUN python -m pip install --upgrade pip
 
 # Install GDAL
-RUN conda install -y -c conda-forge gdal=3.2.2
+RUN conda install -y -c conda-forge gdal=3.3.0
 
 # Install PDAL
-RUN conda install -y -c conda-forge pdal=2.2.0
+RUN conda install -y -c conda-forge pdal=2.3.0
 
 # Install dependencies for building rasterio from source.
 # The rasterio wheels do not include the HDF-EOS driver
