@@ -6,7 +6,7 @@ from pystac import (Catalog, Item, Asset, Extent, TemporalExtent,
                     SpatialExtent, MediaType, Extensions)
 from pystac.extensions.label import (LabelOverview, LabelClasses, LabelCount)
 
-from tests.utils.test_data import TestData
+from tests import test_data
 
 TEST_LABEL_CATALOG = {
     'country-1': {
@@ -77,17 +77,17 @@ class TestCases:
     @staticmethod
     def planet_disaster():
         return pystac.read_file(
-            TestData.get_path('data-files/planet-disaster/collection.json'))
+            test_data.get_path('data-files/planet-disaster/collection.json'))
 
     @staticmethod
     def test_case_1():
         return Catalog.from_file(
-            TestData.get_path('data-files/catalogs/test-case-1/catalog.json'))
+            test_data.get_path('data-files/catalogs/test-case-1/catalog.json'))
 
     @staticmethod
     def test_case_2():
         return Catalog.from_file(
-            TestData.get_path('data-files/catalogs/test-case-2/catalog.json'))
+            test_data.get_path('data-files/catalogs/test-case-2/catalog.json'))
 
     @staticmethod
     def test_case_3():
@@ -145,31 +145,31 @@ class TestCases:
         See: https://www.drivendata.org/competitions/60/building-segmentation-disaster-resilience
         """
         return Catalog.from_file(
-            TestData.get_path('data-files/catalogs/test-case-4/catalog.json'))
+            test_data.get_path('data-files/catalogs/test-case-4/catalog.json'))
 
     @staticmethod
     def test_case_5():
         """Based on a subset of https://cbers.stac.cloud/"""
         return Catalog.from_file(
-            TestData.get_path('data-files/catalogs/test-case-5/catalog.json'))
+            test_data.get_path('data-files/catalogs/test-case-5/catalog.json'))
 
     @staticmethod
     def test_case_6():
         """Based on a subset of CBERS, contains a root and 4 empty children"""
         return Catalog.from_file(
-            TestData.get_path(
+            test_data.get_path(
                 'data-files/catalogs/cbers-partial/catalog.json'))
 
     @staticmethod
     def test_case_7():
         """Test case 4 as STAC version 0.8.1"""
         return Catalog.from_file(
-            TestData.get_path(
+            test_data.get_path(
                 'data-files/catalogs/label_catalog_0_8_1/catalog.json'))
 
     @staticmethod
     def test_case_8():
         """Planet disaster data example catalog, 1.0.0-beta.2"""
         return pystac.read_file(
-            TestData.get_path('data-files/catalogs/'
-                              'planet-example-1.0.0-beta.2/collection.json'))
+            test_data.get_path('data-files/catalogs/'
+                               'planet-example-1.0.0-beta.2/collection.json'))

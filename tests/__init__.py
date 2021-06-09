@@ -1,5 +1,7 @@
 import logging
 
+from stactools.testing import TestData
+
 
 class Logging:
     _logging_setup: bool = False
@@ -23,3 +25,5 @@ class Logging:
 
 
 Logging.setup_logging(logging.INFO)
+
+test_data = TestData(__file__)

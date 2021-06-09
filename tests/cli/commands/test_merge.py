@@ -6,7 +6,8 @@ import pystac
 
 from stactools.cli.commands.merge import create_merge_command
 from stactools.core import move_all_assets
-from tests.utils import (TestCases, CliTestCase)
+from stactools.testing import CliTestCase
+from .test_cases import TestCases
 
 
 def copy_two_planet_disaster_subsets(tmp_dir):
