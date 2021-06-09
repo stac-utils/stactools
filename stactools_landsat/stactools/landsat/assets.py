@@ -198,7 +198,7 @@ B7_ASSET_DEF = AssetDef(
     is_sr=True)
 QA_AEROSOL_ASSET_DEF = AssetDef(
     href_suffix="SR_QA_AEROSOL.TIF",
-    key="SR_B8",
+    key="SR_QA_AEROSOL",
     title="Aerosol Quality Analysis Band",
     description=("Collection 2 Level-2 Aerosol Quality Analysis Band "
                  "(ANG) Surface Reflectance"),
