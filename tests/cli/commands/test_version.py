@@ -2,11 +2,10 @@ from pystac.version import get_stac_version
 from stactools.core.version import __version__
 from stactools.cli.commands.version import create_version_command
 
-from tests.utils import (CliTestCase)
+from tests.utils import CliTestCase
 
 
 class VersionTest(CliTestCase):
-
     def create_subcommand_functions(self):
         return [create_version_command]
 

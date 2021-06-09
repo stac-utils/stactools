@@ -4,9 +4,7 @@ from stactools.core.version import __version__
 
 
 def create_version_command(cli):
-    @cli.command(
-        'version',
-        short_help='Display version info.')
+    @cli.command('version', short_help='Display version info.')
     def version_command():
         """Display version info
         """
