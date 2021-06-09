@@ -5,14 +5,15 @@ import unittest
 
 import rasterio
 
-from tests.utils import TestData, validate_cloud_optimized_geotiff
+from stactools.testing import validate_cloud_optimized_geotiff
 from stactools.core.utils.convert import cogify
+from tests import test_data
 
 
 class CogifyTest(unittest.TestCase):
     @contextmanager
     def cogify(self, **kwargs):
-        infile = TestData.get_path("data-files/core/byte.tif")
+        infile = test_data.get_path("data-files/core/byte.tif")
         with TemporaryDirectory() as directory:
             outfile = os.path.join(directory, "byte.tif")
             cogify(infile, outfile, **kwargs)
