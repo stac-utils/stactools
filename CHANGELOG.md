@@ -1,5 +1,13 @@
 # Changelog
 
+## stactools 0.2.0-alpha.0
+
+### Reorganize packaging [#111](https://github.com/stac-utils/stactools/pull/111)
+
+- Separates dataset packages and `stactools.browse` into a new Github organization, [stactools-packages](https://github.com/stactools-packages)
+- Adds `stactools.testing`, which provides an API with convenience functions for packages to use in their testing code.
+  Replaces `tests/utils`.
+
 ## stactools 0.1.6
 
 ### Added
