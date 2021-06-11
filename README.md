@@ -12,9 +12,16 @@ See [packages](#packages) for more information.
 
 ## Installation
 
+To install the lastest stable version:
 
 ```bash
 > pip install stactools
+```
+
+To install the latest pre release:
+
+```bash
+> pip install stactools --pre
 ```
 
 From source repository:
