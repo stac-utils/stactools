@@ -12,7 +12,7 @@ See [packages](#packages) for more information.
 
 ## Installation
 
-To install the lastest stable version:
+To install the latest stable version:
 
 ```bash
 > pip install stactools
