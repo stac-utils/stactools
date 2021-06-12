@@ -15,7 +15,7 @@ Run linting and tests in a docker container with all prerequisites installed.
 
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     docker run --rm -it \
-        -v `pwd`:/opt/src \
-        --entrypoint /opt/src/scripts/test \
-        stactools-dev:latest
+        -v `pwd`:/opt/stactools \
+        --entrypoint /opt/stactools/scripts/test \
+        stacutils/stactools:latest-dev
 fi

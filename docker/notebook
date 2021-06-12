@@ -15,15 +15,15 @@ Launches a Jupyter notebook in a docker container with all prerequisites install
 
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     docker run --rm -it \
-        -v `pwd`:/opt/src \
+        -v `pwd`:/opt/stactools \
         -v ${HOME}/.planet.json:/root/.planet.json:ro \
         --entrypoint jupyter \
         -p 8888:8888 \
-        stactools:latest \
+        stacutils/stactools:latest \
         notebook \
         --ip=0.0.0.0 \
         --port=8888 \
         --no-browser \
         --allow-root \
-        --notebook-dir=/opt/src
+        --notebook-dir=/opt/stactools
 fi
