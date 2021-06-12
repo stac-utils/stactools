@@ -5,19 +5,20 @@ from zipfile import ZipFile
 
 import requests
 
-EXTERNAL_DATA = {
-    'aster/AST_L1T_00305032000040446_20150409135350_78838.hdf': {
-        'url':
-        ('https://ai4epublictestdata.blob.core.windows.net/'
-         'stactools/aster/AST_L1T_00305032000040446_20150409135350_78838.zip'),
-        'compress':
-        'zip'
-    }
-}
+# example external data:
+# {
+#     'AST_L1T_00305032000040446_20150409135350_78838.hdf': {
+#         'url':
+#         ('https://ai4epublictestdata.blob.core.windows.net/'
+#          'stactools/aster/AST_L1T_00305032000040446_20150409135350_78838.zip'),
+#         'compress':
+#         'zip'
+#     }
+# }
 
 
 class TestData:
-    def __init__(self, path):
+    def __init__(self, path, external_data={}):
         """Creates a test data object for a given test script.
 
         Initialize this from, e.g., `tests/__init__.py`:
@@ -27,6 +28,7 @@ class TestData:
         ```
         """
         self.path = path
+        self.external_data = external_data
 
     def get_path(self, rel_path: str) -> str:
         return os.path.abspath(
@@ -35,7 +37,7 @@ class TestData:
     def get_external_data(self, rel_path: str) -> str:
         path = self.get_path(os.path.join('data-files/external', rel_path))
         if not os.path.exists(path):
-            entry = EXTERNAL_DATA.get(rel_path)
+            entry = self.external_data.get(rel_path)
             if entry is None:
                 raise Exception('Path {} does not exist and there is no entry '
                                 'for external test data {}.'.format(
