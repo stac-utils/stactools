@@ -16,9 +16,9 @@ Build and serve documentation from a docker container with all prerequisites ins
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     docker run --rm -it \
         -p 8000:8000 \
-        -v `pwd`:/opt/src \
-        -w /opt/src/docs \
+        -v `pwd`:/opt/stactools \
+        -w /opt/stactools/docs \
         --entrypoint /bin/bash \
-        stactools-dev:latest \
+        stacutils/stactools:latest-dev \
         -c "make livehtml"
 fi

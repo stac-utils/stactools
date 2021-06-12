@@ -17,6 +17,6 @@ will be reflected in the execution.
 
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     docker run --rm -it \
-        -v `pwd`:/opt/src \
-        stactools:latest "${@}"
+        -v `pwd`:/opt/stactools \
+        stacutils/stactools:latest "${@}"
 fi

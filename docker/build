@@ -18,8 +18,8 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
-        docker build -t stactools -f docker/Dockerfile .
-        docker build -t stactools-dev -f docker/Dockerfile-dev .
+        docker build --target main -t stacutils/stactools:latest -f docker/Dockerfile .
+        docker build --target dev -t stacutils/stactools:latest-dev -f docker/Dockerfile .
     fi
     exit
 fi
