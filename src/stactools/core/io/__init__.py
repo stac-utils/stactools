@@ -1,10 +1,7 @@
-from typing import Callable, Optional, TYPE_CHECKING, Union, Any
+from typing import Callable, Optional, Any
 
-from pystac import StacIO
+from pystac.stac_io import DefaultStacIO, StacIO
 import fsspec
-
-if TYPE_CHECKING:
-    from pystac.link import Link as Link_Type
 
 ReadHrefModifier = Callable[[str], str]
 """Type alias for a function parameter
@@ -22,28 +19,13 @@ def read_text(href: str,
         return StacIO.default().read_text(read_href_modifier(href))
 
 
-class FsspecStacIO(StacIO):
-    def read_text(self, source: Union[str, "Link_Type"], *args: Any,
-                  **kwargs: Any) -> str:
-        if isinstance(source, str):
-            href = source
-        else:
-            href = source.get_absolute_href()
-            if href is None:
-                raise IOError(
-                    f"Could not get an absolute HREF from link {source}")
+class FsspecStacIO(DefaultStacIO):
+    def read_text_from_href(self, href: str, *args: Any, **kwargs: Any) -> str:
         with fsspec.open(href, "r") as f:
             return f.read()
 
-    def write_text(self, dest: Union[str, "Link_Type"], txt: str, *args: Any,
-                   **kwargs: Any) -> None:
-        if isinstance(dest, str):
-            href = dest
-        else:
-            href = dest.get_absolute_href()
-            if href is None:
-                raise IOError(
-                    f"Could not get an absolute HREF from link {dest}")
+    def write_text_from_href(self, href: str, txt: str, *args: Any,
+                             **kwargs: Any) -> None:
         with fsspec.open(href, "w") as destination:
             return destination.write(txt)
 
