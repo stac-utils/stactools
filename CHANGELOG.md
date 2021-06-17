@@ -1,6 +1,27 @@
 # Changelog
 
-## stactools 0.2.0-alpha.0
+## stactools 0.2.1a1
+
+### Added
+
+- Version string to the `stactools.testing` module.
+- PySTAC v1.0 support ([#113](https://github.com/stac-utils/stactools/pull/113)).
+  Primary changes are to input/output and extensions.
+
+### Fixed
+
+- Console script entry point, which was accidentally dropped during the v0.2 reorganization ([#139](https://github.com/stac-utils/stactools/pull/139))
+- External data support for `stactools.testing` ([#135](https://github.com/stac-utils/stactools/pull/135))
+
+### Changed
+
+- Bumped `rasterio` version to v1.2
+
+### Removed
+
+- `validate_cloud_optimized_geotiff.py` from `stactools.testing`
+
+## stactools 0.2.1a0
 
 ### Reorganize packaging [#111](https://github.com/stac-utils/stactools/pull/111)
 
