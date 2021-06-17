@@ -5,7 +5,7 @@ import pystac
 from pystac import (Catalog, Item, Asset, Extent, TemporalExtent,
                     SpatialExtent, MediaType)
 from pystac.extensions.label import (LabelOverview, LabelClasses, LabelCount,
-                                     LabelExtension)
+                                     LabelExtension, LabelType)
 
 from tests import test_data
 
@@ -131,7 +131,7 @@ class TestCases:
         LabelExtension.add_to(label_item)
         label_extension = LabelExtension.ext(label_item)
         label_extension.apply(label_description='ML Labels',
-                              label_type='vector',
+                              label_type=LabelType.VECTOR,
                               label_properties=['label'],
                               label_classes=[
                                   LabelClasses.create(classes=['one', 'two'],
