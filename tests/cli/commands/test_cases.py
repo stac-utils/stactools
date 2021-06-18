@@ -120,16 +120,7 @@ class TestCases:
                           datetime=datetime.utcnow(),
                           properties={})
 
-        # TODO change this to:
-        #
-        # ```
-        # LabelExtension.ext(label_item, add_if_missing=True)
-        # ```
-        #
-        # after PySTAC 1.0.0-rc.1, which incorporates
-        # https://github.com/stac-utils/pystac/pull/450
-        LabelExtension.add_to(label_item)
-        label_extension = LabelExtension.ext(label_item)
+        label_extension = LabelExtension.ext(label_item, add_if_missing=True)
         label_extension.apply(label_description='ML Labels',
                               label_type=LabelType.VECTOR,
                               label_properties=['label'],
