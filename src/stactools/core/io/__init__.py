@@ -1,6 +1,6 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, Any
 
-import pystac
+from pystac.stac_io import DefaultStacIO, StacIO
 import fsspec
 
 ReadHrefModifier = Callable[[str], str]
@@ -12,22 +12,23 @@ to a signed URL
 
 
 def read_text(href: str,
-              read_href_modifier: Optional[ReadHrefModifier]) -> str:
+              read_href_modifier: Optional[ReadHrefModifier] = None) -> str:
     if read_href_modifier is None:
-        return pystac.STAC_IO.read_text(href)
+        return StacIO.default().read_text(href)
     else:
-        return pystac.STAC_IO.read_text(read_href_modifier(href))
+        return StacIO.default().read_text(read_href_modifier(href))
+
+
+class FsspecStacIO(DefaultStacIO):
+    def read_text_from_href(self, href: str, *args: Any, **kwargs: Any) -> str:
+        with fsspec.open(href, "r") as f:
+            return f.read()
+
+    def write_text_from_href(self, href: str, txt: str, *args: Any,
+                             **kwargs: Any) -> None:
+        with fsspec.open(href, "w") as destination:
+            return destination.write(txt)
 
 
 def use_fsspec():
-    # Use fsspec to handle IO
-    def fsspec_read_method(uri):
-        with fsspec.open(uri, 'r') as f:
-            return f.read()
-
-    def fsspec_write_method(uri, txt):
-        with fsspec.open(uri, 'w') as f:
-            return f.write(txt)
-
-    pystac.STAC_IO.read_text_method = fsspec_read_method
-    pystac.STAC_IO.write_text_method = fsspec_write_method
+    StacIO.set_default(FsspecStacIO)

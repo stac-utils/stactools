@@ -49,6 +49,7 @@ fi
 
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     rm -rf dist
-    python setup.py sdist bdist_wheel
+    pip install build twine
+    python -m build --sdist --wheel
     twine upload ${TEST_PYPI} dist/*
 fi
