@@ -2,6 +2,7 @@ import sys
 
 import click
 import pystac
+from pystac import Item, Catalog, STACValidationError, STACObject
 
 
 def create_validate_command(cli):
@@ -17,32 +18,58 @@ def create_validate_command(cli):
         Prints any validation errors to stdout.
         """
         object = pystac.read_file(href)
-        try:
-            if isinstance(object, pystac.Item) or only:
-                object.validate()
-            else:
-                object.validate_all()
-            print(f"OK! STAC object at {href} is valid!")
-        except FileNotFoundError as e:
-            print(
-                f"FileNotFound error: {e}\nWalking children to find location of missing link(s)..."
-            )
-            find_missing_links(object, object)
-        except pystac.STACValidationError as e:
-            print(e)
-            print(e.source)
+        errors = []
+        errors += validation_errors(object, only)
+        if not isinstance(object, Item):
+            if not only:
+                errors += child_errors(object, object)
+            errors += item_errors(object, object)
+        if not errors:
+            click.secho("OK", fg="green", nl=False)
+            click.echo(f" STAC object at {href} is valid!")
+        else:
+            for error in errors:
+                click.secho("ERROR", fg="red", nl=False)
+                click.echo(f" {error}")
             sys.exit(1)
 
     return validate_command
 
 
-def find_missing_links(root, object):
-    for child in object.get_children():
+def validation_errors(object: STACObject, only: bool):
+    try:
+        if isinstance(object, Item) or only:
+            object.validate()
+        else:
+            object.validate_all()
+    except FileNotFoundError as e:
+        return [f"File not found: {e}"]
+    except STACValidationError as e:
+        return [f"{e}\n{e.source}"]
+    else:
+        return []
+
+
+def child_errors(root: Catalog, object: Catalog):
+    errors = []
+    for link in object.get_child_links():
         try:
-            find_missing_links(root, child)
+            link = link.resolve_stac_object(root)
         except FileNotFoundError:
-            for link in child.get_child_links():
-                try:
-                    link.resolve_stac_object(root)
-                except FileNotFoundError:
-                    print(f"{child.self_href} has a missing link: {link.href}")
+            errors.append(
+                f"{object.self_href} has a missing child link: {link.href}")
+        else:
+            errors += child_errors(root, link.target)
+            errors += item_errors(root, link.target)
+    return errors
+
+
+def item_errors(root: Catalog, object: Catalog):
+    errors = []
+    for link in object.get_item_links():
+        try:
+            link.resolve_stac_object(root)
+        except FileNotFoundError:
+            errors.append(
+                f"{object.self_href} has a missing item link: {link.href}")
+    return errors
