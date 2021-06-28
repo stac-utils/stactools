@@ -1,11 +1,37 @@
-FROM continuumio/miniconda3
-
-RUN conda update conda && conda install pip
-
-COPY environment.yml /tmp/environment.yml
-RUN conda env update -f /tmp/environment.yml -n base && rm /tmp/environment.yml
-
-COPY . /tmp/stactools
-RUN cd /tmp/stactools && pip install . && rm -rf /tmp/stactools
-
+FROM continuumio/miniconda3 AS base
+RUN conda update conda && conda install pip && conda clean -af
+WORKDIR /opt/stactools
+COPY environment.yml ./
+RUN conda env update -f environment.yml -n base && conda clean -af
+# For some pip env vars falsey means enable
+ENV PIP_NO_BINARY rasterio
+ENV PIP_NO_CACHE_DIR 0
 ENTRYPOINT [ "python", "-m", "stactools.cli" ]
+
+
+FROM base as dep_builder
+# Some deps must be built (e.g. against the conda GDAL)
+RUN apt-get update \
+    && apt-get install -y gcc build-essential \
+    && rm -rf /var/lib/apt/lists/*
+COPY setup.cfg ./
+COPY src/stactools/core/__init__.py src/stactools/core/
+# Install dependencies but remove the actual package
+RUN pip install --prefix=/install . \
+    && rm -r /install/lib/*/site-packages/stactools*
+
+
+FROM base AS dev
+COPY --from=dep_builder /install /opt/conda
+RUN conda install -c conda-forge pandoc && conda clean -af
+COPY requirements-dev.txt ./
+RUN pip install -r requirements-dev.txt
+COPY . ./
+RUN pip install -e .
+
+
+FROM base AS main
+COPY --from=dep_builder /install /opt/conda
+COPY src ./src
+COPY pyproject.toml setup.cfg ./
+RUN pip install .

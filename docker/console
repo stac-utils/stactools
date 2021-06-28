@@ -15,8 +15,8 @@ Run a console in a docker container with all prerequisites installed.
 
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     docker run --rm -it \
-        -v `pwd`:/opt/src \
+        -v `pwd`:/opt/stactools \
         -p 8000:8000 \
         --entrypoint /bin/bash \
-        stactools-dev:latest
+        stacutils/stactools:latest-dev
 fi
