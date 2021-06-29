@@ -20,10 +20,9 @@ def create_validate_command(cli):
         object = pystac.read_file(href)
         errors = []
         errors += validation_errors(object, only)
-        if not isinstance(object, Item):
-            if not only:
-                errors += child_errors(object, object)
-            errors += item_errors(object, object)
+        errors += link_errors(object, object)
+        if not (isinstance(object, Item) or only):
+            errors += child_errors(object, object)
         if not errors:
             click.secho("OK", fg="green", nl=False)
             click.echo(f" STAC object at {href} is valid!")
@@ -60,16 +59,17 @@ def child_errors(root: Catalog, object: Catalog):
                 f"{object.self_href} has a missing child link: {link.href}")
         else:
             errors += child_errors(root, link.target)
-            errors += item_errors(root, link.target)
+            errors += link_errors(root, link.target)
     return errors
 
 
-def item_errors(root: Catalog, object: Catalog):
+def link_errors(root: Catalog, object: Catalog):
     errors = []
-    for link in object.get_item_links():
+    for link in object.get_links():
         try:
             link.resolve_stac_object(root)
         except FileNotFoundError:
             errors.append(
-                f"{object.self_href} has a missing item link: {link.href}")
+                f"{object.self_href} has a missing \"{link.rel}\" link: {link.href}"
+            )
     return errors
