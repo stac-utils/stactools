@@ -35,5 +35,5 @@ class ValidatateTest(CliTestCase):
         path = test_data.get_path(
             "data-files/catalogs/test-case-1/country-1/area-1-1/collection-invalid.json"
         )
-        result = self.run_command(["validate", path, "--only"])
+        result = self.run_command(["validate", path, "--no-recurse"])
         self.assertEqual(0, result.exit_code)
