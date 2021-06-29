@@ -1,4 +1,5 @@
 import sys
+from typing import Optional
 
 import click
 import pystac
@@ -8,21 +9,28 @@ from pystac import Item, Catalog, STACValidationError, STACObject
 def create_validate_command(cli):
     @cli.command("validate", short_help="Validate a stac object.")
     @click.argument("href")
-    @click.option("--only",
-                  is_flag=True,
-                  help=("Only validate this object, do not validate children "
-                        "(only useful for Catalogs and Collections)"))
-    def validate_command(href, only):
+    @click.option("--recurse/--no-recurse",
+                  default=True,
+                  help=("If false, do not validate any children "
+                        "(only useful for Catalogs and Collections"))
+    @click.option("--links/--no-links",
+                  default=True,
+                  help=("If false, do not check any of the item's links."))
+    def validate_command(href, recurse, links):
         """Validates a STAC object.
 
         Prints any validation errors to stdout.
         """
         object = pystac.read_file(href)
+
         errors = []
-        errors += validation_errors(object, only)
-        errors += link_errors(object, object)
-        if not (isinstance(object, Item) or only):
-            errors += child_errors(object, object)
+        errors += validation_errors(object, recurse)
+        if links:
+            if isinstance(object, Item):
+                errors += link_errors(object, None)
+            else:
+                errors += link_errors(object, object)
+
         if not errors:
             click.secho("OK", fg="green", nl=False)
             click.echo(f" STAC object at {href} is valid!")
@@ -35,9 +43,9 @@ def create_validate_command(cli):
     return validate_command
 
 
-def validation_errors(object: STACObject, only: bool):
+def validation_errors(object: STACObject, recurse: bool):
     try:
-        if isinstance(object, Item) or only:
+        if isinstance(object, Item) or not recurse:
             object.validate()
         else:
             object.validate_all()
@@ -49,27 +57,16 @@ def validation_errors(object: STACObject, only: bool):
         return []
 
 
-def child_errors(root: Catalog, object: Catalog):
+def link_errors(object: STACObject, root: Optional[Catalog]):
     errors = []
-    for link in object.get_child_links():
+    for link in object.get_links():
         try:
             link = link.resolve_stac_object(root)
         except FileNotFoundError:
             errors.append(
-                f"{object.self_href} has a missing child link: {link.href}")
-        else:
-            errors += child_errors(root, link.target)
-            errors += link_errors(root, link.target)
-    return errors
-
-
-def link_errors(root: Catalog, object: Catalog):
-    errors = []
-    for link in object.get_links():
-        try:
-            link.resolve_stac_object(root)
-        except FileNotFoundError:
-            errors.append(
-                f"{object.self_href} has a missing \"{link.rel}\" link: {link.href}"
+                f"Missing link in {object.self_href}: \"{link.rel}\" -> {link.href}"
             )
+        else:
+            if link.rel == "child" or link.rel == "item":
+                errors += link_errors(link.target, root)
     return errors
