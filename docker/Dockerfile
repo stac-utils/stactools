@@ -22,6 +22,10 @@ RUN pip install --prefix=/install . \
 
 
 FROM base AS dev
+# Install make for the docs build
+RUN apt-get update \
+    && apt-get install -y make \
+    && rm -rf /var/lib/apt/lists/*
 COPY --from=dep_builder /install /opt/conda
 RUN conda install -c conda-forge pandoc && conda clean -af
 COPY requirements-dev.txt ./
