@@ -15,6 +15,7 @@ RUN apt-get update \
     && apt-get install -y gcc build-essential \
     && rm -rf /var/lib/apt/lists/*
 COPY setup.cfg ./
+COPY pyproject.toml ./
 COPY src/stactools/core/__init__.py src/stactools/core/
 # Install dependencies but remove the actual package
 RUN pip install --prefix=/install . \
