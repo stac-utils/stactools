@@ -102,9 +102,11 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME }}
+          flavor: |
+            suffix=-dev
           tags: |
-            type=ref,event=branch,suffix=-dev
-            type=ref,event=pr,suffix=-dev
+            type=ref,event=branch
+            type=ref,event=pr
       -
         name: Build and push dev
         uses: docker/build-push-action@v2
