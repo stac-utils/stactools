@@ -92,7 +92,8 @@ jobs:
           context: .
           file: docker/Dockerfile
           target: main
-          push: true
+          # Don't try to push if the event is a PR from a fork
+          push: ${{ github.event_name != 'pull_request' || github.head_ref.repo.full_name == github.repository }}
           tags: ${{ steps.meta-main.outputs.tags }}
           labels: ${{ steps.meta-main.outputs.labels }}
       -
@@ -111,6 +112,7 @@ jobs:
           context: .
           file: docker/Dockerfile
           target: dev
-          push: true
+          # Don't try to push if the event is a PR from a fork
+          push: ${{ github.event_name != 'pull_request' || github.head_ref.repo.full_name == github.repository }}
           tags: ${{ steps.meta-dev.outputs.tags }}
           labels: ${{ steps.meta-dev.outputs.labels }}
