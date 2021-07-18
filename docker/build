@@ -6,6 +6,8 @@ if [[ -n "${STACTOOLS_DEBUG}" ]]; then
     set -x
 fi
 
+source $(dirname "$0")/env
+
 function usage() {
 
     echo -n \
@@ -18,8 +20,8 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
-        docker build --target main -t stacutils/stactools:latest -f docker/Dockerfile .
-        docker build --target dev -t stacutils/stactools:latest-dev -f docker/Dockerfile .
+        docker build --target main -t $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:$DOCKER_TAG -f docker/Dockerfile .
+        docker build --target dev -t $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:$DOCKER_TAG_DEV -f docker/Dockerfile .
     fi
     exit
 fi
