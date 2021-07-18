@@ -13,15 +13,41 @@ function usage() {
     echo -n \
         "Usage: $(basename "$0")
 Build stactools containers. Must be run from the repository root
+
+Options:
+--no-cache  Do not use cache when building the images
+--pull      Attempt to pull upstream images before building
 "
 }
+
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+    case $key in
+        --help)
+        usage
+        exit 0
+        shift
+        ;;
+
+        --no-cache)
+        NO_CACHE="--no-cache"
+        shift
+        ;;
+
+        --pull)
+        PULL="--pull"
+        shift
+        ;;
+    esac
+done
 
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
-        docker build --target main -t $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:$DOCKER_TAG -f docker/Dockerfile .
-        docker build --target dev -t $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:$DOCKER_TAG_DEV -f docker/Dockerfile .
+        docker build $PULL $NO_CACHE --target main -t $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:$DOCKER_TAG -f docker/Dockerfile .
+        docker build $PULL $NO_CACHE --target dev -t $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:$DOCKER_TAG_DEV -f docker/Dockerfile .
     fi
     exit
 fi
