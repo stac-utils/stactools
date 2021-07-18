@@ -2,6 +2,7 @@ codespell
 coverage
 flake8
 ipython
+jupyter
 nbsphinx
 pylint
 sphinx
