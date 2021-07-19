@@ -6,4 +6,4 @@ from stactools.core.copy import (move_asset_file_to_item, move_assets,
 from stactools.core.layout import layout_catalog
 from stactools.core.merge import (merge_items, merge_all_items)
 
-__version__ = "0.2.1a1"
+__version__ = "0.2.1a2"
