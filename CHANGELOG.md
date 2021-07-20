@@ -1,12 +1,24 @@
 # Changelog
 
+## stactools 0.2.1a2
+
 ### Added
 
-- Added Issue and PR Templates
+- `docker/pull` script for downloading Docker images
+- GitHub issue and PR templates
+
 ### Fixed
 
 ### Changed
+
+- Bumped `pystac` to v1.0.0
+- Restructured the Docker build
+- Using GitHub Docker Registry rather than DockerHub for storing images
+- Use both PySTAC and STAC version in version command ([#149](https://github.com/stac-utils/stactools/pull/149))
+
 ### Removed
+
+- Dropped support for Python 3.6
 
 ## stactools 0.2.1a1
 
