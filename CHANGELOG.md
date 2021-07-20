@@ -6,6 +6,7 @@
 
 - `docker/pull` script for downloading Docker images
 - GitHub issue and PR templates
+- `script/notebook` to run Jupyter notebooks ([#174](https://github.com/stac-utils/stactools/pull/174))
 
 ### Fixed
 
