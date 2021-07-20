@@ -1,0 +1,5 @@
+DOCKER_REGISTRY=ghcr.io
+DOCKER_ORG=stac-utils
+DOCKER_REPO=stactools
+DOCKER_TAG=local
+DOCKER_TAG_DEV=local-dev
