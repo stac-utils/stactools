@@ -1,5 +1,13 @@
 # Changelog
 
+### Added
+
+- Added Issue and PR Templates
+### Fixed
+
+### Changed
+### Removed
+
 ## stactools 0.2.1a1
 
 ### Added
