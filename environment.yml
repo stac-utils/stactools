@@ -4,3 +4,4 @@ channels:
   - defaults
 dependencies:
   - gdal
+  - rasterio~=1.2
