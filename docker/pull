@@ -20,8 +20,10 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
-        docker pull $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:$DOCKER_TAG
-        docker pull $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:$DOCKER_TAG_DEV
+        docker pull $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:main
+        docker tag $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:main $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:$DOCKER_TAG
+        docker pull $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:main-dev
+        docker tag $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:main-dev $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:$DOCKER_TAG_DEV
     fi
     exit
 fi
