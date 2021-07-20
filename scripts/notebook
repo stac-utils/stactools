@@ -19,7 +19,6 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     else
         jupyter notebook \
             --ip=0.0.0.0 \
-            --port=8888 \
-            --allow-root # Useful if run within the Docker containers
+            --port=8888
     fi
 fi
