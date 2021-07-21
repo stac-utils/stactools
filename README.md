@@ -32,10 +32,24 @@ From source repository:
 > pip install .
 ```
 
+### Docker
+
+To download the Docker image from the registry:
+
+```bash
+> docker pull ghcr.io/stac-utils/stactools:latest
+```
+
 ## Running
 
-```
+```bash
 > stac --help
+```
+
+### Docker
+
+```bash
+> docker run --rm ghcr.io/stac-utils/stactools:latest --help
 ```
 
 ## Documentation
@@ -100,6 +114,18 @@ A complete build and test can be run with:
 ```
 
 It is recommended to do a Docker CI build before submitting a pull request to ensure your changes will (likely) pass Github's CI.
+
+In scenarios where you want to run scripts in `docker/` but don't want to run the build, images can be downloaded via the `pull` script:
+
+```
+> docker/pull
+```
+
+Run a Juypter notebook:
+
+```
+> docker/notebook
+```
 
 ### Using conda
 
@@ -167,6 +193,13 @@ or
 ```
 
 The test script also runs lint and code quality checks.
+
+Run a Juypter notebook:
+
+```
+> scripts/notebook
+```
+
 ### Documentation
 
 To build and serve the docs, all of the requirements must be installed with `scripts/update`.
