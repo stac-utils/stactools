@@ -28,15 +28,10 @@ def create_validate_command(cli):
         """
         object = pystac.read_file(href)
 
-        errors = []
-        errors += validation_errors(object, recurse)
-        if links:
-            if isinstance(object, Item):
-                errors += link_errors(object, None)
-            else:
-                errors += link_errors(object, object)
-        if assets:
-            errors += asset_errors(object)
+        if isinstance(object, Item):
+            errors = validate(object, None, False, links, assets)
+        else:
+            errors = validate(object, object, recurse, links, assets)
 
         if not errors:
             click.secho("OK", fg="green", nl=False)
@@ -50,39 +45,37 @@ def create_validate_command(cli):
     return validate_command
 
 
-def validation_errors(object: STACObject, recurse: bool) -> List[str]:
+def validate(object: STACObject, root: Optional[STACObject], recurse: bool,
+             links: bool, assets: bool) -> List[str]:
+    errors: List[str] = []
+
     try:
-        if isinstance(object, Item) or not recurse:
-            object.validate()
-        else:
-            object.validate_all()
+        object.validate()
     except FileNotFoundError as e:
-        return [f"File not found: {e}"]
+        errors.append(f"File not found: {e}")
     except STACValidationError as e:
-        return [f"{e}\n{e.source}"]
-    else:
-        return []
+        errors.append(f"{e}\n{e.source}")
 
+    if links:
+        for link in object.get_links():
+            try:
+                link = link.resolve_stac_object(root)
+            except FileNotFoundError:
+                errors.append(
+                    f"Missing link in {object.self_href}: \"{link.rel}\" -> {link.href}"
+                )
 
-def link_errors(object: STACObject, root: Optional[Catalog]) -> List[str]:
-    errors = []
-    for link in object.get_links():
-        try:
-            link = link.resolve_stac_object(root)
-        except FileNotFoundError:
-            errors.append(
-                f"Missing link in {object.self_href}: \"{link.rel}\" -> {link.href}"
-            )
-        else:
-            if link.rel == "child" or link.rel == "item":
-                errors += link_errors(link.target, root)
-    return errors
+    if assets and not isinstance(object, Catalog):
+        for name, asset in object.get_assets().items():
+            if not asset_exists(asset):
+                errors.append(
+                    f"Asset '{name}' does not exist: {asset.get_absolute_href()}"
+                )
 
+    if recurse:
+        for child in object.get_children():
+            errors.extend(validate(child, root, recurse, links, assets))
+        for item in object.get_items():
+            errors.extend(validate(item, root, False, links, assets))
 
-def asset_errors(object: STACObject) -> List[str]:
-    errors = []
-    for name, asset in object.get_assets().items():
-        if not asset_exists(asset):
-            errors.append(
-                f"Asset '{name}' does not exist: {asset.get_absolute_href()}")
     return errors
