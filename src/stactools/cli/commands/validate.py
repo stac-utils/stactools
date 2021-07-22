@@ -1,9 +1,11 @@
 import sys
-from typing import Optional
+from typing import Optional, List
 
 import click
 import pystac
 from pystac import Item, Catalog, STACValidationError, STACObject
+
+from stactools.core.utils import asset_exists
 
 
 def create_validate_command(cli):
@@ -15,8 +17,11 @@ def create_validate_command(cli):
                         "(only useful for Catalogs and Collections"))
     @click.option("--links/--no-links",
                   default=True,
-                  help=("If false, do not check any of the item's links."))
-    def validate_command(href, recurse, links):
+                  help=("If false, do not check any of the objects's links."))
+    @click.option("--assets/--no-assets",
+                  default=True,
+                  help=("If false, do not check any of the item's assets."))
+    def validate_command(href, recurse, links, assets):
         """Validates a STAC object.
 
         Prints any validation errors to stdout.
@@ -30,6 +35,8 @@ def create_validate_command(cli):
                 errors += link_errors(object, None)
             else:
                 errors += link_errors(object, object)
+        if assets:
+            errors += asset_errors(object)
 
         if not errors:
             click.secho("OK", fg="green", nl=False)
@@ -43,7 +50,7 @@ def create_validate_command(cli):
     return validate_command
 
 
-def validation_errors(object: STACObject, recurse: bool):
+def validation_errors(object: STACObject, recurse: bool) -> List[str]:
     try:
         if isinstance(object, Item) or not recurse:
             object.validate()
@@ -57,7 +64,7 @@ def validation_errors(object: STACObject, recurse: bool):
         return []
 
 
-def link_errors(object: STACObject, root: Optional[Catalog]):
+def link_errors(object: STACObject, root: Optional[Catalog]) -> List[str]:
     errors = []
     for link in object.get_links():
         try:
@@ -69,4 +76,13 @@ def link_errors(object: STACObject, root: Optional[Catalog]):
         else:
             if link.rel == "child" or link.rel == "item":
                 errors += link_errors(link.target, root)
+    return errors
+
+
+def asset_errors(object: STACObject) -> List[str]:
+    errors = []
+    for name, asset in object.get_assets().items():
+        if not asset_exists(asset):
+            errors.append(
+                f"Asset '{name}' does not exist: {asset.get_absolute_href()}")
     return errors
