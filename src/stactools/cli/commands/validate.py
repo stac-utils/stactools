@@ -18,9 +18,10 @@ def create_validate_command(cli):
     @click.option("--links/--no-links",
                   default=True,
                   help=("If false, do not check any of the objects's links."))
-    @click.option("--assets/--no-assets",
-                  default=True,
-                  help=("If false, do not check any of the item's assets."))
+    @click.option(
+        "--assets/--no-assets",
+        default=True,
+        help=("If false, do not check any of the collection's/item's assets."))
     def validate_command(href, recurse, links, assets):
         """Validates a STAC object.
 
