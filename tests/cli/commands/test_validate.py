@@ -14,7 +14,7 @@ class ValidatateTest(CliTestCase):
         path = test_data.get_path(
             "data-files/catalogs/test-case-1/country-1/area-1-1/"
             "area-1-1-imagery/area-1-1-imagery.json")
-        result = self.run_command(["validate", path])
+        result = self.run_command(["validate", path, "--no-assets"])
         self.assertEqual(0, result.exit_code)
 
     def test_invalid_item(self):
@@ -37,3 +37,10 @@ class ValidatateTest(CliTestCase):
         )
         result = self.run_command(["validate", path, "--no-recurse"])
         self.assertEqual(0, result.exit_code)
+
+    def test_collection_invalid_asset(self):
+        path = test_data.get_path(
+            "data-files/catalogs/test-case-1/country-1"
+            "/area-1-1/area-1-1-imagery/area-1-1-imagery.json")
+        result = self.run_command(["validate", path])
+        self.assertEqual(1, result.exit_code)
