@@ -1,6 +1,5 @@
 from typing import Callable, Optional, TypeVar
 
-from pystac import Asset, Link
 import fsspec
 
 T = TypeVar('T')
