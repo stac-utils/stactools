@@ -5,7 +5,7 @@ import click
 import pystac
 from pystac import Item, Catalog, STACValidationError, STACObject
 
-from stactools.core.utils import asset_exists
+from stactools.core.utils import href_exists
 
 
 def create_validate_command(cli):
@@ -59,16 +59,14 @@ def validate(object: STACObject, root: Optional[STACObject], recurse: bool,
 
     if links:
         for link in object.get_links():
-            try:
-                link = link.resolve_stac_object(root)
-            except FileNotFoundError:
+            if not href_exists(link.get_absolute_href()):
                 errors.append(
                     f"Missing link in {object.self_href}: \"{link.rel}\" -> {link.href}"
                 )
 
     if assets and not isinstance(object, Catalog):
         for name, asset in object.get_assets().items():
-            if not asset_exists(asset):
+            if not href_exists(asset.get_absolute_href()):
                 errors.append(
                     f"Asset '{name}' does not exist: {asset.get_absolute_href()}"
                 )
