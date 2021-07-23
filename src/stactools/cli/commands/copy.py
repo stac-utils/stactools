@@ -1,6 +1,7 @@
 import click
 import pystac
 
+from pystac.utils import make_absolute_href
 from stactools.core.copy import copy_catalog, move_all_assets
 
 
@@ -67,7 +68,7 @@ def create_copy_command(cli):
         at DST.
 
         Note: Copying a catalog will upgrade it to the latest version of STAC."""
-        source_catalog = pystac.read_file(src)
+        source_catalog = pystac.read_file(make_absolute_href(src))
         copy_catalog(source_catalog, dst, catalog_type, copy_assets,
                      publish_location)
 

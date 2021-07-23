@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -e
+
+if [[ -n "${STACTOOLS_DEBUG}" ]]; then
+    set -x
+fi
+
+source $(dirname "$0")/env
+
+function usage() {
+
+    echo -n \
+        "Usage: $(basename "$0")
+Pull stactools container images from registry. Must be run from the repository root
+"
+}
+
+if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
+    if [ "${1:-}" = "--help" ]; then
+        usage
+    else
+        docker pull $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:main
+        docker tag $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:main $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:$DOCKER_TAG
+        docker pull $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:main-dev
+        docker tag $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:main-dev $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:$DOCKER_TAG_DEV
+    fi
+    exit
+fi
