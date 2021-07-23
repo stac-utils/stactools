@@ -46,9 +46,25 @@ class TestData:
             print('Downloading external test data {}...'.format(rel_path))
             os.makedirs(os.path.dirname(path), exist_ok=True)
 
-            with fsspec.open(entry["url"]) as f:
-                data = f.read()
-            if entry['compress'] == 'zip':
+            s3_config = entry.get("s3")
+            if s3_config:
+                try:
+                    import s3fs
+                except ImportError as e:
+                    print(
+                        "Trying to download external test data via s3, "
+                        "but s3fs is not installed and the download requires "
+                        "configuring the s3fs filesystem. Install stactools "
+                        "with s3fs via `pip install stactools[s3]` and try again."
+                    )
+                    raise (e)
+                s3 = s3fs.S3FileSystem(**s3_config)
+                with s3.open(entry["url"]) as f:
+                    data = f.read()
+            else:
+                with fsspec.open(entry["url"]) as f:
+                    data = f.read()
+            if entry.get("compress") == 'zip':
                 with TemporaryDirectory() as tmp_dir:
                     tmp_path = os.path.join(tmp_dir, 'file.zip')
                     with open(tmp_path, 'wb') as f:

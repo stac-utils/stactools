@@ -9,6 +9,14 @@ test_data = TestData(
         },
         "goes-16/index.html": {
             "url": "s3://noaa-goes16/index.html",
-            "compress": False
+        },
+        "AW3D30_global.vrt": {
+            "url": "s3://raster/AW3D30/AW3D30_global.vrt",
+            "s3": {
+                "anon": True,
+                "client_kwargs": {
+                    "endpoint_url": "https://opentopography.s3.sdsc.edu"
+                }
+            }
         }
     })
