@@ -57,7 +57,7 @@ jobs:
       - name: Execute linters and test suites
         run: ./scripts/cibuild
       - name: Install with extra_requires
-        run: pip install -e '.[all]'
+        run: pip install -e '.[s3]'
       - name: Test again
         run: ./scripts/test
   docker:

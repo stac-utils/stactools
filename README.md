@@ -37,18 +37,11 @@ From source repository:
 `stactools` includes some optional dependencies:
 - `s3`: Enables s3 hrefs via `fsspec` and `s3fs`
 
-To install a single optional dependency:
+To install a single optional dependency, e.g. `s3`:
 
 ```bash
 > pip install stactools[s3]
 ```
-
-To install all optional dependencies:
-
-```bash
-> pip install stactools[all]
-```
-
 ### Docker
 
 To download the Docker image from the registry:
