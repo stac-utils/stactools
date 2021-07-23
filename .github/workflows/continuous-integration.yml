@@ -56,6 +56,10 @@ jobs:
         run: conda env update -f environment.yml -n test
       - name: Execute linters and test suites
         run: ./scripts/cibuild
+      - name: Install with extra_requires
+        run: pip install -e '.[all]'
+      - name: Test again
+        run: ./scripts/test
   docker:
     name: docker
     needs:
