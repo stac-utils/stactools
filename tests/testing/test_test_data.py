@@ -14,16 +14,6 @@ class TestDataTest(TestCase):
 
     def test_external_data_s3(self):
         skip_without_s3fs()
-        path = test_data.get_external_data("goes-16/index.html")
-        with open(path) as f:
-            html = f.read()
-        self.assertNotEqual(
-            html.find("Amazon"), -1,
-            "Could not find 'Amazon' in the index page for the AWS public dataset"
-        )
-
-    def test_external_data_s3_with_config(self):
-        skip_without_s3fs()
         path = test_data.get_external_data("AW3D30_global.vrt")
         with open(path) as f:
             xml = f.read()
