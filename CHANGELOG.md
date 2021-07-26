@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Optional dependency on s3fs ([#178](https://github.com/stac-utils/stactools/pull/178)), enabling:
+  - Using s3 files as external data for testing
+  - Using s3 hrefs with stactools functionality by installing with `pip install stactools[s3]` (or `pip install stactools[all]`)
+
 ## stactools 0.2.1a2
 
 ### Added
