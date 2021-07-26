@@ -17,7 +17,7 @@ RUN apt-get update \
 COPY pyproject.toml setup.cfg ./
 COPY src/stactools/core/__init__.py src/stactools/core/
 # Install dependencies but remove the actual package
-RUN pip install --prefix=/install . \
+RUN pip install --prefix=/install .[all] \
     && rm -r /install/lib/*/site-packages/stactools*
 
 
@@ -31,11 +31,11 @@ RUN conda install -c conda-forge pandoc && conda clean -af
 COPY requirements-dev.txt ./
 RUN pip install -r requirements-dev.txt
 COPY . ./
-RUN pip install -e .
+RUN pip install -e .[all]
 
 
 FROM base AS main
 COPY --from=dep_builder /install /opt/conda
 COPY src ./src
 COPY pyproject.toml setup.cfg ./
-RUN pip install .
+RUN pip install .[all]

@@ -19,7 +19,7 @@ jobs:
       - name: Execute linters and test suites
         run: ./docker/cibuild
       - name: Upload All coverage to Codecov
-        uses: codecov/codecov-action@v2.0.1
+        uses: codecov/codecov-action@v2.0.2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
@@ -56,6 +56,10 @@ jobs:
         run: conda env update -f environment.yml -n test
       - name: Execute linters and test suites
         run: ./scripts/cibuild
+      - name: Install with extra_requires
+        run: pip install -e '.[all]'
+      - name: Test again
+        run: ./scripts/test
   docker:
     name: docker
     needs:
@@ -93,7 +97,7 @@ jobs:
           file: docker/Dockerfile
           target: main
           # Don't try to push if the event is a PR from a fork
-          push: ${{ github.event_name != 'pull_request' || github.head_ref.repo.full_name == github.repository }}
+          push: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
           tags: ${{ steps.meta-main.outputs.tags }}
           labels: ${{ steps.meta-main.outputs.labels }}
       -
@@ -115,6 +119,6 @@ jobs:
           file: docker/Dockerfile
           target: dev
           # Don't try to push if the event is a PR from a fork
-          push: ${{ github.event_name != 'pull_request' || github.head_ref.repo.full_name == github.repository }}
+          push: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
           tags: ${{ steps.meta-dev.outputs.tags }}
           labels: ${{ steps.meta-dev.outputs.labels }}

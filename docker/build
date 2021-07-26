@@ -49,5 +49,16 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         docker build $PULL $NO_CACHE --target main -t $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:$DOCKER_TAG -f docker/Dockerfile .
         docker build $PULL $NO_CACHE --target dev -t $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:$DOCKER_TAG_DEV -f docker/Dockerfile .
     fi
-    exit
+
+    # Wipe out the debug container if it still exists. It is now obsolete.
+    if [ "$(docker ps -aqf name=$DOCKER_DEBUG_CONTAINER_NAME)" ]; then
+        # Container exists
+        if [ "$(docker ps -qf name=$DOCKER_DEBUG_CONTAINER_NAME)" ]; then
+            # Container is runnking
+            echo "Kill debug container"
+            docker kill $DOCKER_DEBUG_CONTAINER_NAME
+        fi
+        echo "Remove debug container"
+        docker rm -f $DOCKER_DEBUG_CONTAINER_NAME
+    fi
 fi
