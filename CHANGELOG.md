@@ -7,6 +7,7 @@
 - Optional dependency on s3fs ([#178](https://github.com/stac-utils/stactools/pull/178)), enabling:
   - Using s3 files as external data for testing
   - Using s3 hrefs with stactools functionality by installing with `pip install stactools[s3]` (or `pip install stactools[all]`)
+- `stac validate` command for validating JSON and checking links ([#151](https://github.com/stac-utils/stactools/pull/151))
 
 ## stactools 0.2.1a2
 
