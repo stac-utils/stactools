@@ -23,6 +23,13 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         yapf -dpr ${DIRS_TO_CHECK[@]}
         # Lint
         flake8 ${DIRS_TO_CHECK[@]}
+        # Type checking
+        for module in src/*/; do
+            if [[ "$module" == *.egg-info/ ]] ; then continue; fi
+            for submodule in "$module"/*; do
+                mypy -p "$(basename "$module").$(basename "$submodule")"
+            done
+        done
 
     fi
 fi
