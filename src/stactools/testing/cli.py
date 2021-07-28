@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 @click.group()
-def cli():
+def cli() -> None:
     pass
 
 
@@ -26,8 +26,8 @@ def cli():
               required=True,
               help="Do a dry run; print commands.",
               is_flag=True)
-def make_rasters_smaller_cmd(dir, dry_run):
-    def make_it_smaller(tif_path):
+def make_rasters_smaller_cmd(dir: str, dry_run: bool) -> None:
+    def make_it_smaller(tif_path: str) -> None:
         with TemporaryDirectory() as tmp_dir:
             tmp_path = os.path.join(tmp_dir, "smaller.tif")
             translate_cmd = [
@@ -48,7 +48,7 @@ def make_rasters_smaller_cmd(dir, dry_run):
                 make_it_smaller(full_path)
 
 
-def run_cli():
+def run_cli() -> None:
     cli(prog_name='testutils')
 
 

@@ -7,7 +7,7 @@ import rasterio.crs
 import rasterio.transform
 
 
-def epsg_from_utm_zone_number(utm_zone_number, south):
+def epsg_from_utm_zone_number(utm_zone_number: int, south: bool) -> int:
     """Return the EPSG code for a UTM zone number.
 
     Args:
@@ -27,9 +27,9 @@ def epsg_from_utm_zone_number(utm_zone_number, south):
 
 
 def reproject_geom(src_crs: Union[pyproj.CRS, rasterio.crs.CRS, str],
-                   dest_crs: Any,
+                   dest_crs: Union[pyproj.CRS, rasterio.crs.CRS, str],
                    geom: Dict[str, Any],
-                   precision: Optional[int] = None):
+                   precision: Optional[int] = None) -> Dict[str, Any]:
     """Reprojects a geometry represented as GeoJSON
     from the src_crs to the dest crs.
 
@@ -49,7 +49,7 @@ def reproject_geom(src_crs: Union[pyproj.CRS, rasterio.crs.CRS, str],
                                               always_xy=True)
     result = deepcopy(geom)
 
-    def fn(coords):
+    def fn(coords: abc.Sequence[Any]) -> abc.Sequence[Any]:
         coords = list(coords)
         for i in range(0, len(coords)):
             coord = coords[i]

@@ -1,11 +1,11 @@
 import logging
-
 import click
 
+from typing import Union
 from stactools.cli import registry
 
 
-def setup_logging(level):
+def setup_logging(level: Union[str, int]) -> None:
     logger = logging.getLogger('stactools')
     logger.setLevel(level)
 
@@ -23,7 +23,7 @@ def setup_logging(level):
               '--quiet',
               help=("Use quiet mode (no output)"),
               is_flag=True)
-def cli(verbose, quiet):
+def cli(verbose: bool, quiet: bool) -> None:
     logging_level = logging.INFO
     if verbose:
         logging_level = logging.DEBUG
@@ -36,7 +36,7 @@ for create_subcommand in registry.get_create_subcommand_functions():
     create_subcommand(cli)
 
 
-def run_cli():
+def run_cli() -> None:
     cli(prog_name='stac')
 
 

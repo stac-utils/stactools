@@ -16,7 +16,7 @@ class XmlElement:
 
     @lru_cache(maxsize=100)
     def find(self, xpath: str) -> Optional["XmlElement"]:
-        node = self.element.find(xpath, self.element.nsmap)
+        node = self.element.find(xpath, self.element.nsmap)  # type: ignore
         return None if node is None else XmlElement(node)
 
     def find_or_throw(
@@ -30,8 +30,8 @@ class XmlElement:
     @lru_cache(maxsize=100)
     def findall(self, xpath: str) -> List["XmlElement"]:
         return [
-            XmlElement(e)
-            for e in self.element.findall(xpath, self.element.nsmap)
+            XmlElement(e) for e in self.element.findall(
+                xpath, self.element.nsmap)  # type: ignore
         ]
 
     @lru_cache(maxsize=100)
@@ -52,8 +52,8 @@ class XmlElement:
         return None if node is None else node.get_attr(attr)
 
     @property
-    def text(self):
-        return self.element.text
+    def text(self) -> Optional[str]:
+        return str(self.element.text)
 
     @lru_cache(maxsize=100)
     def get_attr(self, attr: str) -> Optional[str]:
