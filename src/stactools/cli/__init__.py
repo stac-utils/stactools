@@ -5,7 +5,7 @@ import stactools.core
 stactools.core.use_fsspec()
 
 
-def register_plugin(registry):
+def register_plugin(registry: 'Registry') -> None:
     # Register subcommands
 
     from stactools.cli.commands import (copy, info, layout, merge, migrate,

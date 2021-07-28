@@ -3,13 +3,12 @@ from typing import Optional, List
 
 import click
 import pystac
-from pystac import Item, Collection, STACValidationError, STACObject
-from pystac.catalog import Catalog
 
+from pystac import Catalog, Collection, Item, STACObject, STACValidationError
 from stactools.core.utils import href_exists
 
 
-def create_validate_command(cli):
+def create_validate_command(cli: click.Group) -> click.Command:
     @cli.command("validate", short_help="Validate a stac object.")
     @click.argument("href")
     @click.option("--recurse/--no-recurse",
@@ -23,7 +22,8 @@ def create_validate_command(cli):
         "--assets/--no-assets",
         default=True,
         help=("If false, do not check any of the collection's/item's assets."))
-    def validate_command(href, recurse, links, assets):
+    def validate_command(href: str, recurse: bool, links: bool,
+                         assets: bool) -> None:
         """Validates a STAC object.
 
         Prints any validation errors to stdout.

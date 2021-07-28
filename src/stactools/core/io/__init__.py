@@ -22,13 +22,13 @@ def read_text(href: str,
 class FsspecStacIO(DefaultStacIO):
     def read_text_from_href(self, href: str, *args: Any, **kwargs: Any) -> str:
         with fsspec.open(href, "r") as f:
-            return f.read()
+            return str(f.read())
 
     def write_text_from_href(self, href: str, txt: str, *args: Any,
                              **kwargs: Any) -> None:
         with fsspec.open(href, "w") as destination:
-            return destination.write(txt)
+            destination.write(txt)
 
 
-def use_fsspec():
+def use_fsspec() -> None:
     StacIO.set_default(FsspecStacIO)

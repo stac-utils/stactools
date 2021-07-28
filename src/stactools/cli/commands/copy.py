@@ -1,11 +1,12 @@
 import click
 import pystac
 
+from typing import Optional
 from pystac.utils import make_absolute_href
 from stactools.core.copy import copy_catalog, move_all_assets
 
 
-def create_move_assets_command(cli):
+def create_move_assets_command(cli: click.Group) -> click.Command:
     @cli.command(
         'move-assets',
         short_help='Move or copy assets in a STAC to the Item locations.')
@@ -19,7 +20,8 @@ def create_move_assets_command(cli):
                   help=('Subdirectory to place assets '
                         'inside of the directory containing '
                         'their items'))
-    def move_assets_command(catalog_path, copy, asset_subdirectory):
+    def move_assets_command(catalog_path: str, copy: bool,
+                            asset_subdirectory: str) -> None:
         """Move or copy assets in a STAC Catalog.
 
         For all assets in the catalog at CATALOG_PATH, move or copy
@@ -32,6 +34,9 @@ def create_move_assets_command(cli):
         an absolute HREF after this operation. Otherwise, it will have a relative HREF.
         """
         catalog = pystac.read_file(catalog_path)
+        if not isinstance(catalog, pystac.Catalog):
+            raise click.BadArgumentUsage(
+                f"{catalog_path} is not a STAC Catalog")
 
         processed = move_all_assets(catalog,
                                     asset_subdirectory=asset_subdirectory,
@@ -42,7 +47,7 @@ def create_move_assets_command(cli):
     return move_assets_command
 
 
-def create_copy_command(cli):
+def create_copy_command(cli: click.Group) -> click.Command:
     @cli.command('copy', short_help='Copy a STAC Catalog')
     @click.argument('src')
     @click.argument('dst')
@@ -63,12 +68,16 @@ def create_copy_command(cli):
                   '--publish-location',
                   help=('Location to use for resolving HREF links '
                         'instead of the destination folder.'))
-    def copy_command(src, dst, catalog_type, copy_assets, publish_location):
+    def copy_command(src: str, dst: str, catalog_type: pystac.CatalogType,
+                     copy_assets: bool,
+                     publish_location: Optional[str]) -> None:
         """Copy a STAC Catalog or Collection at SRC to the directory
         at DST.
 
         Note: Copying a catalog will upgrade it to the latest version of STAC."""
         source_catalog = pystac.read_file(make_absolute_href(src))
+        if not isinstance(source_catalog, pystac.Catalog):
+            raise click.BadArgumentUsage(f"{src} is not a STAC Catalog")
         copy_catalog(source_catalog, dst, catalog_type, copy_assets,
                      publish_location)
 

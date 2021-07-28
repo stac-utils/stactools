@@ -3,6 +3,7 @@ coverage
 flake8
 ipython
 jupyter
+lxml-stubs
 mypy
 nbsphinx
 pylint
