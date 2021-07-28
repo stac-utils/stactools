@@ -11,6 +11,10 @@
   - Using s3 hrefs with stactools functionality by installing with `pip install stactools[s3]` (or `pip install stactools[all]`)
 - `stac validate` command for validating JSON and checking links ([#151](https://github.com/stac-utils/stactools/pull/151))
 
+### Changed
+
+- Updated PySTAC dependency to `~= 1.1` ([#185](https://github.com/stac-utils/stactools/pull/185))
+
 ## stactools 0.2.1a2
 
 ### Added
