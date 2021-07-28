@@ -59,12 +59,17 @@ def create_copy_command(cli):
                   is_flag=True,
                   help=('Copy all item assets to '
                         'be alongside the new item location.'))
-    def copy_command(src, dst, catalog_type, copy_assets):
+    @click.option('-l',
+                  '--publish-location',
+                  help=('Location to use for resolving HREF links '
+                        'instead of the destination folder.'))
+    def copy_command(src, dst, catalog_type, copy_assets, publish_location):
         """Copy a STAC Catalog or Collection at SRC to the directory
         at DST.
 
         Note: Copying a catalog will upgrade it to the latest version of STAC."""
         source_catalog = pystac.read_file(make_absolute_href(src))
-        copy_catalog(source_catalog, dst, catalog_type, copy_assets)
+        copy_catalog(source_catalog, dst, catalog_type, copy_assets,
+                     publish_location)
 
     return copy_command
