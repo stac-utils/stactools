@@ -3,6 +3,7 @@ coverage
 flake8
 ipython
 jupyter
+mypy
 nbsphinx
 pylint
 sphinx
@@ -10,4 +11,6 @@ sphinx-autobuild
 sphinx-click
 sphinxcontrib-fulltoc
 sphinxcontrib-napoleon
+types-certifi
+types-click
 yapf
