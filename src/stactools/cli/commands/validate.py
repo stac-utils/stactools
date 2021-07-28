@@ -3,7 +3,8 @@ from typing import Optional, List
 
 import click
 import pystac
-from pystac import Item, Catalog, STACValidationError, STACObject
+from pystac import Item, Collection, STACValidationError, STACObject
+from pystac.catalog import Catalog
 
 from stactools.core.utils import href_exists
 
@@ -59,19 +60,24 @@ def validate(object: STACObject, root: Optional[STACObject], recurse: bool,
 
     if links:
         for link in object.get_links():
-            if not href_exists(link.get_absolute_href()):
+            href = link.get_absolute_href()
+            assert href
+            if not href_exists(href):
                 errors.append(
                     f"Missing link in {object.self_href}: \"{link.rel}\" -> {link.href}"
                 )
 
-    if assets and not isinstance(object, Catalog):
+    if assets and (isinstance(object, Item) or isinstance(object, Collection)):
         for name, asset in object.get_assets().items():
-            if not href_exists(asset.get_absolute_href()):
+            href = asset.get_absolute_href()
+            assert href
+            if not href_exists(href):
                 errors.append(
                     f"Asset '{name}' does not exist: {asset.get_absolute_href()}"
                 )
 
     if recurse:
+        assert isinstance(object, Catalog) or isinstance(object, Collection)
         for child in object.get_children():
             errors.extend(validate(child, root, recurse, links, assets))
         for item in object.get_items():
