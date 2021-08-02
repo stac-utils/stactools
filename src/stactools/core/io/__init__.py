@@ -22,7 +22,14 @@ def read_text(href: str,
 class FsspecStacIO(DefaultStacIO):
     def read_text_from_href(self, href: str, *args: Any, **kwargs: Any) -> str:
         with fsspec.open(href, "r") as f:
-            return str(f.read())
+            s = f.read()
+            if isinstance(s, str):
+                return s
+            elif isinstance(s, bytes):
+                return str(s, encoding='utf-8')
+            else:
+                raise ValueError(
+                    f"Unable to decode data loaded from HREF: {href}")
 
     def write_text_from_href(self, href: str, txt: str, *args: Any,
                              **kwargs: Any) -> None:
