@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- ReadTheDocs ([#190](https://github.com/stac-utils/stactools/pull/190))
+
 ## stactools 0.2.1
 
 The v0.2 release of stactools is a major refactor of the packaging and organization strategy for stactools.
