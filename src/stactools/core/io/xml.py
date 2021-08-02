@@ -53,7 +53,13 @@ class XmlElement:
 
     @property
     def text(self) -> Optional[str]:
-        return str(self.element.text)
+        if isinstance(self.element.text, str):
+            return self.element.text
+        elif isinstance(self.element.text, bytes):
+            return str(self.element.text, encoding='utf-8')
+        else:
+            assert self.element.text is None
+            return None
 
     @lru_cache(maxsize=100)
     def get_attr(self, attr: str) -> Optional[str]:
