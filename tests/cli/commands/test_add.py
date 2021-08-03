@@ -47,7 +47,6 @@ class AddTest(CliTestCase):
         item_path = item.get_self_href()
         with TemporaryDirectory() as tmp_dir:
             target_catalog = create_temp_catalog_copy(tmp_dir)
-
             items = list(target_catalog.get_all_items())
             self.assertEqual(len(items), 5)
 
@@ -63,8 +62,9 @@ class AddTest(CliTestCase):
             self.assertEqual(res.exit_code, 0)
 
             target_col = pystac.read_file(target_catalog.get_self_href())
-            items = list(target_col.get_all_items())
-            self.assertEqual(len(items), 6)
+            child_col = target_col.get_child("hurricane-harvey")
+            target_item = child_col.get_item(item.id)
+            self.assertIsNotNone(target_item)
 
     def test_add_item_to_missing_collection(self):
         catalog = TestCases.test_case_1()
