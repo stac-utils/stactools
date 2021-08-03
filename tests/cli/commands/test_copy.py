@@ -1,5 +1,6 @@
 import os
 from tempfile import TemporaryDirectory
+from typing import cast
 
 import pystac
 from pystac.utils import is_absolute_href, make_absolute_href
@@ -51,6 +52,25 @@ class CopyTest(CliTestCase):
                         make_absolute_href(href, item_href)
                     ])
                     self.assertTrue(common_path, os.path.dirname(item_href))
+
+    def test_copy_using_publish_location(self):
+        cat = TestCases.planet_disaster()
+        href = "http://test.com"
+        with TemporaryDirectory() as tmp_dir:
+            cat.make_all_asset_hrefs_absolute()
+            cat.normalize_hrefs(tmp_dir)
+            cat.save(catalog_type=pystac.CatalogType.ABSOLUTE_PUBLISHED)
+
+            cat2_dir = os.path.join(tmp_dir, 'second')
+
+            command = [
+                'copy', '-t', 'ABSOLUTE_PUBLISHED', '-a',
+                cat.get_self_href(), cat2_dir, '-l', href
+            ]
+            self.run_command(command)
+            cat2 = pystac.read_file(os.path.join(cat2_dir, 'collection.json'))
+            for link in cat2.get_child_links():
+                self.assertTrue(cast(str, link.target).startswith(href))
 
     def test_move_assets(self):
         cat = TestCases.planet_disaster()

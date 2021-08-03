@@ -1,54 +1,37 @@
 # Changelog
 
-## stactools 0.2.1a2
+## stactools 0.2.1
+
+The v0.2 release of stactools is a major refactor of the packaging and organization strategy for stactools.
+Most packages have been moved to the [stactools-packages](https://github.com/stactools-packages) organizing, leaving only `stactools.core`, `stactools.cli`, and the new `stactools.testing` packages in this repository.
 
 ### Added
 
+- Adds `stactools.testing`, which provides an API with convenience functions for packages to use in their testing code.
+  Replaces `tests/utils`.
+- Add `mypy` as a lint dependency.
+  Also publish type information for when `stactools` is used as a library. ([#182](https://github.com/stac-utils/stactools/pull/182))
+- Optional dependency on s3fs ([#178](https://github.com/stac-utils/stactools/pull/178)), enabling:
+  - Using s3 files as external data for testing
+  - Using s3 hrefs with stactools functionality by installing with `pip install stactools[s3]` (or `pip install stactools[all]`)
+- `stac validate` command for validating JSON and checking links ([#151](https://github.com/stac-utils/stactools/pull/151))
 - `docker/pull` script for downloading Docker images
 - GitHub issue and PR templates
 - `script/notebook` to run Jupyter notebooks ([#174](https://github.com/stac-utils/stactools/pull/174))
 
-### Fixed
-
 ### Changed
 
-- Bumped `pystac` to v1.0.0
+- Separates dataset packages and `stactools.browse` into a new Github organization, [stactools-packages](https://github.com/stactools-packages)
+- Updated PySTAC dependency to `~= 1.1` ([#185](https://github.com/stac-utils/stactools/pull/185))
 - Restructured the Docker build
 - Using GitHub Docker Registry rather than DockerHub for storing images
 - Use both PySTAC and STAC version in version command ([#149](https://github.com/stac-utils/stactools/pull/149))
-
-### Removed
-
-- Dropped support for Python 3.6
-
-## stactools 0.2.1a1
-
-### Added
-
-- Version string to the `stactools.testing` module.
-- PySTAC v1.0 support ([#113](https://github.com/stac-utils/stactools/pull/113)).
-  Primary changes are to input/output and extensions.
-
-### Fixed
-
-- Console script entry point, which was accidentally dropped during the v0.2 reorganization ([#139](https://github.com/stac-utils/stactools/pull/139))
-- External data support for `stactools.testing` ([#135](https://github.com/stac-utils/stactools/pull/135))
-
-### Changed
-
 - Bumped `rasterio` version to v1.2
 
 ### Removed
 
-- `validate_cloud_optimized_geotiff.py` from `stactools.testing`
-
-## stactools 0.2.1a0
-
-### Reorganize packaging [#111](https://github.com/stac-utils/stactools/pull/111)
-
-- Separates dataset packages and `stactools.browse` into a new Github organization, [stactools-packages](https://github.com/stactools-packages)
-- Adds `stactools.testing`, which provides an API with convenience functions for packages to use in their testing code.
-  Replaces `tests/utils`.
+- Dropped support for Python 3.6
+- `validate_cloud_optimized_geotiff.py`
 
 ## stactools 0.1.6
 

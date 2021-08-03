@@ -1,6 +1,7 @@
 ## stactools
 ![Build Status](https://github.com/stac-utils/stactools/workflows/CI/badge.svg)
 [![Documentation](https://readthedocs.org/projects/stactools/badge/?version=latest)](https://stactools.readthedocs.io/en/latest/)
+[![PyPI version](https://img.shields.io/pypi/v/stactools)](https://pypi.org/project/stactools/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 `stactools` is a command line tool and library for working with [STAC](https://stacspec.org).
@@ -30,6 +31,23 @@ From source repository:
 > git clone https://github.com/stac-utils/stactools.git
 > cd stactools
 > pip install .
+```
+
+### Optional dependencies
+
+`stactools` includes some optional dependencies:
+- `s3`: Enables s3 hrefs via `fsspec` and `s3fs`
+
+To install a single optional dependency:
+
+```bash
+> pip install stactools[s3]
+```
+
+To install all optional dependencies:
+
+```bash
+> pip install stactools[all]
 ```
 
 ### Docker

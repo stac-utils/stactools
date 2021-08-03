@@ -7,4 +7,4 @@ from stactools.core.layout import layout_catalog
 from stactools.core.merge import (merge_items, merge_all_items)
 from stactools.core.add import add_item
 
-__version__ = "0.2.1a2"
+__version__ = "0.2.1"

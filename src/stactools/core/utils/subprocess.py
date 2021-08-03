@@ -11,6 +11,7 @@ def call(command: List[str]) -> int:
             logger.info(line.decode("utf-8").strip('\n'))
 
     process = Popen(command, stdout=PIPE, stderr=STDOUT)
-    with process.stdout:
-        log_subprocess_output(process.stdout)
+    if process.stdout:
+        with process.stdout:
+            log_subprocess_output(process.stdout)
     return process.wait()

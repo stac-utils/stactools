@@ -40,7 +40,7 @@ def move_asset_file_to_item(item,
             'requires that the Item HREFs are available.')
 
     if not is_absolute_href(asset_href):
-        raise ValueError('asset_href msut be absolute.')
+        raise ValueError('asset_href must be absolute.')
 
     item_dir = os.path.dirname(item_href)
 
@@ -194,13 +194,17 @@ def move_all_assets(catalog,
 def copy_catalog(source_catalog,
                  dest_directory,
                  catalog_type=None,
-                 copy_assets=False):
+                 copy_assets=False,
+                 publish_location=None):
     catalog = source_catalog.full_copy()
     dest_directory = make_absolute_href(dest_directory)
-
-    catalog.normalize_hrefs(dest_directory)
 
     if copy_assets:
         catalog = move_all_assets(catalog, copy=True, make_hrefs_relative=True)
 
-    catalog.save(catalog_type)
+    if publish_location is not None:
+        catalog.normalize_hrefs(publish_location)
+        catalog.save(catalog_type, dest_directory)
+    else:
+        catalog.normalize_hrefs(dest_directory)
+        catalog.save(catalog_type)

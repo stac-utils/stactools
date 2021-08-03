@@ -1,0 +1,39 @@
+#!/bin/bash
+
+set -e
+
+if [[ -n "${STACTOOLS_DEBUG}" ]]; then
+    set -x
+fi
+
+source $(dirname "$0")/env
+
+function usage() {
+    echo -n \
+        "Usage: $(basename "$0")
+Run a console in a docker container for debugging.
+"
+}
+
+if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
+    if [ "$(docker ps -aqf name=$DOCKER_DEBUG_CONTAINER_NAME)" ]; then
+        # Container already exists
+        if [ ! "$(docker ps -qf name=$DOCKER_DEBUG_CONTAINER_NAME)" ]; then
+            # Container is stopped
+            echo "Starting debug container"
+            docker start $DOCKER_DEBUG_CONTAINER_NAME
+        fi
+        echo "Attaching debug container"
+        docker attach $DOCKER_DEBUG_CONTAINER_NAME
+    else
+        # Container doesn't exist, run it
+        echo "Running debug container"
+        docker run --name $DOCKER_DEBUG_CONTAINER_NAME -it \
+            -v `pwd`:/opt/stactools \
+            -p 8000:8000 \
+            -p 5678:5678 \
+            --entrypoint /bin/bash \
+            -e NETWORK_DEBUGGING_PORT=5678 \
+            $DOCKER_REGISTRY/$DOCKER_ORG/$DOCKER_REPO:$DOCKER_TAG_DEV
+    fi
+fi
