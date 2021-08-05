@@ -2,11 +2,14 @@ import click
 import pystac
 
 
-def print_info(catalog_path):
+def print_info(catalog_path: str) -> None:
     cat_count, col_count, item_count = 0, 0, 0
     cat_ext, col_ext, item_ext = set([]), set([]), set([])
 
     cat = pystac.read_file(catalog_path)
+    if not isinstance(cat, pystac.Catalog):
+        print("{} is not a catalog".format(catalog_path))
+        return
 
     for root, _, items in cat.walk():
         if root.STAC_OBJECT_TYPE == pystac.STACObjectType.COLLECTION:
@@ -41,17 +44,17 @@ def print_info(catalog_path):
     print('      ITEMS: {} {}'.format(item_count, item_ext_info))
 
 
-def create_info_command(cli):
+def create_info_command(cli: click.Group) -> click.Command:
     @cli.command('info',
                  short_help='Display info about a static STAC catalog.')
     @click.argument('catalog_path')
-    def info_command(catalog_path):
+    def info_command(catalog_path: str) -> None:
         print_info(catalog_path)
 
     return info_command
 
 
-def create_describe_command(cli):
+def create_describe_command(cli: click.Group) -> click.Command:
     @cli.command(
         'describe',
         short_help='Prints out a list of all catalogs, collections and items '
@@ -61,8 +64,11 @@ def create_describe_command(cli):
                   '--include-hrefs',
                   is_flag=True,
                   help='Include HREFs in description.')
-    def describe_command(catalog_path, include_hrefs):
+    def describe_command(catalog_path: str, include_hrefs: bool) -> None:
         cat = pystac.read_file(catalog_path)
+        if not isinstance(cat, pystac.Catalog):
+            print("{} is not a catalog".format(catalog_path))
+            return
         cat.describe(include_hrefs=include_hrefs)
 
     return describe_command

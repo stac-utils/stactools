@@ -5,17 +5,19 @@ import fsspec
 from fsspec.core import split_protocol
 from fsspec.registry import get_filesystem_class
 
+from pystac import Catalog, CatalogType, Item
 from pystac.utils import (is_absolute_href, make_absolute_href,
                           make_relative_href)
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
 
-def move_asset_file_to_item(item,
-                            asset_href,
-                            asset_subdirectory=None,
-                            copy=False,
-                            ignore_conflicts=False):
+def move_asset_file_to_item(item: Item,
+                            asset_href: str,
+                            asset_subdirectory: Optional[str] = None,
+                            copy: bool = False,
+                            ignore_conflicts: bool = False) -> str:
     """Moves an asset file to be alongside that item.
 
     Args:
@@ -36,8 +38,8 @@ def move_asset_file_to_item(item,
     item_href = item.get_self_href()
     if item_href is None:
         raise ValueError(
-            'Self HREF is not available for item {}. This operation '
-            'requires that the Item HREFs are available.')
+            f"Self HREF is not available for item {item.id}. This operation "
+            "requires that the Item HREFs are available.")
 
     if not is_absolute_href(asset_href):
         raise ValueError('asset_href must be absolute.')
@@ -63,7 +65,7 @@ def move_asset_file_to_item(item,
         else:
             if copy:
 
-                def _op1(dry_run=False):
+                def _op1(dry_run: bool = False) -> None:
                     logger.info("Copying {} to {}...".format(
                         asset_href, new_asset_href))
                     if not dry_run:
@@ -79,7 +81,7 @@ def move_asset_file_to_item(item,
 
                 if source_protocol == dest_protocol:
 
-                    def _op2(dry_run=False):
+                    def _op2(dry_run: bool = False) -> None:
                         logger.info("Moving {} to {}...".format(
                             asset_href, new_asset_href))
                         if not dry_run:
@@ -90,7 +92,7 @@ def move_asset_file_to_item(item,
                     op = _op2
                 else:
 
-                    def _op3(dry_run=False):
+                    def _op3(dry_run: bool = False) -> None:
                         logger.info("Moving {} to {}...".format(
                             asset_href, new_asset_href))
                         if not dry_run:
@@ -111,11 +113,11 @@ def move_asset_file_to_item(item,
     return new_asset_href
 
 
-def move_assets(item,
-                asset_subdirectory=None,
-                make_hrefs_relative=True,
-                copy=False,
-                ignore_conflicts=False):
+def move_assets(item: Item,
+                asset_subdirectory: Optional[str] = None,
+                make_hrefs_relative: bool = True,
+                copy: bool = False,
+                ignore_conflicts: bool = False) -> Item:
     """Moves assets for an item to be alongside that item.
 
     Args:
@@ -138,11 +140,15 @@ def move_assets(item,
     item_href = item.get_self_href()
     if item_href is None:
         raise ValueError(
-            'Self HREF is not available for item {}. This operation '
-            'requires that the Item HREFs are available.')
+            f"Self HREF is not available for item {item.id}. This operation "
+            "requires that the Item HREFs are available.")
 
     for asset in item.assets.values():
         abs_asset_href = asset.get_absolute_href()
+        if abs_asset_href is None:
+            raise ValueError(
+                f"Asset {asset.title} HREF is not available for item {item.id}. This operation "
+                "requires that the Asset HREFs are available.")
 
         new_asset_href = move_asset_file_to_item(
             item,
@@ -159,11 +165,11 @@ def move_assets(item,
     return item
 
 
-def move_all_assets(catalog,
-                    asset_subdirectory=None,
-                    make_hrefs_relative=True,
-                    copy=False,
-                    ignore_conflicts=False):
+def move_all_assets(catalog: Catalog,
+                    asset_subdirectory: Optional[str] = None,
+                    make_hrefs_relative: bool = True,
+                    copy: bool = False,
+                    ignore_conflicts: bool = False) -> Catalog:
     """Moves assets in a catalog to be alongside the items that own them.
 
     Args:
@@ -191,11 +197,11 @@ def move_all_assets(catalog,
     return catalog
 
 
-def copy_catalog(source_catalog,
-                 dest_directory,
-                 catalog_type=None,
-                 copy_assets=False,
-                 publish_location=None):
+def copy_catalog(source_catalog: Catalog,
+                 dest_directory: str,
+                 catalog_type: Optional[CatalogType] = None,
+                 copy_assets: bool = False,
+                 publish_location: Optional[str] = None) -> None:
     catalog = source_catalog.full_copy()
     dest_directory = make_absolute_href(dest_directory)
 

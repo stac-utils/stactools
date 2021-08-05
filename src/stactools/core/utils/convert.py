@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from stactools.core.utils.subprocess import call
 
@@ -7,8 +7,8 @@ DEFAULT_COGIFY_ARGS = ["-co", "compress=deflate"]
 
 def cogify(infile: str,
            outfile: str,
-           args: List[str] = None,
-           extra_args: List[str] = None):
+           args: Optional[List[str]] = None,
+           extra_args: Optional[List[str]] = None) -> int:
     """Creates a COG from a GDAL-readable file."""
     if args is None:
         args = DEFAULT_COGIFY_ARGS[:]
