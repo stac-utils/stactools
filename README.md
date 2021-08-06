@@ -33,6 +33,9 @@ From source repository:
 > pip install .
 ```
 
+**NOTE:** In order to read and write Cloud Optimized Geotiffs, GDAL version 3.1 or greater is required.
+If your system GDAL is older than version 3.1, consider using [Docker](#using-docker) or [Conda](#using-conda) to get a modern GDAL.
+
 ### Optional dependencies
 
 `stactools` includes some optional dependencies:
