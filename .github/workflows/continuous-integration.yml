@@ -96,8 +96,8 @@ jobs:
           context: .
           file: docker/Dockerfile
           target: main
-          # Don't try to push if the event is a PR from a fork
-          push: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+          # Don't try to push if the event is a PR from a fork or the user is dependabot
+          push: ${{ github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot') }}
           tags: ${{ steps.meta-main.outputs.tags }}
           labels: ${{ steps.meta-main.outputs.labels }}
       -
