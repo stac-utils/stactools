@@ -24,6 +24,6 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         # Lint
         flake8 ${DIRS_TO_CHECK[@]}
         # Type checking
-        mypy src
+        mypy --install-types --non-interactive src
     fi
 fi
