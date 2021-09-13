@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## stactools 0.2.2
 
 ### Added
 
