@@ -6,5 +6,6 @@ from stactools.core.copy import (move_asset_file_to_item, move_assets,
 from stactools.core.layout import layout_catalog
 from stactools.core.merge import (merge_items, merge_all_items)
 from stactools.core.add import add_item
+from stactools.core.addraster import add_raster_to_item
 
 __version__ = "0.2.3"
