@@ -31,11 +31,9 @@ def add_item(source_item, target_catalog, move_assets=False):
 
     if isinstance(target_catalog, pystac.Collection):
         item_copy.set_collection(target_catalog)
+        target_catalog.update_extent_from_items()
     else:
         item_copy.set_collection(None)
 
     if move_assets:
         do_move_assets(item_copy, copy=False)
-
-    if target_catalog.STAC_OBJECT_TYPE == pystac.STACObjectType.COLLECTION:
-        target_catalog.update_extent_from_items()
