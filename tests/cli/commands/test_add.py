@@ -87,4 +87,5 @@ class AddTest(CliTestCase):
 
             res = self.run_command(cmd)
             self.assertEqual(res.exit_code, 2)
-            self.assertTrue(" A collection with ID WRONG does not exist" in res.output)
+            self.assertTrue(
+                " A collection with ID WRONG does not exist" in res.output)
