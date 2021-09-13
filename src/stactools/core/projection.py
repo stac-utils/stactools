@@ -57,7 +57,7 @@ def reproject_geom(src_crs: Union[pyproj.CRS, rasterio.crs.CRS, str],
                 coords[i] = fn(coord)
             else:
                 x, y = coord
-                reprojected_coords = transformer.transform(x, y)
+                reprojected_coords = list(transformer.transform(x, y))
                 if precision is not None:
                     reprojected_coords = [
                         round(n, precision) for n in reprojected_coords
