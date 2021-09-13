@@ -8,10 +8,11 @@ stactools.core.use_fsspec()
 def register_plugin(registry: 'Registry') -> None:
     # Register subcommands
 
-    from stactools.cli.commands import (add, copy, info, layout, merge,
-                                        migrate, validate, version)
+    from stactools.cli.commands import (add, copy, info, layout, merge, create,
+                                        version, validate)
 
     registry.register_subcommand(copy.create_copy_command)
+    registry.register_subcommand(create.create_create_item_command)
     registry.register_subcommand(copy.create_move_assets_command)
     registry.register_subcommand(info.create_info_command)
     registry.register_subcommand(info.create_describe_command)
