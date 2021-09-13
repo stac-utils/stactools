@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- `stactools.core.create.item` and associated CLI subcommand ([#201](https://github.com/stac-utils/stactools/pull/201))
+
+### Fixed
+
+- Typing for Python 3.7 in `stactools.core.projection` ([#201](https://github.com/stac-utils/stactools/pull/201))
+
 ## stactools 0.2.2
 
 ### Added
