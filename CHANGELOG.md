@@ -7,9 +7,11 @@
 - Improved error reporting and documentation for old GDAL versions.
   GDAL 3.1 is required to read and write Cloud Optimized Geotiffs.
   ([#194](https://github.com/stac-utils/stactools/pull/194))
+
 ### Fixed
 
 - ReadTheDocs ([#190](https://github.com/stac-utils/stactools/pull/190))
+- Typing in the projection module ([#198](https://github.com/stac-utils/stactools/pull/198))
 
 ## stactools 0.2.1
 
