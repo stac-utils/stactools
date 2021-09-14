@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased
+## stactools 0.2.2
+
+### Added
+
+- Add the ability to use data from the Microsoft Planetary Computer as external testing data ([#197](https://github.com/stac-utils/stactools/pull/197))
 
 ### Changed
 
