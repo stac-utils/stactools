@@ -1,6 +1,5 @@
-from collections import abc
 from copy import deepcopy
-from typing import Any, List, Optional, Union, Dict
+from typing import Any, List, Optional, Union, Dict, Sequence
 
 import pyproj
 import rasterio.crs
@@ -49,11 +48,11 @@ def reproject_geom(src_crs: Union[pyproj.CRS, rasterio.crs.CRS, str],
                                               always_xy=True)
     result = deepcopy(geom)
 
-    def fn(coords: abc.Sequence[Any]) -> abc.Sequence[Any]:
+    def fn(coords: Sequence[Any]) -> Sequence[Any]:
         coords = list(coords)
         for i in range(0, len(coords)):
             coord = coords[i]
-            if isinstance(coord[0], abc.Sequence):
+            if isinstance(coord[0], Sequence):
                 coords[i] = fn(coord)
             else:
                 x, y = coord
