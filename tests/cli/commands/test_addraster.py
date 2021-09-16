@@ -27,9 +27,8 @@ class AddRasterTest(CliTestCase):
         with TemporaryDirectory() as tmp_dir:
             catalog = create_temp_catalog_copy(tmp_dir)
             items = list(catalog.get_all_items())
-            item_path = make_absolute_href(
-                items[0].get_self_href(), catalog.get_self_href()
-            )
+            item_path = make_absolute_href(items[0].get_self_href(),
+                                           catalog.get_self_href())
 
             cmd = ["addraster", item_path]
             self.run_command(cmd)
