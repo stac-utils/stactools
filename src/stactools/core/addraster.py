@@ -2,6 +2,7 @@ import logging
 
 from osgeo import gdal
 from pystac import Item
+from pystac.utils import make_absolute_href
 from pystac.extensions.raster import (DataType, Histogram, RasterBand,
                                       RasterExtension, Statistics)
 
@@ -25,7 +26,8 @@ def add_raster_to_item(item: Item) -> Item:
         if asset.roles and "data" in asset.roles:
             raster = RasterExtension.ext(asset)
             bands = []
-            dataset = gdal.Open(asset.href, gdal.GA_ReadOnly)
+            href = make_absolute_href(asset.href, item.get_self_href())
+            dataset = gdal.Open(href, gdal.GA_ReadOnly)
             for nband in range(dataset.RasterCount):
                 gdal_band = dataset.GetRasterBand(nband + 1)
                 band = RasterBand.create()
