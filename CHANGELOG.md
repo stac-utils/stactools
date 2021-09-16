@@ -1,10 +1,11 @@
 # Changelog
 
-## Unreleased
+## stactools 0.2.3
 
 ### Added
 
 - `stactools.core.create.item` and associated CLI subcommand ([#201](https://github.com/stac-utils/stactools/pull/201))
+- `stactools.core.add.add_item` and associated CLI command for adding an item to a Catlog/Collection ([#153](https://github.com/stac-utils/stactools/pull/153))
 
 ### Fixed
 
