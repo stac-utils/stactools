@@ -14,4 +14,7 @@ sphinxcontrib-fulltoc
 sphinxcontrib-napoleon
 types-certifi
 types-click
+types-orjson
+types-python-dateutil
+types-requests
 yapf
