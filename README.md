@@ -74,33 +74,25 @@ See the [documentation page](https://stactools.readthedocs.io/en/latest/) for th
 ## Packages
 
 `stactools` is comprised of many other sub-packages that provide library and CLI functionality.
-Officially supported packages are hosted in the Github `stactools-packages` organization, and other subpackages may be available from other sources.
-Below is a list of officially supported packages and their current build status.
+Officially supported packages are hosted in the Github [`stactools-packages` organization](https://github.com/stactools-packages/stactools-packages.github.io), and other subpackages may be available from other sources.
+
+There are over 25 packages that translate specific types of data into STAC, including imagery sources like [aster](https://github.com/stactools-packages/aster), 
+[landsat](https://github.com/stactools-packages/landsat), [modis](https://github.com/stactools-packages/modis), [naip](https://github.com/stactools-packages/naip),
+[planet](https://github.com/stactools-packages/planet),  [sentinel1](https://github.com/stactools-packages/sentinel1), 
+[sentinel1-grd](https://github.com/stactools-packages/sentinel1-grd), [sentinel2](https://github.com/stactools-packages/sentinel2),
+[sentinel3](https://github.com/stactools-packages/sentinel3), landuse/landcover data ([corine](https://github.com/stactools-packages/corine), 
+[cgls_lc100](https://github.com/stactools-packages/cgls_lc100), [aafc-landuse](https://github.com/stactools-packages/aafc-landuse)), DEM's 
+([cop-dem](https://github.com/stactools-packages/cop-dem), [alos-dem](https://github.com/stactools-packages/alos-dem)), population data 
+([gpw](https://github.com/stactools-packages/gpw), [worldpop](https://github.com/stactools-packages/worldpop)), 
+[pointclouds](https://github.com/stactools-packages/pointcloud) and many more.
+
+There are also cool tools like [stactools-browse](https://github.com/stactools-packages/stactools-browse) which makes it super easy to deploy a 
+[STAC Browser](https://github.com/radiantearth/stac-browser) from the command-line for any local data.
+
+For the list of officially supported packages see the [list of STAC packages](https://github.com/stactools-packages/stactools-packages.github.io#list-of-stac-packages)
+on the stactools-packages github organization. 
 Each package can be installed via `pip install stactools-{package}`, e.g. `pip install stactools-landsat`.
 Third-party packages can be installed in the same way, or, if they are not on PyPI, directly from the source repository, e.g. `pip install /path/to/my/code/stactools-greatdata`.
-
-### Function packages
-
-These extend the `stac` command line utility to provide additional funcionality.
-
-| name                                                                       | description                                                                                 | build status                                                                                                                                                                                                                |
-| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [stactools-browse](https://github.com/stactools-packages/stactools-browse) | Launch [stac-browser](https://github.com/radiantearth/stac-browser) against a local catalog | [![CI](https://github.com/stactools-packages/stactools-browse/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/stactools-packages/stactools-browse/actions/workflows/continuous-integration.yml) |
-
-### Dataset packages
-
-These are designed to work with specific types of geospatial data.
-
-| name                                                                               | data type                                                                  | build status                                                                                                                                                                                                                        |
-| ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [stactools-aster](https://github.com/stactools-packages/stactools-aster)           | ASTER                                                                      |                                                                                                                                                                                                                                     |
-| [stactools-cgls_lc100](https://github.com/stactools-packages/stactools-cgls_lc100) | Copernicus Global Land Cover Layers                                        | [![CI](https://github.com/stactools-packages/stactools-cgls_lc100/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/stactools-packages/stactools-cgls_lc100/actions/workflows/continuous-integration.yml) |
-| [stactools-corine](https://github.com/stactools-packages/stactools-corine)         | CORINE Land Cover                                                          | [![CI](https://github.com/stactools-packages/stactools-corine/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/stactools-packages/stactools-corine/actions/workflows/continuous-integration.yml)         |
-| [stactools-landsat](https://github.com/stactools-packages/stactools-landsat)       | USGS LANDSAT                                                               | [![CI](https://github.com/stactools-packages/stactools-landsat/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/stactools-packages/stactools-landsat/actions/workflows/continuous-integration.yml)       |
-| [stactools-naip](https://github.com/stactools-packages/stactools-naip)             | USDA National Agriculture Imagery Program                                  | [![CI](https://github.com/stactools-packages/stactools-naip/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/stactools-packages/stactools-naip/actions/workflows/continuous-integration.yml)             |
-| [stactools-planet](https://github.com/stactools-packages/stactools-planet)         | Planet                                                                     | [![CI](https://github.com/stactools-packages/stactools-planet/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/stactools-packages/stactools-planet/actions/workflows/continuous-integration.yml)         |
-| [stactools-sentinel2](https://github.com/stactools-packages/stactools-sentinel2)   | Sentinel-2                                                                 | [![CI](https://github.com/stactools-packages/stactools-sentinel2/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/stactools-packages/stactools-sentinel2/actions/workflows/continuous-integration.yml)   |
-| [stactools-threedep](https://github.com/stactools-packages/stactools-threedep)     | USGS 3D Elevation Program (formerly the National Elevation Dataset or NED) | [![CI](https://github.com/stactools-packages/stactools-threedep/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/stactools-packages/stactools-threedep/actions/workflows/continuous-integration.yml)     |
 
 ## Developing
 
