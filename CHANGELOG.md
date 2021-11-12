@@ -7,6 +7,9 @@
 ### Changed
 
 - Update to pystac 1.2
+- Update click to 8.0.x
+  - Any packages using `types-click` should remove that package. Version 8 adds proper type annotations to the main package.
+- Set mypy to `strict`
 
 ### Fixed
 
