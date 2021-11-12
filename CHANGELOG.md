@@ -6,10 +6,10 @@
 
 ### Changed
 
-- Update to pystac 1.2
-- Update click to 8.0.x
+- Update to pystac 1.2 ([#209](https://github.com/stac-utils/stactools/pull/209))
+- Update click to 8.0.x ([#209](https://github.com/stac-utils/stactools/pull/209))
   - Any packages using `types-click` should remove that package. Version 8 adds proper type annotations to the main package.
-- Set mypy to `strict`
+- Set mypy to `strict` ([#209](https://github.com/stac-utils/stactools/pull/209))
 
 ### Fixed
 
