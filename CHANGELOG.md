@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+### Changed
+
+- Update to pystac 1.2
+
+### Fixed
+
 ## stactools 0.2.3
 
 ### Added
