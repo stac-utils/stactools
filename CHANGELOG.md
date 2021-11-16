@@ -13,6 +13,8 @@
 
 ### Fixed
 
+- Readthedocs build ([#210](https://github.com/stac-utils/stactools/pull/210))
+
 ## stactools 0.2.3
 
 ### Added
