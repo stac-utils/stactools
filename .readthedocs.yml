@@ -13,9 +13,10 @@ sphinx:
 formats:
   - pdf
 
-python:
-  version: 3.8
-  install:
-    - method: pip
-      path: .
-    - requirements: requirements-dev.txt
+build:
+  os: ubuntu-20.04
+  tools:
+    python: mambaforge-4.10
+
+conda:
+  environment: .readthedocs.environment.yml
