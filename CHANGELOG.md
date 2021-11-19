@@ -4,6 +4,8 @@
 
 ### Added
 
+- `addraster` command ([#204](https://github.com/stac-utils/stactools/pull/204)), including `gdal` Python dependency
+
 ### Changed
 
 - Update to pystac 1.2 ([#209](https://github.com/stac-utils/stactools/pull/209))
