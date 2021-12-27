@@ -27,6 +27,7 @@ def cli() -> None:
               help="Do a dry run; print commands.",
               is_flag=True)
 def make_rasters_smaller_cmd(dir: str, dry_run: bool) -> None:
+
     def make_it_smaller(tif_path: str) -> None:
         with TemporaryDirectory() as tmp_dir:
             tmp_path = os.path.join(tmp_dir, "smaller.tif")

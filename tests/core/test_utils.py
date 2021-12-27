@@ -10,6 +10,7 @@ from tests import test_data
 
 
 class CogifyTest(unittest.TestCase):
+
     @contextmanager
     def cogify(self, **kwargs):
         infile = test_data.get_path("data-files/core/byte.tif")

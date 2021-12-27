@@ -34,6 +34,7 @@ def add(source_item: str,
 
 
 def create_add_command(cli: click.Group) -> click.Command:
+
     @cli.command('add', short_help='Add an item to a catalog/collection.')
     @click.argument('source_item')
     @click.argument('target_catalog')

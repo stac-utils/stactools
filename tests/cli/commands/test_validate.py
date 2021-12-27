@@ -7,6 +7,7 @@ from tests import test_data
 
 
 class ValidatateTest(CliTestCase):
+
     def create_subcommand_functions(self) -> List[Callable]:
         return [create_validate_command]
 

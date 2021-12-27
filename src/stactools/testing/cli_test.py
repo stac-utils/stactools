@@ -8,6 +8,7 @@ from click.testing import CliRunner, Result
 
 
 class CliTestCase(unittest.TestCase, ABC):
+
     def use_debug_logging(self) -> None:
         logger = logging.getLogger('stactools')
         logger.setLevel(logging.DEBUG)
@@ -20,6 +21,7 @@ class CliTestCase(unittest.TestCase, ABC):
         logger.addHandler(ch)
 
     def setUp(self) -> None:
+
         @click.group()
         def cli() -> None:
             pass

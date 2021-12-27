@@ -20,6 +20,7 @@ def create_temp_catalog_copy(tmp_dir):
 
 
 class AddRasterTest(CliTestCase):
+
     def create_subcommand_functions(self):
         return [create_addraster_command]
 

@@ -45,6 +45,7 @@ def print_info(catalog_path: str) -> None:
 
 
 def create_info_command(cli: click.Group) -> click.Command:
+
     @cli.command('info',
                  short_help='Display info about a static STAC catalog.')
     @click.argument('catalog_path')
@@ -55,6 +56,7 @@ def create_info_command(cli: click.Group) -> click.Command:
 
 
 def create_describe_command(cli: click.Group) -> click.Command:
+
     @cli.command(
         'describe',
         short_help='Prints out a list of all catalogs, collections and items '

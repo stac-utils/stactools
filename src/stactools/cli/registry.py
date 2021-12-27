@@ -6,6 +6,7 @@ from click import Command, Group
 
 class Registry():
     """A registry for resources that are built-in or contributed by plugins."""
+
     def __init__(self) -> None:
         self._create_command_functions: List[Callable[[Group], Command]] = []
 

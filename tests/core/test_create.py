@@ -9,6 +9,7 @@ from tests import test_data
 
 
 class CreateItem(TestCase):
+
     def setUp(self) -> None:
         self.path = test_data.get_path(
             'data-files/planet-disaster/hurricane-harvey/'
