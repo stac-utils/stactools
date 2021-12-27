@@ -6,6 +6,7 @@ from click import Command, Group
 
 class Registry():
     """A registry for resources that are built-in or contributed by plugins."""
+
     def __init__(self) -> None:
         self._create_command_functions: List[Callable[[Group], Command]] = []
 
@@ -32,9 +33,7 @@ class Registry():
             # returned name an absolute name instead of a relative one. This allows
             # import_module to work without having to do additional modification to
             # the name.
-            return pkgutil.iter_modules(
-                ns_pkg.__path__,  # type: ignore  # mypy issue #1422
-                ns_pkg.__name__ + '.')
+            return pkgutil.iter_modules(ns_pkg.__path__, ns_pkg.__name__ + '.')
 
         discovered_plugins = {
             name: importlib.import_module(name)

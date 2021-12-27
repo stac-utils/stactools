@@ -57,6 +57,7 @@ RANDOM_EXTENT = Extent(spatial=SpatialExtent.from_coordinates(
 
 
 class TestCases:
+
     @staticmethod
     def get_path(rel_path):
         return os.path.abspath(

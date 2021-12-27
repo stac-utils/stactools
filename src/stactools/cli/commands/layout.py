@@ -5,6 +5,7 @@ from stactools.core import layout_catalog
 
 
 def create_layout_command(cli: click.Group) -> click.Command:
+
     @cli.command(
         'layout',
         short_help='Reformat the layout of a STAC based on templating.')

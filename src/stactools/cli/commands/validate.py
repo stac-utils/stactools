@@ -9,6 +9,7 @@ from stactools.core.utils import href_exists
 
 
 def create_validate_command(cli: click.Group) -> click.Command:
+
     @cli.command("validate", short_help="Validate a stac object.")
     @click.argument("href")
     @click.option("--recurse/--no-recurse",

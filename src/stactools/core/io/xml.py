@@ -11,6 +11,7 @@ class XmlElement:
     """Thin wrapper around lxml etree.Element with some
     convenience functions
     """
+
     def __init__(self, element: lxmlElement):
         self.element = element
 

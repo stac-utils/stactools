@@ -35,6 +35,7 @@ def copy_two_planet_disaster_subsets(tmp_dir):
 
 
 class MergeTest(CliTestCase):
+
     def create_subcommand_functions(self):
         return [create_merge_command]
 

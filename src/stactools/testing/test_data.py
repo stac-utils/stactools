@@ -20,6 +20,7 @@ import requests
 
 
 class TestData:
+
     def __init__(self, path: str, external_data: Dict[str, Any] = {}) -> None:
         """Creates a test data object for a given test script.
 

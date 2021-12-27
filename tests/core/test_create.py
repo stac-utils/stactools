@@ -9,6 +9,7 @@ from tests import test_data
 
 
 class CreateItem(TestCase):
+
     def setUp(self) -> None:
         self.path = test_data.get_path(
             'data-files/planet-disaster/hurricane-harvey/'
@@ -50,3 +51,15 @@ class CreateItem(TestCase):
         self.assertEqual(data.roles, ['data'])
         self.assertEqual(data.media_type, None)
         item.validate()
+
+    def test_read_href_modifer(self) -> None:
+        did_it = False
+
+        def do_it(href: str) -> str:
+            nonlocal did_it
+            did_it = True
+            return href
+
+        item = create.item(self.path, read_href_modifier=do_it)
+        assert did_it
+        assert item.id == "20170831_172754_101c_3b_Visual"

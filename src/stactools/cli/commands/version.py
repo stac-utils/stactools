@@ -8,6 +8,7 @@ from click.core import Command, Group
 
 
 def create_version_command(cli: Group) -> Command:
+
     @cli.command('version', short_help='Display version info.')
     def version_command() -> None:
         """Display version info

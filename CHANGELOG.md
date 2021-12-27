@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- `read_href_modifer` argument to `stactools.create.item` ([#212](https://github.com/stac-utils/stactools/pull/212))
+
 ## stactools 0.2.4
 
 ### Added

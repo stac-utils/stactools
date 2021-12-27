@@ -35,6 +35,7 @@ def merge(source_catalog: str,
 
 
 def create_merge_command(cli: click.Group) -> click.Command:
+
     @cli.command('merge', short_help='Merge items from one STAC into another.')
     @click.argument('source_catalog')
     @click.argument('target_catalog')

@@ -1,5 +1,6 @@
 import datetime
 import os.path
+from typing import Optional
 
 import shapely.geometry
 from pystac import Item, Asset
@@ -7,10 +8,15 @@ from pystac.extensions.projection import ProjectionExtension
 import rasterio
 
 import stactools.core.projection
+from .io import ReadHrefModifier
 
 
-def item(href: str) -> Item:
+def item(href: str,
+         read_href_modifier: Optional[ReadHrefModifier] = None) -> Item:
     """Creates a STAC Item from the asset at the provided href.
+
+    The `read_href_modifer` argument can be used to modify the href for the
+    rasterio read, e.g. if you need to sign a url.
 
     This function is intentionally minimal in its signature and capabilities. If
     you need to customize your Item, do so after creation.
@@ -31,7 +37,11 @@ def item(href: str) -> Item:
     In particular, the datetime and asset media type fields most likely need to be updated.
     """
     id = os.path.splitext(os.path.basename(href))[0]
-    with rasterio.open(href) as dataset:
+    if read_href_modifier:
+        modified_href = read_href_modifier(href)
+    else:
+        modified_href = href
+    with rasterio.open(modified_href) as dataset:
         crs = dataset.crs
         proj_bbox = dataset.bounds
         proj_transform = list(dataset.transform)[0:6]

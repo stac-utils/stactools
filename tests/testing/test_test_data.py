@@ -7,6 +7,7 @@ from tests.testing import test_data
 
 class TestDataTest(TestCase):
     """Say test ONE MORE TIME and I swear..."""
+
     def test_external_data_https(self):
         path = test_data.get_external_data("item.json")
         item = pystac.read_file(path)
