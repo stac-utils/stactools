@@ -1,25 +1,27 @@
-from typing import List, Optional
+from typing import Dict, Any, Optional
 
-from stactools.core.utils.subprocess import call
-from stactools.core.utils import gdal_driver_is_enabled
+import rasterio
+import rasterio.shutil
+from rasterio.errors import DriverRegistrationError
 
-DEFAULT_COGIFY_ARGS = ["-co", "compress=deflate"]
+from stactools.core import utils
+
+DEFAULT_PROFILE = {
+    "compress": "deflate",
+    "driver": "COG",
+    "blocksize": 512,
+}
 
 
 def cogify(infile: str,
            outfile: str,
-           args: Optional[List[str]] = None,
-           extra_args: Optional[List[str]] = None) -> int:
+           profile: Optional[Dict[str, Any]] = None) -> None:
     """Creates a COG from a GDAL-readable file."""
-    if not gdal_driver_is_enabled("COG"):
-        raise Exception(
-            "GDAL's COG driver is not enabled. "
-            "Please make sure your GDAL version is 3.1 or greater.")
-    if args is None:
-        args = DEFAULT_COGIFY_ARGS[:]
-    args = ["gdal_translate", "-of", "COG"] + args
-    if extra_args:
-        args.extend(extra_args)
-    args.append(infile)
-    args.append(outfile)
-    return call(args)
+    if not utils.gdal_driver_is_enabled("COG"):
+        raise DriverRegistrationError(
+            "GDAL's COG driver is not enabled, make sure you're using GDAL >= 3.1"
+        )
+    destination_profile = DEFAULT_PROFILE.copy()
+    if profile:
+        destination_profile.update(profile)
+    rasterio.shutil.copy(infile, outfile, **destination_profile)
