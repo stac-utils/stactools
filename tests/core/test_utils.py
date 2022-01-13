@@ -26,15 +26,9 @@ class CogifyTest(unittest.TestCase):
                 self.assertEqual(dataset.compression,
                                  rasterio.enums.Compression.deflate)
 
-    def test_override_default(self):
-        with self.cogify(args=["-co", "compress=lzw"]) as outfile:
+    def test_profile(self):
+        with self.cogify(profile={"compress": "lzw"}) as outfile:
             self.assertTrue(os.path.exists(outfile))
             with rasterio.open(outfile) as dataset:
                 self.assertEqual(dataset.compression,
                                  rasterio.enums.Compression.lzw)
-
-    def test_extra_args(self):
-        with self.cogify(
-                extra_args=["-mo", "TIFFTAG_ARTIST=prince"]) as outfile:
-            with rasterio.open(outfile) as dataset:
-                self.assertEqual(dataset.tags()["TIFFTAG_ARTIST"], "prince")
