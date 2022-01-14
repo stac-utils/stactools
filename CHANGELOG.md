@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Changed
+
+- Use [pytest](https://docs.pytest.org/) for unit testing instead of `unittest` ([#220](https://github.com/stac-utils/stactools/pull/220))
+
 ## [0.2.5] - 2022-01-03
 
 ### Added
