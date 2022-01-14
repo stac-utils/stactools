@@ -181,10 +181,10 @@ or in the local environment with
 
 ### Unit Tests
 
-Unit tests are in the `tests` folder. To run unit tests, use `unittest`:
+Unit tests are in the `tests` folder. To run unit tests, use `pytest`:
 
 ```
-> python -m unittest discover tests
+> pytest tests
 ```
 
 To run linters, code formatters, and test suites all together, use `test`:

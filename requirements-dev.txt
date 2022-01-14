@@ -1,5 +1,4 @@
 codespell
-coverage
 flake8
 ipython
 jupyter
@@ -7,6 +6,8 @@ lxml-stubs
 mypy
 nbsphinx
 pylint
+pytest
+pytest-cov
 sphinx
 sphinx-autobuild
 sphinx-click
