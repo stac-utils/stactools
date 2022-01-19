@@ -39,4 +39,6 @@ class AddRasterTest(CliTestCase):
             asset = item.get_assets().get("analytic")
             assert asset is not None
             expected = expected_json("rasterbands.json")
-            assert expected == asset.to_dict().get("raster:bands")
+            self.maxDiff = None
+            for a, b in zip(expected, asset.to_dict().get("raster:bands")):
+                self.assertDictEqual(a, b)
