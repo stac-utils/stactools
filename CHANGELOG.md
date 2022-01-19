@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Use [pytest](https://docs.pytest.org/) for unit testing instead of `unittest` ([#220](https://github.com/stac-utils/stactools/pull/220))
+- Signature of `stactools.core.utils.convert.cogify` ([#222](https://github.com/stac-utils/stactools/pull/222))
+
+### Removed
+
+- GDAL Python bindings dependency ([#222](https://github.com/stac-utils/stactools/pull/222))
 
 ## [0.2.5] - 2022-01-03
 
