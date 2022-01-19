@@ -1,14 +1,16 @@
 import logging
+from typing import List
 
-from osgeo import gdal
+import numpy
 from pystac import Item
 from pystac.utils import make_absolute_href
 from pystac.extensions.raster import (DataType, Histogram, RasterBand,
                                       RasterExtension, Statistics)
+import rasterio
 
 logger = logging.getLogger(__name__)
 
-NUM_BUCKETS = 256
+BINS = 256
 
 
 def add_raster_to_item(item: Item) -> Item:
@@ -25,27 +27,29 @@ def add_raster_to_item(item: Item) -> Item:
     for asset in item.assets.values():
         if asset.roles and "data" in asset.roles:
             raster = RasterExtension.ext(asset)
-            bands = []
             href = make_absolute_href(asset.href, item.get_self_href())
-            dataset = gdal.Open(href, gdal.GA_ReadOnly)
-            for nband in range(dataset.RasterCount):
-                gdal_band = dataset.GetRasterBand(nband + 1)
-                band = RasterBand.create()
-                band.nodata = gdal_band.GetNoDataValue()
-                band.spatial_resolution = dataset.GetGeoTransform()[1]
-                band.data_type = DataType(
-                    gdal.GetDataTypeName(gdal_band.DataType).lower())
-                minimum = gdal_band.GetMinimum()
-                maximum = gdal_band.GetMaximum()
-                if not minimum or not max:
-                    minimum, maximum = gdal_band.ComputeRasterMinMax(True)
-                band.statistics = Statistics.create(minimum=minimum,
-                                                    maximum=maximum)
-                hist_data = gdal_band.GetHistogram(minimum, maximum,
-                                                   NUM_BUCKETS)
-                band.histogram = Histogram.create(NUM_BUCKETS, minimum,
-                                                  maximum, hist_data)
-                bands.append(band)
+            bands = _read_bands(href)
             if bands:
                 raster.apply(bands)
     return item
+
+
+def _read_bands(href: str) -> List[RasterBand]:
+    bands = []
+    with rasterio.open(href) as dataset:
+        for (i, index) in enumerate(dataset.indexes):
+            data = dataset.read(index, masked=True)
+            band = RasterBand.create()
+            band.nodata = dataset.nodatavals[i]
+            band.spatial_resolution = dataset.transform[0]
+            band.data_type = DataType(dataset.dtypes[i])
+            minimum = float(numpy.min(data))  # type: ignore
+            maximum = float(numpy.max(data))  # type: ignore
+            band.statistics = Statistics.create(minimum=minimum,
+                                                maximum=maximum)
+            hist_data, _ = numpy.histogram(  # type: ignore
+                data, range=(minimum, maximum), bins=BINS)
+            band.histogram = Histogram.create(BINS, minimum, maximum,
+                                              hist_data.tolist())
+            bands.append(band)
+    return bands
