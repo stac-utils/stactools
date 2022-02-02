@@ -70,18 +70,15 @@ jobs:
       packages: write
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v2
-      -
-        name: Login to GitHub Container Registry
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
           registry: ${{ env.DOCKER_REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      -
-        name: Docker meta main
+      - name: Docker meta main
         id: meta-main
         uses: docker/metadata-action@v3
         with:
@@ -89,8 +86,7 @@ jobs:
           tags: |
             type=ref,event=branch
             type=ref,event=pr
-      -
-        name: Build and push main
+      - name: Build and push main
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -100,8 +96,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot') }}
           tags: ${{ steps.meta-main.outputs.tags }}
           labels: ${{ steps.meta-main.outputs.labels }}
-      -
-        name: Docker meta dev
+      - name: Docker meta dev
         id: meta-dev
         uses: docker/metadata-action@v3
         with:
@@ -111,8 +106,7 @@ jobs:
           tags: |
             type=ref,event=branch
             type=ref,event=pr
-      -
-        name: Build and push dev
+      - name: Build and push dev
         uses: docker/build-push-action@v2
         with:
           context: .
