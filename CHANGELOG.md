@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Use [pytest](https://docs.pytest.org/) for unit testing instead of `unittest` ([#220](https://github.com/stac-utils/stactools/pull/220))
 - Signature of `stactools.core.utils.convert.cogify` ([#222](https://github.com/stac-utils/stactools/pull/222))
-- Don't push Docker images from pull requests ([#225](https://github.com/stac-utils/stactools/pull/225))
+- Don't push Docker images from pull requests ([#225](https://github.com/stac-utils/stactools/pull/225), [#226](https://github.com/stac-utils/stactools/pull/226))
 
 ### Removed
 
