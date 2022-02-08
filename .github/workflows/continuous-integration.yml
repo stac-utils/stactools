@@ -11,21 +11,8 @@ env:
   DOCKER_IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  codecov:
-    name: codecov
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Execute linters and test suites
-        run: ./docker/cibuild
-      - name: Upload All coverage to Codecov
-        uses: codecov/codecov-action@v2.1.0
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
-          fail_ci_if_error: false
-  python-matrix:
-    name: python-matrix
+  standard:
+    name: Standard
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -35,36 +22,100 @@ jobs:
         shell: bash -l {0}
     steps:
       - uses: actions/checkout@v2
-      - name: Set up conda cache
-        uses: actions/cache@v2
+      - uses: ./.github/setup
         with:
-          path: ~/conda_pkgs_dir
-          key: ${{ runner.os }}-conda-${{ hashFiles('**/environment.yml') }}
-          restore-keys: ${{ runner.os }}-conda-
-      - name: Set up pip cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.cfg', '**/requirements-dev.txt') }}
-          restore-keys: ${{ runner.os }}-pip-
-      - name: Set up Conda with Python ${{ matrix.python-version }}
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          auto-update-conda: true
           python-version: ${{ matrix.python-version }}
-      - name: Update Conda's environemnt
-        run: conda env update -f environment.yml -n test
-      - name: Execute linters and test suites
-        run: ./scripts/cibuild
-      - name: Install with extra_requires
-        run: pip install -e '.[all]'
-      - name: Test again
+      - name: Update
+        run: ./scripts/update
+      - name: Test
         run: ./scripts/test
-  docker:
-    name: docker
+  extra-requires:
+    name: Extra requires
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8, 3.9]
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/setup
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install with extra_requires
+        run: pip install '.[all]'
+      - name: Install development dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Test
+        run: ./scripts/test
+  minimum-versions:
+    name: Minimum versions
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8, 3.9]
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/setup
+        with:
+          python-version: ${{ matrix.python-version }}
+          pip-cache-hash: ${{ hashFiles('requirements-min.txt', 'requirements-dev.txt') }}
+      - name: Install minimum requirements
+        run: pip install -r requirements-min.txt
+      - name: Install the package
+        run: pip install .
+      - name: Install development dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Test
+        run: scripts/test
+  pre-release-versions:
+    name: Pre-release versions
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8, 3.9]
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/setup
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Update
+        run: scripts/update
+      - name: Install pre-release versions of rasterio and pystac
+        run: pip install -U --pre pystac rasterio
+      - name: Run tests
+        run: unset PROJ_LIB && scripts/test
+  codecov:
+    name: Codecov
     needs:
-      - codecov
-      - python-matrix
+      - standard
+      - extra-requires
+      - minimum-versions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Execute linters and test suites
+        run: ./docker/cibuild
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2.1.0
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          fail_ci_if_error: false
+  docker:
+    name: Docker
+    needs:
+      - standard
+      - extra-requires
+      - minimum-versions
     permissions:
       contents: read
       packages: write
