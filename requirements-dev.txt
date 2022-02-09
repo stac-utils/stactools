@@ -1,10 +1,12 @@
 codespell
 flake8
+importlib-metadata
 ipython
 jupyter
 lxml-stubs
 mypy
 nbsphinx
+packaging
 pylint
 pytest
 pytest-cov
