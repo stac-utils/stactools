@@ -70,6 +70,8 @@ jobs:
         run: pip install .
       - name: Install development dependencies
         run: pip install -r requirements-dev.txt
+      - name: Check minimum requirements
+        run: scripts/check_minimum_requirements
       - name: Test
         run: scripts/test
   pre-release-versions:
