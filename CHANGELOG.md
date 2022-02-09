@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- CI checks for minimum and pre-release versions of dependencies ([#228](https://github.com/stac-utils/stactools/pull/228))
+
 ### Changed
 
 - Use [pytest](https://docs.pytest.org/) for unit testing instead of `unittest` ([#220](https://github.com/stac-utils/stactools/pull/220))
@@ -16,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - GDAL Python bindings dependency ([#222](https://github.com/stac-utils/stactools/pull/222))
+- Upper bounds on dependencies ([#228](https://github.com/stac-utils/stactools/pull/228))
 
 ## [0.2.5] - 2022-01-03
 
