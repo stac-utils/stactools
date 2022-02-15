@@ -2,7 +2,7 @@ Shapely == 1.6
 aiohttp == 3.8
 click == 8.0.3
 fsspec == 2021.7
-lxml == 4.6
+lxml == 4.7.1
 numpy == 1.21.0
 pyproj == 3.0
 pystac[validation] == 1.2
