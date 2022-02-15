@@ -1,5 +1,5 @@
 Shapely == 1.6
-aiohttp == 3.8
+aiohttp == 3.8.1
 click == 8.0.3
 fsspec == 2021.7
 lxml == 4.6
