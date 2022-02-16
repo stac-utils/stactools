@@ -4,7 +4,7 @@ click == 8.0.3
 fsspec == 2021.7
 lxml == 4.6
 numpy == 1.21.0
-pyproj == 3.0
+pyproj == 3.3.0
 pystac[validation] == 1.2
 rasterio == 1.2.7
 requests == 2.20
