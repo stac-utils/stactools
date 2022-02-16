@@ -235,3 +235,8 @@ Use 'make' without arguments to see a list of available commands.
 To create a new `stactools` package, use the [`stactools` package template](https://github.com/stactools-packages/template).
 `stactools` utilizes Python's [namespace packages](https://packaging.python.org/guides/packaging-namespace-packages/) to provide a suite of tools all under the `stactools` namespace.
 If you would like your package to be considered for inclusion as a core `stactools` package, please open an issue on this repository with a link to your package repository.
+
+
+### Releasing
+
+See [RELEASING.md](./RELEASING.md) for the steps to create a new release.
