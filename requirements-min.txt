@@ -7,4 +7,4 @@ numpy == 1.21.0
 pyproj == 3.0
 pystac[validation] == 1.2
 rasterio == 1.2.7
-requests == 2.20
+requests == 2.27.1
