@@ -1,9 +1,9 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-beta.2",
+  "stac_version": "1.0.0",
   "id": "d43bead8-e3f8-4c51-95d6-e24e750a402b",
   "properties": {
-    "datetime": "2019-08-07 20:37:10Z"
+    "datetime": "2019-08-07T20:37:10Z"
   },
   "geometry": {
     "type": "MultiPolygon",
@@ -34,17 +34,12 @@
       ]
     ]
   },
-  "bbox": [
-    -86.75260925292969,
-    35.685734110176064,
-    -86.43606567382814,
-    35.9078947564485
-  ],
   "links": [
     {
       "rel": "root",
       "href": "../../../catalog.json",
-      "type": "application/json"
+      "type": "application/json",
+      "title": "Test Case 2"
     },
     {
       "rel": "parent",
@@ -59,5 +54,11 @@
       "title": "scene"
     }
   },
+  "bbox": [
+    -86.75260925292969,
+    35.685734110176064,
+    -86.43606567382814,
+    35.9078947564485
+  ],
   "stac_extensions": []
 }
