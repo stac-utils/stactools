@@ -11,6 +11,7 @@ from .test_cases import TestCases
 
 
 class CopyTest(CliTestCase):
+
     def create_subcommand_functions(self):
         return [create_copy_command, create_move_assets_command]
 

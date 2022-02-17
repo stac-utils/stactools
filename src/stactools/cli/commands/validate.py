@@ -8,10 +8,12 @@ from pystac import Collection, Item, STACObject, STACObjectType, STACValidationE
 from pystac.catalog import Catalog
 from pystac.validation import RegisteredValidator, STACValidator
 
+from pystac import Catalog, Collection, Item, STACObject, STACValidationError
 from stactools.core.utils import href_exists
 
 
-def create_validate_command(cli):
+def create_validate_command(cli: click.Group) -> click.Command:
+
     @cli.command("validate", short_help="Validate a stac object.")
     @click.argument("href")
     @click.option("--recurse/--no-recurse",
@@ -128,6 +130,7 @@ def validate(object: STACObject, root: Optional[STACObject], recurse: bool,
 
 
 class RequiredFieldsValidator(STACValidator):
+
     def __init__(self, required_fields: Dict[STACObjectType, List[str]]):
         self.required_fields = required_fields
 

@@ -1,6 +1,79 @@
 # Changelog
 
-## stactools 0.2.1
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.2.6] - 2022-02-15
+
+### Added
+
+- CI checks for minimum and pre-release versions of dependencies ([#228](https://github.com/stac-utils/stactools/pull/228))
+
+### Changed
+
+- Use [pytest](https://docs.pytest.org/) for unit testing instead of `unittest` ([#220](https://github.com/stac-utils/stactools/pull/220))
+- Signature of `stactools.core.utils.convert.cogify` ([#222](https://github.com/stac-utils/stactools/pull/222))
+- Don't push Docker images from pull requests ([#225](https://github.com/stac-utils/stactools/pull/225), [#226](https://github.com/stac-utils/stactools/pull/226))
+
+### Removed
+
+- GDAL Python bindings dependency ([#222](https://github.com/stac-utils/stactools/pull/222))
+- Upper bounds on dependencies ([#228](https://github.com/stac-utils/stactools/pull/228))
+
+## [0.2.5] - 2022-01-03
+
+### Added
+
+- `read_href_modifer` argument to `stactools.create.item` ([#212](https://github.com/stac-utils/stactools/pull/212))
+
+## [0.2.4] - 2021-11-23
+
+### Added
+
+- `addraster` command ([#204](https://github.com/stac-utils/stactools/pull/204)), including `gdal` Python dependency
+
+### Changed
+
+- Update to pystac 1.2 ([#209](https://github.com/stac-utils/stactools/pull/209))
+- Update click to 8.0.x ([#209](https://github.com/stac-utils/stactools/pull/209))
+  - Any packages using `types-click` should remove that package. Version 8 adds proper type annotations to the main package.
+- Set mypy to `strict` ([#209](https://github.com/stac-utils/stactools/pull/209))
+
+### Fixed
+
+- Readthedocs build ([#210](https://github.com/stac-utils/stactools/pull/210))
+
+## [0.2.3] - 2021-09-16
+
+### Added
+
+- `stactools.core.create.item` and associated CLI subcommand ([#201](https://github.com/stac-utils/stactools/pull/201))
+- `stactools.core.add.add_item` and associated CLI command for adding an item to a Catlog/Collection ([#153](https://github.com/stac-utils/stactools/pull/153))
+
+### Fixed
+
+- Typing for Python 3.7 in `stactools.core.projection` ([#201](https://github.com/stac-utils/stactools/pull/201))
+
+## [0.2.2] - 2021-09-13
+
+### Added
+
+- Add the ability to use data from the Microsoft Planetary Computer as external testing data ([#197](https://github.com/stac-utils/stactools/pull/197))
+
+### Changed
+
+- Improved error reporting and documentation for old GDAL versions.
+  GDAL 3.1 is required to read and write Cloud Optimized Geotiffs.
+  ([#194](https://github.com/stac-utils/stactools/pull/194))
+
+### Fixed
+
+- ReadTheDocs ([#190](https://github.com/stac-utils/stactools/pull/190))
+- Typing in the projection module ([#198](https://github.com/stac-utils/stactools/pull/198))
+
+## [0.2.1] - 2021-07-28
 
 The v0.2 release of stactools is a major refactor of the packaging and organization strategy for stactools.
 Most packages have been moved to the [stactools-packages](https://github.com/stactools-packages) organizing, leaving only `stactools.core`, `stactools.cli`, and the new `stactools.testing` packages in this repository.
@@ -33,7 +106,7 @@ Most packages have been moved to the [stactools-packages](https://github.com/sta
 - Dropped support for Python 3.6
 - `validate_cloud_optimized_geotiff.py`
 
-## stactools 0.1.6
+## [0.1.6] - 2021-06-09
 
 ### Added
 
@@ -58,7 +131,7 @@ Most packages have been moved to the [stactools-packages](https://github.com/sta
 - SA_QA_AEROSOL asset key in landsat data ([#126](https://github.com/stac-utils/stactools/pull/126))
 - Relative paths in sentinel2 assets ([#125](https://github.com/stac-utils/stactools/pull/125))
 
-## stactools 0.1.5
+## [0.1.5] - 2021-05-06
 
 ### Added
 
@@ -88,14 +161,14 @@ Most packages have been moved to the [stactools-packages](https://github.com/sta
 - `landsat` asset keys ([#90](https://github.com/stac-utils/stactools/pull/90))
 - Docs ([#93](https://github.com/stac-utils/stactools/pull/93))
 
-## stactools 0.1.4
+## [0.1.4] - 2021-02-21
 
 ### Added
 - Implementation of Landsat STAC handling ([#23](https://github.com/stac-utils/stactools/pull/23))
 - Add NAIP subpackage for deriving NAIP STAC items and collection ([#18](https://github.com/stac-utils/stactools/pull/18))
 - Add catalog type option for `planet convert` ([#61](https://github.com/stac-utils/stactools/pull/61))
 
-## stactools 0.1.3
+## [0.1.3] - 2021-01-19
 
 ### Added
 
@@ -105,7 +178,7 @@ Most packages have been moved to the [stactools-packages](https://github.com/sta
 
 - Fix issue caused by mihandling of shapely bounds returning tuple. ([#41](https://github.com/stac-utils/stactools/pull/41))
 
-## stactools 0.1.2
+## [0.1.2] - 2021-01-14
 
 ### Added
 
@@ -116,7 +189,7 @@ Most packages have been moved to the [stactools-packages](https://github.com/sta
 - Fixed issues with copying and asset movint ([#34](https://github.com/stac-utils/stactools/pull/34))
 - Fix `stac browse` with upgrades to versions in the tiler container ([#35](https://github.com/stac-utils/stactools/pull/35))
 
-## stactools 0.1.1
+## [0.1.1] - 2020-11-14
 
 See [#9](https://github.com/stac-utils/stactools/pull/9)
 
@@ -134,7 +207,7 @@ See [#9](https://github.com/stac-utils/stactools/pull/9)
 - Fixed bug in stac merge when copying assets
 - Update collection extents when using stac merge
 
-## stactools 0.1
+## [0.1.0] - 2020-10-30
 
 ### Added
 
@@ -142,3 +215,18 @@ See [#9](https://github.com/stac-utils/stactools/pull/9)
 - `stac.cli.command.copy` commands for copying and moving STACs and assets.
 - `stac.cli.command.layout` for modfiygin the layout of STACs
 - `stac.browse` for launching a local instance of stac-browser using docker.
+
+[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.2.6..main>
+[0.2.6]: <https://github.com/stac-utils/stactools/compare/v0.2.5..v0.2.6>
+[0.2.5]: <https://github.com/stac-utils/stactools/compare/v0.2.4..v0.2.5>
+[0.2.4]: <https://github.com/stac-utils/stactools/compare/v0.2.3..v0.2.4>
+[0.2.3]: <https://github.com/stac-utils/stactools/compare/v0.2.2..v0.2.3>
+[0.2.2]: <https://github.com/stac-utils/stactools/compare/v0.2.1..v0.2.2>
+[0.2.1]: <https://github.com/stac-utils/stactools/compare/v0.1.6..v0.2.1>
+[0.1.6]: <https://github.com/stac-utils/stactools/compare/v0.1.5..v0.1.6>
+[0.1.5]: <https://github.com/stac-utils/stactools/compare/v0.1.4..v0.1.5>
+[0.1.4]: <https://github.com/stac-utils/stactools/compare/v0.1.3..v0.1.4>
+[0.1.3]: <https://github.com/stac-utils/stactools/compare/v0.1.2..v0.1.3>
+[0.1.2]: <https://github.com/stac-utils/stactools/compare/v0.1.1..v0.1.2>
+[0.1.1]: <https://github.com/stac-utils/stactools/compare/v0.1.0..v0.1.1>
+[0.1.0]: <https://github.com/stac-utils/stactools/releases/tag/v0.1.0>

@@ -1,13 +1,12 @@
-from collections import abc
 from copy import deepcopy
-from typing import Any, List, Optional, Union, Dict
+from typing import Any, List, Optional, Union, Dict, Sequence
 
 import pyproj
 import rasterio.crs
 import rasterio.transform
 
 
-def epsg_from_utm_zone_number(utm_zone_number, south):
+def epsg_from_utm_zone_number(utm_zone_number: int, south: bool) -> int:
     """Return the EPSG code for a UTM zone number.
 
     Args:
@@ -27,9 +26,9 @@ def epsg_from_utm_zone_number(utm_zone_number, south):
 
 
 def reproject_geom(src_crs: Union[pyproj.CRS, rasterio.crs.CRS, str],
-                   dest_crs: Any,
+                   dest_crs: Union[pyproj.CRS, rasterio.crs.CRS, str],
                    geom: Dict[str, Any],
-                   precision: Optional[int] = None):
+                   precision: Optional[int] = None) -> Dict[str, Any]:
     """Reprojects a geometry represented as GeoJSON
     from the src_crs to the dest crs.
 
@@ -49,15 +48,15 @@ def reproject_geom(src_crs: Union[pyproj.CRS, rasterio.crs.CRS, str],
                                               always_xy=True)
     result = deepcopy(geom)
 
-    def fn(coords):
+    def fn(coords: Sequence[Any]) -> Sequence[Any]:
         coords = list(coords)
         for i in range(0, len(coords)):
             coord = coords[i]
-            if isinstance(coord[0], abc.Sequence):
+            if isinstance(coord[0], Sequence):
                 coords[i] = fn(coord)
             else:
                 x, y = coord
-                reprojected_coords = transformer.transform(x, y)
+                reprojected_coords = list(transformer.transform(x, y))
                 if precision is not None:
                     reprojected_coords = [
                         round(n, precision) for n in reprojected_coords

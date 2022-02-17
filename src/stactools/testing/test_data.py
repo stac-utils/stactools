@@ -1,9 +1,11 @@
 import os
 import shutil
+from typing import Any, Dict
 from tempfile import TemporaryDirectory
 from zipfile import ZipFile
 
 import fsspec
+import requests
 
 # example external data:
 # {
@@ -18,7 +20,10 @@ import fsspec
 
 
 class TestData:
-    def __init__(self, path, external_data={}):
+
+    __test__ = False
+
+    def __init__(self, path: str, external_data: Dict[str, Any] = {}) -> None:
         """Creates a test data object for a given test script.
 
         Initialize this from, e.g., `tests/__init__.py`:
@@ -47,6 +52,8 @@ class TestData:
             os.makedirs(os.path.dirname(path), exist_ok=True)
 
             s3_config = entry.get("s3")
+            is_pc = entry.get(
+                "planetary_computer")  # True if from PC, needs signing
             if s3_config:
                 try:
                     import s3fs
@@ -61,9 +68,21 @@ class TestData:
                 s3 = s3fs.S3FileSystem(**s3_config)
                 with s3.open(entry["url"]) as f:
                     data = f.read()
+            elif is_pc:
+                href = entry["url"]
+                r = requests.get(
+                    "https://planetarycomputer.microsoft.com/api/sas/v1/sign?"
+                    f"href={href}")
+                r.raise_for_status()
+                signed_href = r.json()["href"]
+
+                with fsspec.open(signed_href) as f:
+                    data = f.read()
+
             else:
                 with fsspec.open(entry["url"]) as f:
                     data = f.read()
+
             if entry.get("compress") == 'zip':
                 with TemporaryDirectory() as tmp_dir:
                     tmp_path = os.path.join(tmp_dir, 'file.zip')

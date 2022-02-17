@@ -3,5 +3,6 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - gdal
-  - rasterio~=1.2
+  - gdal>=3.3
+  - geos>=3.3
+  - rasterio>=1.2

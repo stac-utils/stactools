@@ -9,6 +9,7 @@ from stactools.testing import CliTestCase
 
 
 class VersionTest(CliTestCase):
+
     def create_subcommand_functions(self):
         return [create_version_command]
 

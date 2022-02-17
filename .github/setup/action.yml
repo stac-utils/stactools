@@ -1,0 +1,36 @@
+name: Setup
+description: Set up the stactools testing environment with conda, pip, and associated caches
+inputs:
+  python-version:
+    description: Python version to set up w/ conda
+    required: True
+  pip-cache-hash:
+    description: The hash used for the pip cache
+    required: False
+    default: ${{ hashFiles('setup.cfg', 'requirements-dev.txt') }}
+runs:
+  using: composite
+  steps:
+    - name: Set up conda cache
+      uses: actions/cache@v2
+      with:
+        path: ~/conda_pkgs_dir
+        key: ${{ runner.os }}-conda-${{ hashFiles('environment.yml') }}
+        restore-keys: ${{ runner.os }}-conda-
+    - name: Set up pip cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ inputs.pip-cache-hash }}
+        restore-keys: ${{ runner.os }}-pip-
+    - name: Set up Conda with Python ${{ inputs.python-version }}
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        auto-update-conda: true
+        python-version: ${{ inputs.python-version }}
+    - name: Update Conda's environemnt
+      run: conda env update -f environment.yml -n test
+      shell: bash -l {0}
+    - name: Update pip
+      run: python -m pip install --upgrade pip
+      shell: bash -l {0}

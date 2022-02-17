@@ -7,6 +7,7 @@ from tests.testing import test_data
 
 class TestDataTest(TestCase):
     """Say test ONE MORE TIME and I swear..."""
+
     def test_external_data_https(self):
         path = test_data.get_external_data("item.json")
         item = pystac.read_file(path)
@@ -20,6 +21,12 @@ class TestDataTest(TestCase):
         self.assertNotEqual(
             xml.find("ALPSMLC30_N041W106_DSM"), -1,
             "Could not find 'ALPSMLC30_N041W106_DSM' in the ALOS VRT")
+
+    def test_external_pc_data(self):
+        path = test_data.get_external_data("manifest.safe")
+        with open(path) as f:
+            xml = f.read()
+        self.assertIsNotNone(xml)
 
 
 def skip_without_s3fs():

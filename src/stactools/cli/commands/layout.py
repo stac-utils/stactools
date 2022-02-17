@@ -4,7 +4,8 @@ import pystac
 from stactools.core import layout_catalog
 
 
-def create_layout_command(cli):
+def create_layout_command(cli: click.Group) -> click.Command:
+
     @cli.command(
         'layout',
         short_help='Reformat the layout of a STAC based on templating.')
@@ -28,9 +29,13 @@ def create_layout_command(cli):
                   '--move-assets',
                   is_flag=True,
                   help='Move assets to the target catalog Item locations.')
-    def layout_command(catalog, item_path_template, create_subcatalogs,
-                       remove_existing_subcatalogs, move_assets):
+    def layout_command(catalog: str, item_path_template: str,
+                       create_subcatalogs: bool,
+                       remove_existing_subcatalogs: bool,
+                       move_assets: bool) -> None:
         source = pystac.read_file(catalog)
+        if not isinstance(source, pystac.Catalog):
+            raise click.BadArgumentUsage(f"{catalog} is not a STAC Catalog")
 
         layout_catalog(source,
                        item_path_template,

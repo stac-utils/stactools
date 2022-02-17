@@ -1,6 +1,7 @@
 from typing import Callable, Optional, TypeVar
 
 import fsspec
+import rasterio
 
 T = TypeVar('T')
 U = TypeVar('U')
@@ -20,4 +21,10 @@ def href_exists(href: str) -> bool:
     https://filesystem-spec.readthedocs.io/en/latest/api.html#fsspec.spec.AbstractFileSystem.exists.
     """
     fs, _, paths = fsspec.get_fs_token_paths(href)
-    return paths and fs.exists(paths[0])
+    return bool(paths and fs.exists(paths[0]))
+
+
+def gdal_driver_is_enabled(name: str) -> bool:
+    """Checks to see if the named GDAL driver is enabled."""
+    with rasterio.Env() as env:
+        return name in env.drivers().keys()
