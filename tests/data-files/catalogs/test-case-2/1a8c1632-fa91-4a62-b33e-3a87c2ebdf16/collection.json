@@ -1,6 +1,7 @@
 {
+  "type": "Collection",
   "id": "1a8c1632-fa91-4a62-b33e-3a87c2ebdf16",
-  "stac_version": "1.0.0-beta.2",
+  "stac_version": "1.0.0",
   "description": "Project layer collection",
   "links": [
     {
@@ -18,7 +19,8 @@
     {
       "rel": "root",
       "href": "../catalog.json",
-      "type": "application/json"
+      "type": "application/json",
+      "title": "Test Case 2"
     },
     {
       "rel": "parent",
@@ -26,7 +28,12 @@
       "type": "application/json"
     }
   ],
+  "stac_extensions": [],
   "title": "Layers",
+  "keywords": [],
+  "version": "1",
+  "providers": [],
+  "properties": {},
   "extent": {
     "spatial": {
       "bbox": [
@@ -47,9 +54,5 @@
       ]
     }
   },
-  "license": "proprietary",
-  "keywords": [],
-  "version": "1",
-  "providers": [],
-  "properties": {}
+  "license": "proprietary"
 }
