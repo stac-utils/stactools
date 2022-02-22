@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - CI checks for minimum and pre-release versions of dependencies ([#228](https://github.com/stac-utils/stactools/pull/228))
 
+### Fixed
+
+- Test items are now valid STAC v1.0.0 ([#243](https://github.com/stac-utils/stactools/pull/243))
+- Move asset tests now have all the assets they need ([#243](https://github.com/stac-utils/stactools/pull/243))
 ### Changed
 
 - Use [pytest](https://docs.pytest.org/) for unit testing instead of `unittest` ([#220](https://github.com/stac-utils/stactools/pull/220))
