@@ -8,3 +8,4 @@ pyproj == 3.0
 pystac[validation] == 1.2
 rasterio == 1.2.9
 requests == 2.20
+stac-check == 1.1.3

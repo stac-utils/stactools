@@ -15,6 +15,7 @@ sphinx-autobuild
 sphinx-click
 sphinxcontrib-fulltoc
 sphinxcontrib-napoleon
+stac-check
 types-certifi
 types-orjson
 types-python-dateutil

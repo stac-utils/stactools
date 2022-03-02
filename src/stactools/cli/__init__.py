@@ -9,7 +9,7 @@ def register_plugin(registry: 'Registry') -> None:
     # Register subcommands
 
     from stactools.cli.commands import (add, addraster, copy, create, info,
-                                        layout, merge, migrate, version,
+                                        layout, lint, merge, migrate, version,
                                         validate)
 
     registry.register_subcommand(add.create_add_command)
@@ -20,6 +20,7 @@ def register_plugin(registry: 'Registry') -> None:
     registry.register_subcommand(info.create_info_command)
     registry.register_subcommand(info.create_describe_command)
     registry.register_subcommand(layout.create_layout_command)
+    registry.register_subcommand(lint.create_lint_command)
     registry.register_subcommand(merge.create_merge_command)
     registry.register_subcommand(validate.create_validate_command)
     registry.register_subcommand(version.create_version_command)
