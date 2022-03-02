@@ -21,7 +21,7 @@ jobs:
       run:
         shell: bash -l {0}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./.github/setup
         with:
           python-version: ${{ matrix.python-version }}
@@ -39,7 +39,7 @@ jobs:
       run:
         shell: bash -l {0}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./.github/setup
         with:
           python-version: ${{ matrix.python-version }}
@@ -59,7 +59,7 @@ jobs:
       run:
         shell: bash -l {0}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./.github/setup
         with:
           python-version: ${{ matrix.python-version }}
@@ -85,7 +85,7 @@ jobs:
       run:
         shell: bash -l {0}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./.github/setup
         with:
           python-version: ${{ matrix.python-version }}
@@ -103,7 +103,7 @@ jobs:
       - minimum-versions
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Execute linters and test suites
         run: ./docker/cibuild
       - name: Upload coverage to Codecov
@@ -124,7 +124,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
