@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Documentation on the release process ([#241](https://github.com/stac-utils/stactools/pull/241))
+- `stac lint` using [stac-check](https://github.com/philvarner/stac-check) ([#254](https://github.com/stac-utils/stactools/pull/254))
 
 ## [0.2.6] - 2022-02-15
 
