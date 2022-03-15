@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `stac lint` using [stac-check](https://github.com/philvarner/stac-check) ([#254](https://github.com/stac-utils/stactools/pull/254))
 - `stac info` now has option `-s` or `--skip_items` to skip counting and printing catalog item info ([#260](https://github.com/stac-utils/stactools/pull/260))
 - updated `livehtml` target for documentation build to work with latest `sphinx-autobuild` ([#261](https://github.com/stac-utils/stactools/pull/261))
+- Antimeridian helpers ([#259](https://github.com/stac-utils/stactools/pull/259))
 
 ## [0.2.6] - 2022-02-15
 
