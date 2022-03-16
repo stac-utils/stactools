@@ -12,7 +12,7 @@ help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 livehtml:
-	sphinx-autobuild -z ../stactools --host 0.0.0.0 ${SOURCEDIR} $(BUILDDIR)/html -d _build/doctrees
+	sphinx-autobuild --watch ../stactools --host 0.0.0.0 ${SOURCEDIR} $(BUILDDIR)/html -d _build/doctrees
 
 .PHONY: help Makefile
 
