@@ -2,7 +2,7 @@ import click
 import pystac
 
 
-def print_info(catalog_path: str) -> None:
+def print_info(catalog_path: str, skip_items: bool = False) -> None:
     cat_count, col_count, item_count = 0, 0, 0
     cat_ext, col_ext, item_ext = set([]), set([]), set([])
 
@@ -22,12 +22,12 @@ def print_info(catalog_path: str) -> None:
             if root.stac_extensions is not None:
                 for ext in root.stac_extensions:
                     cat_ext.add(ext)
-
-        for item in items:
-            item_count += 1
-            if item.stac_extensions is not None:
-                for ext in item.stac_extensions:
-                    item_ext.add(ext)
+        if not skip_items:
+            for item in items:
+                item_count += 1
+                if item.stac_extensions is not None:
+                    for ext in item.stac_extensions:
+                        item_ext.add(ext)
 
     cat_id_info = 'Catalog ID: {}'.format(cat.id)
     cat_ext_info = '(extensions: {})'.format(
@@ -41,7 +41,8 @@ def print_info(catalog_path: str) -> None:
     print('-' * len(cat_id_info))
     print('   CATALOGS: {} {}'.format(cat_count, cat_ext_info))
     print('COLLECTIONS: {} {}'.format(col_count, col_ext_info))
-    print('      ITEMS: {} {}'.format(item_count, item_ext_info))
+    if not skip_items:
+        print('      ITEMS: {} {}'.format(item_count, item_ext_info))
 
 
 def create_info_command(cli: click.Group) -> click.Command:
@@ -49,8 +50,12 @@ def create_info_command(cli: click.Group) -> click.Command:
     @cli.command('info',
                  short_help='Display info about a static STAC catalog.')
     @click.argument('catalog_path')
-    def info_command(catalog_path: str) -> None:
-        print_info(catalog_path)
+    @click.option('-s',
+                  '--skip_items',
+                  is_flag=True,
+                  help='Skip counting items')
+    def info_command(catalog_path: str, skip_items: bool) -> None:
+        print_info(catalog_path, skip_items)
 
     return info_command
 
