@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Documentation on the release process ([#241](https://github.com/stac-utils/stactools/pull/241))
 - `stac lint` using [stac-check](https://github.com/philvarner/stac-check) ([#254](https://github.com/stac-utils/stactools/pull/254))
+- `stac info` now has option `-s` or `--skip_items` to skip counting and printing catalog item info ([#14](https://github.com/stac-utils/stactools/issues/14))
 
 ## [0.2.6] - 2022-02-15
 
