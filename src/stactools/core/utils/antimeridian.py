@@ -121,4 +121,11 @@ def normalize(polygon: Polygon) -> Polygon:
         delta = end[0] - start[0]
         if abs(delta) > 180:
             coords[index + 1] = (end[0] - math.copysign(360, delta), end[1])
-    return Polygon(coords)
+    polygon = Polygon(coords)
+    centroid = polygon.centroid
+    if centroid.x > 180:
+        return shapely.affinity.translate(polygon, xoff=-360)
+    elif centroid.x < -180:
+        return shapely.affinity.translate(polygon, xoff=+360)
+    else:
+        return polygon
