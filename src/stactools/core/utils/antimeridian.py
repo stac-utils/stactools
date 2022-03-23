@@ -117,10 +117,14 @@ def normalize(polygon: Polygon) -> Polygon:
         shapely.geometry.Polygon: The normalized polygon.
     """
     coords = list(polygon.exterior.coords)
+    has_changes = False
     for index, (start, end) in enumerate(zip(coords, coords[1:])):
         delta = end[0] - start[0]
         if abs(delta) > 180:
+            has_changes = True
             coords[index + 1] = (end[0] - math.copysign(360, delta), end[1])
+    if not has_changes:
+        return polygon
     polygon = Polygon(coords)
     centroid = polygon.centroid
     if centroid.x > 180:
