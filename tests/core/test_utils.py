@@ -99,6 +99,22 @@ class CogifyTest(unittest.TestCase):
         assert normalized.equals(
             expected), f"actual={normalized}, expected={expected}"
 
+    def test_antimeridian_normalize_westerly(self) -> None:
+        westerly = Polygon(
+            ((170, 40), (170, 50), (-140, 50), (-140, 40), (170, 40)))
+        normalized = antimeridian.normalize(westerly)
+        expected = shapely.geometry.box(-190, 40, -140, 50)
+        assert normalized.equals(
+            expected), f"actual={normalized}, expected={expected}"
+
+    def test_antimeridian_normalize_easterly(self) -> None:
+        easterly = Polygon(
+            ((-170, 40), (140, 40), (140, 50), (-170, 50), (-170, 40)))
+        normalized = antimeridian.normalize(easterly)
+        expected = shapely.geometry.box(140, 40, 190, 50)
+        assert normalized.equals(
+            expected), f"actual={normalized}, expected={expected}"
+
     def test_item_fix_antimeridian_split(self) -> None:
         canonical = Polygon(
             ((170, 40), (170, 50), (-170, 50), (-170, 40), (170, 40)))
