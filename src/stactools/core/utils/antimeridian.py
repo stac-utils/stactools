@@ -33,10 +33,11 @@ def fix_item(item: Item, strategy: Strategy) -> None:
             f"Can only fix antimeridian issues for Polygons, geometry={geometry}"
         )
     if strategy == Strategy.NORMALIZE:
-        geometry = normalize(geometry)
-        bbox = geometry.bounds
-        item.geometry = shapely.geometry.mapping(geometry)
-        item.bbox = bbox
+        normalized_geometry = normalize(geometry)
+        if normalized_geometry:
+            bbox = normalized_geometry.bounds
+            item.geometry = shapely.geometry.mapping(normalized_geometry)
+            item.bbox = bbox
     elif strategy == Strategy.SPLIT:
         split_geometry = split(geometry)
         if split_geometry:
@@ -70,6 +71,8 @@ def split(polygon: Polygon) -> Optional[MultiPolygon]:
             no split occurred.
     """
     normalized = normalize(polygon)
+    if normalized is None:
+        return None
     if normalized.bounds[0] < -180:
         longitude = -180
     elif normalized.bounds[2] > 180:
@@ -92,8 +95,8 @@ def split(polygon: Polygon) -> Optional[MultiPolygon]:
     return MultiPolygon(geoms)
 
 
-def normalize(polygon: Polygon) -> Polygon:
-    """'Normalizes' a WGS84 lat/lon polygon.
+def normalize(polygon: Polygon) -> Optional[Polygon]:
+    """'Normalizes' a WGS84 lat/lon polygon, or returns None if no changes were made.
 
     This converts the polygon's x coordinates to all be the same sign, even if
     the polygon crosses the antimeridian. E.g.:
@@ -114,7 +117,7 @@ def normalize(polygon: Polygon) -> Polygon:
         polygon (shapely.geometry.Polygon): The input polygon.
 
     Returns:
-        shapely.geometry.Polygon: The normalized polygon.
+        Optional[shapely.geometry.Polygon]: The normalized polygon.
     """
     coords = list(polygon.exterior.coords)
     has_changes = False
@@ -124,7 +127,7 @@ def normalize(polygon: Polygon) -> Polygon:
             has_changes = True
             coords[index + 1] = (end[0] - math.copysign(360, delta), end[1])
     if not has_changes:
-        return polygon
+        return None
     polygon = Polygon(coords)
     centroid = polygon.centroid
     if centroid.x > 180:
