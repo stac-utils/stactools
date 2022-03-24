@@ -1,6 +1,7 @@
 from typing import Callable, List
 
-from click import Group, Command
+from click import Command, Group
+
 from stactools.cli.commands.validate import create_validate_command
 from stactools.testing.cli_test import CliTestCase
 from tests import test_data
@@ -15,7 +16,7 @@ class ValidatateTest(CliTestCase):
             "data-files/catalogs/test-case-1/country-1/area-1-1/"
             "area-1-1-imagery/area-1-1-imagery.json"
         )
-        result = self.run_command(f"validate {path} --no-assets")
+        result = self.run_command(f"validate {path} --no-validate-assets")
         self.assertEqual(0, result.exit_code)
 
     def test_invalid_item(self) -> None:
@@ -37,7 +38,7 @@ class ValidatateTest(CliTestCase):
         path = test_data.get_path(
             "data-files/catalogs/test-case-1/country-1/area-1-1/collection-invalid.json"
         )
-        result = self.run_command(f"validate {path} --no-recurse")
+        result = self.run_command(f"validate {path} --no-recursive")
         self.assertEqual(0, result.exit_code)
 
     def test_collection_invalid_asset(self) -> None:
@@ -46,4 +47,6 @@ class ValidatateTest(CliTestCase):
             "/area-1-1/area-1-1-imagery/area-1-1-imagery.json"
         )
         result = self.run_command(f"validate {path}")
-        self.assertEqual(1, result.exit_code)
+        self.assertEqual(
+            0, result.exit_code
+        )  # unreachable links aren't an error in stac-validator
