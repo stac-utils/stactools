@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.3.0] - 2022-03-25
 
 ### Added
 
@@ -230,7 +230,8 @@ See [#9](https://github.com/stac-utils/stactools/pull/9)
 - `stac.cli.command.layout` for modfiygin the layout of STACs
 - `stac.browse` for launching a local instance of stac-browser using docker.
 
-[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.2.6..main>
+[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.3.0..main>
+[0.3.0]: <https://github.com/stac-utils/stactools/compare/v0.2.6..v0.3.0>
 [0.2.6]: <https://github.com/stac-utils/stactools/compare/v0.2.5..v0.2.6>
 [0.2.5]: <https://github.com/stac-utils/stactools/compare/v0.2.4..v0.2.5>
 [0.2.4]: <https://github.com/stac-utils/stactools/compare/v0.2.3..v0.2.4>
