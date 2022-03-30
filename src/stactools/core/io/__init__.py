@@ -1,6 +1,9 @@
-from typing import Any, Callable, Optional
+import hashlib
+from dataclasses import dataclass
+from typing import Any, Callable, Optional, cast
 
 import fsspec
+import multihash
 from pystac.stac_io import DefaultStacIO, StacIO
 
 from stactools.core import utils
@@ -49,3 +52,21 @@ class FsspecStacIO(DefaultStacIO):
 
 def use_fsspec() -> None:
     StacIO.set_default(FsspecStacIO)
+
+
+@dataclass
+class FileInfo:
+
+    checksum: str
+    size: int
+
+    @classmethod
+    def read(cls, href: str) -> "FileInfo":
+        m = hashlib.sha256()
+        with fsspec.open(href, mode="rb") as file:
+            data = file.read()
+            size = len(data)
+            m.update(data)
+        hash = multihash.encode(m.digest(), code="sha2-256", length=m.digest_size)
+        checksum = cast(str, multihash.to_hex_string(hash))
+        return FileInfo(checksum=checksum, size=size)

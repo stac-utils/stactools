@@ -22,7 +22,7 @@ from stactools.core import __version__  # noqa
 # -- Project information -----------------------------------------------------
 
 project = "stactools"
-copyright = "2020, stac-utils"
+copyright = "2022, stac-utils"
 author = "stac-utils"
 
 # The short X.Y version

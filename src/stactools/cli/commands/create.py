@@ -1,3 +1,5 @@
+import json
+
 import click
 
 from stactools.core import create
@@ -15,6 +17,6 @@ def create_create_item_command(cli: click.Group) -> click.Command:
         stac](https://github.com/developmentseed/rio-stac/).
         """
         item = create.item(href)
-        print(item.to_dict())
+        print(json.dumps(item.to_dict(), indent=4))
 
     return create_item_command
