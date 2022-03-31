@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- CI check for Python 3.10 (requires pre-release version of rasterio 1.3) ([#271](https://github.com/stac-utils/stactools/pull/271))
+
 ### Changed
 
 - Skip Click v8.1.0 as it broke decorator typing ([#266](https://github.com/stac-utils/stactools/pull/266))
