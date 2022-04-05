@@ -8,6 +8,7 @@ lxml-stubs
 mypy
 nbsphinx
 packaging
+pre-commit
 pylint
 pytest
 pytest-cov

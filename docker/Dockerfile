@@ -31,6 +31,7 @@ RUN conda install -c conda-forge pandoc && conda clean -af
 COPY requirements-dev.txt ./
 RUN pip install -r requirements-dev.txt
 COPY . ./
+RUN git init
 RUN pip install -e .[all]
 
 
