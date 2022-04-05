@@ -10,13 +10,11 @@ from tests import test_data
 
 
 class LintTest(CliTestCase):
-
     def create_subcommand_functions(self) -> List[Callable[[Group], Command]]:
         return [create_lint_command]
 
     def test_valid_item(self) -> None:
-        path = test_data.get_path(
-            "data-files/linting/20201211_223832_cs2.json")
+        path = test_data.get_path("data-files/linting/20201211_223832_cs2.json")
         result = self.run_command(["lint", path])
         self.assertEqual(0, result.exit_code)
 

@@ -4,9 +4,8 @@ from stactools.core import create
 
 
 def create_create_item_command(cli: click.Group) -> click.Command:
-
-    @cli.command('create-item', short_help='Creates an item from an asset')
-    @click.argument('href')
+    @cli.command("create-item", short_help="Creates an item from an asset")
+    @click.argument("href")
     def create_item_command(href: str) -> None:
         """Creates an Item from a href.
 

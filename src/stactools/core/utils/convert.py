@@ -13,9 +13,7 @@ DEFAULT_PROFILE = {
 }
 
 
-def cogify(infile: str,
-           outfile: str,
-           profile: Optional[Dict[str, Any]] = None) -> None:
+def cogify(infile: str, outfile: str, profile: Optional[Dict[str, Any]] = None) -> None:
     """Creates a COG from a GDAL-readable file."""
     if not utils.gdal_driver_is_enabled("COG"):
         raise DriverRegistrationError(

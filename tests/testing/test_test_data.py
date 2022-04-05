@@ -19,8 +19,10 @@ class TestDataTest(TestCase):
         with open(path) as f:
             xml = f.read()
         self.assertNotEqual(
-            xml.find("ALPSMLC30_N041W106_DSM"), -1,
-            "Could not find 'ALPSMLC30_N041W106_DSM' in the ALOS VRT")
+            xml.find("ALPSMLC30_N041W106_DSM"),
+            -1,
+            "Could not find 'ALPSMLC30_N041W106_DSM' in the ALOS VRT",
+        )
 
     def test_external_pc_data(self):
         path = test_data.get_external_data("manifest.safe")

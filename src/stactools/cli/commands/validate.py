@@ -9,22 +9,27 @@ from stactools.core.utils import href_exists
 
 
 def create_validate_command(cli: click.Group) -> click.Command:
-
     @cli.command("validate", short_help="Validate a stac object.")
     @click.argument("href")
-    @click.option("--recurse/--no-recurse",
-                  default=True,
-                  help=("If false, do not validate any children "
-                        "(only useful for Catalogs and Collections"))
-    @click.option("--links/--no-links",
-                  default=True,
-                  help=("If false, do not check any of the objects's links."))
+    @click.option(
+        "--recurse/--no-recurse",
+        default=True,
+        help=(
+            "If false, do not validate any children "
+            "(only useful for Catalogs and Collections"
+        ),
+    )
+    @click.option(
+        "--links/--no-links",
+        default=True,
+        help=("If false, do not check any of the objects's links."),
+    )
     @click.option(
         "--assets/--no-assets",
         default=True,
-        help=("If false, do not check any of the collection's/item's assets."))
-    def validate_command(href: str, recurse: bool, links: bool,
-                         assets: bool) -> None:
+        help=("If false, do not check any of the collection's/item's assets."),
+    )
+    def validate_command(href: str, recurse: bool, links: bool, assets: bool) -> None:
         """Validates a STAC object.
 
         Prints any validation errors to stdout.
@@ -48,8 +53,13 @@ def create_validate_command(cli: click.Group) -> click.Command:
     return validate_command
 
 
-def validate(object: STACObject, root: Optional[STACObject], recurse: bool,
-             links: bool, assets: bool) -> List[str]:
+def validate(
+    object: STACObject,
+    root: Optional[STACObject],
+    recurse: bool,
+    links: bool,
+    assets: bool,
+) -> List[str]:
     errors: List[str] = []
 
     try:
@@ -65,7 +75,7 @@ def validate(object: STACObject, root: Optional[STACObject], recurse: bool,
             assert href
             if not href_exists(href):
                 errors.append(
-                    f"Missing link in {object.self_href}: \"{link.rel}\" -> {link.href}"
+                    f'Missing link in {object.self_href}: "{link.rel}" -> {link.href}'
                 )
 
     if assets and (isinstance(object, Item) or isinstance(object, Collection)):

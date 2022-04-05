@@ -3,8 +3,8 @@ from typing import Callable, Optional, TypeVar
 import fsspec
 import rasterio
 
-T = TypeVar('T')
-U = TypeVar('U')
+T = TypeVar("T")
+U = TypeVar("U")
 
 
 def map_opt(fn: Callable[[T], U], v: Optional[T]) -> Optional[U]:

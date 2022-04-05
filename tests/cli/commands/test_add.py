@@ -18,7 +18,6 @@ def create_temp_catalog_copy(tmp_dir):
 
 
 class AddTest(CliTestCase):
-
     def create_subcommand_functions(self):
         return [create_add_command]
 
@@ -88,5 +87,4 @@ class AddTest(CliTestCase):
 
             res = self.run_command(cmd)
             self.assertEqual(res.exit_code, 2)
-            self.assertTrue(
-                " A collection with ID WRONG does not exist" in res.output)
+            self.assertTrue(" A collection with ID WRONG does not exist" in res.output)

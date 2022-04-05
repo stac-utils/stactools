@@ -16,19 +16,17 @@ def epsg_from_utm_zone_number(utm_zone_number: int, south: bool) -> int:
     Returns:
         int: The EPSG code number for the UTM zone.
     """
-    crs = pyproj.CRS.from_dict({
-        'proj': 'utm',
-        'zone': utm_zone_number,
-        'south': south
-    })
+    crs = pyproj.CRS.from_dict({"proj": "utm", "zone": utm_zone_number, "south": south})
 
     return int(crs.to_authority()[1])
 
 
-def reproject_geom(src_crs: Union[pyproj.CRS, rasterio.crs.CRS, str],
-                   dest_crs: Union[pyproj.CRS, rasterio.crs.CRS, str],
-                   geom: Dict[str, Any],
-                   precision: Optional[int] = None) -> Dict[str, Any]:
+def reproject_geom(
+    src_crs: Union[pyproj.CRS, rasterio.crs.CRS, str],
+    dest_crs: Union[pyproj.CRS, rasterio.crs.CRS, str],
+    geom: Dict[str, Any],
+    precision: Optional[int] = None,
+) -> Dict[str, Any]:
     """Reprojects a geometry represented as GeoJSON
     from the src_crs to the dest crs.
 
@@ -43,9 +41,7 @@ def reproject_geom(src_crs: Union[pyproj.CRS, rasterio.crs.CRS, str],
     Returns:
         dict: The reprojected geometry
     """
-    transformer = pyproj.Transformer.from_crs(src_crs,
-                                              dest_crs,
-                                              always_xy=True)
+    transformer = pyproj.Transformer.from_crs(src_crs, dest_crs, always_xy=True)
     result = deepcopy(geom)
 
     def fn(coords: Sequence[Any]) -> Sequence[Any]:
@@ -64,7 +60,7 @@ def reproject_geom(src_crs: Union[pyproj.CRS, rasterio.crs.CRS, str],
                 coords[i] = reprojected_coords
         return coords
 
-    result['coordinates'] = fn(result['coordinates'])
+    result["coordinates"] = fn(result["coordinates"])
 
     return result
 
@@ -76,5 +72,7 @@ def transform_from_bbox(bbox: List[float], shape: List[int]) -> List[float]:
     Only take the first 6 elements, as that is all that is necessary.
     """
     return list(
-        rasterio.transform.from_bounds(bbox[0], bbox[1], bbox[2], bbox[3],
-                                       shape[1], shape[0]))[:6]
+        rasterio.transform.from_bounds(
+            bbox[0], bbox[1], bbox[2], bbox[3], shape[1], shape[0]
+        )
+    )[:6]

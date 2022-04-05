@@ -36,24 +36,23 @@ class TestData:
         self.external_data = external_data
 
     def get_path(self, rel_path: str) -> str:
-        return os.path.abspath(
-            os.path.join(os.path.dirname(self.path), rel_path))
+        return os.path.abspath(os.path.join(os.path.dirname(self.path), rel_path))
 
     def get_external_data(self, rel_path: str) -> str:
-        path = self.get_path(os.path.join('data-files/external', rel_path))
+        path = self.get_path(os.path.join("data-files/external", rel_path))
         if not os.path.exists(path):
             entry = self.external_data.get(rel_path)
             if entry is None:
-                raise Exception('Path {} does not exist and there is no entry '
-                                'for external test data {}.'.format(
-                                    path, rel_path))
+                raise Exception(
+                    "Path {} does not exist and there is no entry "
+                    "for external test data {}.".format(path, rel_path)
+                )
 
-            print('Downloading external test data {}...'.format(rel_path))
+            print("Downloading external test data {}...".format(rel_path))
             os.makedirs(os.path.dirname(path), exist_ok=True)
 
             s3_config = entry.get("s3")
-            is_pc = entry.get(
-                "planetary_computer")  # True if from PC, needs signing
+            is_pc = entry.get("planetary_computer")  # True if from PC, needs signing
             if s3_config:
                 try:
                     import s3fs
@@ -72,7 +71,8 @@ class TestData:
                 href = entry["url"]
                 r = requests.get(
                     "https://planetarycomputer.microsoft.com/api/sas/v1/sign?"
-                    f"href={href}")
+                    f"href={href}"
+                )
                 r.raise_for_status()
                 signed_href = r.json()["href"]
 
@@ -83,17 +83,17 @@ class TestData:
                 with fsspec.open(entry["url"]) as f:
                     data = f.read()
 
-            if entry.get("compress") == 'zip':
+            if entry.get("compress") == "zip":
                 with TemporaryDirectory() as tmp_dir:
-                    tmp_path = os.path.join(tmp_dir, 'file.zip')
-                    with open(tmp_path, 'wb') as f:
+                    tmp_path = os.path.join(tmp_dir, "file.zip")
+                    with open(tmp_path, "wb") as f:
                         f.write(data)
                     z = ZipFile(tmp_path)
                     name = z.namelist()[0]
                     extracted_path = z.extract(name)
                     shutil.move(extracted_path, path)
             else:
-                with open(path, 'wb') as f:
+                with open(path, "wb") as f:
                     f.write(data)
 
         return path

@@ -11,8 +11,7 @@ import stactools.core.projection
 from .io import ReadHrefModifier
 
 
-def item(href: str,
-         read_href_modifier: Optional[ReadHrefModifier] = None) -> Item:
+def item(href: str, read_href_modifier: Optional[ReadHrefModifier] = None) -> Item:
     """Creates a STAC Item from the asset at the provided href.
 
     The `read_href_modifer` argument can be used to modify the href for the
@@ -47,26 +46,27 @@ def item(href: str,
         proj_transform = list(dataset.transform)[0:6]
         proj_shape = dataset.shape
     proj_geometry = shapely.geometry.mapping(shapely.geometry.box(*proj_bbox))
-    geometry = stactools.core.projection.reproject_geom(crs,
-                                                        'EPSG:4326',
-                                                        proj_geometry,
-                                                        precision=6)
+    geometry = stactools.core.projection.reproject_geom(
+        crs, "EPSG:4326", proj_geometry, precision=6
+    )
     bbox = list(shapely.geometry.shape(geometry).bounds)
-    item = Item(id=id,
-                geometry=geometry,
-                bbox=bbox,
-                datetime=datetime.datetime.now(),
-                properties={})
+    item = Item(
+        id=id,
+        geometry=geometry,
+        bbox=bbox,
+        datetime=datetime.datetime.now(),
+        properties={},
+    )
 
     projection = ProjectionExtension.ext(item, add_if_missing=True)
     epsg = crs.to_epsg()
     if epsg:
         projection.epsg = epsg
     else:
-        projection.wkt2 = crs.to_wkt('WKT2')
+        projection.wkt2 = crs.to_wkt("WKT2")
     projection.transform = proj_transform
     projection.shape = proj_shape
 
-    item.add_asset('data', Asset(href=href, roles=['data']))
+    item.add_asset("data", Asset(href=href, roles=["data"]))
 
     return item
