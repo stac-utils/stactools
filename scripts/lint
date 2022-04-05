@@ -20,7 +20,7 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         usage
     else
         # Code formatting
-        yapf -dpr ${DIRS_TO_CHECK[@]}
+        scripts/format
         # Lint
         flake8 ${DIRS_TO_CHECK[@]}
         # Type checking

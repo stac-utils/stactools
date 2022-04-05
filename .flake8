@@ -9,7 +9,4 @@ max-line-length = 100
 # W503, W504: flake8 reports this as incorrect, and scripts/format_code
 # changes code to it, so let format_code win.
 
-# E126: Continuation line over-indented for hanging indent
-# Conflicts with yapf formatting
-
-ignore = E127,W503,W504,E126
+ignore = E127,W503,W504

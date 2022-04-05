@@ -7,23 +7,23 @@ dependencies:
   - pip
   - rasterio~=1.2
   - pip:
-    - codespell
-    - coverage
-    - flake8
-    - ipython
-    - jupyter
-    - lxml-stubs
-    - mypy
-    - nbsphinx
-    - pylint
-    - sphinx
-    - sphinx-autobuild
-    - sphinx-click
-    - sphinxcontrib-fulltoc
-    - sphinxcontrib-napoleon
-    - types-certifi
-    - types-orjson
-    - types-python-dateutil
-    - types-requests
-    - yapf
-    - .
+      - black
+      - codespell
+      - coverage
+      - flake8
+      - ipython
+      - jupyter
+      - lxml-stubs
+      - mypy
+      - nbsphinx
+      - pylint
+      - sphinx
+      - sphinx-autobuild
+      - sphinx-click
+      - sphinxcontrib-fulltoc
+      - sphinxcontrib-napoleon
+      - types-certifi
+      - types-orjson
+      - types-python-dateutil
+      - types-requests
+      - .
