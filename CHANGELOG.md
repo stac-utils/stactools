@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Skip Click v8.1.0 as it broke decorator typing ([#266](https://github.com/stac-utils/stactools/pull/266))
+- Use black (instead of yapf) for formatting ([#274](https://github.com/stac-utils/stactools/pull/274))
 
 ## [0.3.0] - 2022-03-25
 
