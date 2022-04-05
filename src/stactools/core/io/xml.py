@@ -21,8 +21,8 @@ class XmlElement:
         return None if node is None else XmlElement(node)
 
     def find_or_throw(
-            self, xpath: str,
-            get_exception: Callable[[str], Exception]) -> "XmlElement":
+        self, xpath: str, get_exception: Callable[[str], Exception]
+    ) -> "XmlElement":
         result = self.find(xpath)
         if result is None:
             raise get_exception(xpath)
@@ -31,8 +31,8 @@ class XmlElement:
     @lru_cache(maxsize=100)
     def findall(self, xpath: str) -> List["XmlElement"]:
         return [
-            XmlElement(e) for e in self.element.findall(
-                xpath, self.element.nsmap)  # type: ignore
+            XmlElement(e)
+            for e in self.element.findall(xpath, self.element.nsmap)  # type: ignore
         ]
 
     @lru_cache(maxsize=100)
@@ -40,8 +40,9 @@ class XmlElement:
         node = self.find(xpath)
         return None if node is None else node.text
 
-    def find_text_or_throw(self, xpath: str,
-                           get_exception: Callable[[str], Exception]) -> str:
+    def find_text_or_throw(
+        self, xpath: str, get_exception: Callable[[str], Exception]
+    ) -> str:
         result = self.find_text(xpath)
         if result is None:
             raise get_exception(xpath)
@@ -57,7 +58,7 @@ class XmlElement:
         if isinstance(self.element.text, str):
             return self.element.text
         elif isinstance(self.element.text, bytes):
-            return str(self.element.text, encoding='utf-8')
+            return str(self.element.text, encoding="utf-8")
         else:
             assert self.element.text is None
             return None
@@ -67,9 +68,8 @@ class XmlElement:
         return self.element.get(attr, None)
 
     @classmethod
-    def from_file(cls,
-                  href: str,
-                  read_href_modifier: Optional[ReadHrefModifier] = None
-                  ) -> "XmlElement":
+    def from_file(
+        cls, href: str, read_href_modifier: Optional[ReadHrefModifier] = None
+    ) -> "XmlElement":
         text = read_text(href, read_href_modifier)
-        return cls(etree.fromstring(bytes(text, encoding='utf-8')))
+        return cls(etree.fromstring(bytes(text, encoding="utf-8")))

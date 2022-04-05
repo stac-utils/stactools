@@ -12,9 +12,10 @@ from shapely.geometry import Polygon, MultiPolygon, LineString
 class Strategy(Enum):
     """Strategy for handling antimeridian-crossing polygons.
 
-        - SPLIT: split the polygon at the antimeridian
-        - NORMALIZE: keep the polygon as one, but extend it to > 180 or < -180.
+    - SPLIT: split the polygon at the antimeridian
+    - NORMALIZE: keep the polygon as one, but extend it to > 180 or < -180.
     """
+
     SPLIT = auto()
     NORMALIZE = auto()
 

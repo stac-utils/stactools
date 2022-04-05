@@ -6,9 +6,9 @@ from pystac.layout import BestPracticesLayoutStrategy
 from stactools.core.copy import move_assets as do_move_assets
 
 
-def add_item(source_item: Item,
-             target_catalog: Catalog,
-             move_assets: bool = False) -> None:
+def add_item(
+    source_item: Item, target_catalog: Catalog, move_assets: bool = False
+) -> None:
     """Add a item into a catalog.
 
     Args:
@@ -22,15 +22,14 @@ def add_item(source_item: Item,
     target_item_ids = [item.id for item in target_catalog.get_all_items()]
     if source_item.id in target_item_ids:
         raise ValueError(
-            f'An item with ID {source_item.id} already exists in the target catalog'
+            f"An item with ID {source_item.id} already exists in the target catalog"
         )
     self_href = target_catalog.get_self_href()
     if self_href:
         parent_dir = os.path.dirname(self_href)
         layout_strategy = BestPracticesLayoutStrategy()
         item_copy = source_item.clone()
-        item_copy.set_self_href(
-            layout_strategy.get_item_href(item_copy, parent_dir))
+        item_copy.set_self_href(layout_strategy.get_item_href(item_copy, parent_dir))
         target_catalog.add_item(item_copy)
 
         if isinstance(target_catalog, Collection):

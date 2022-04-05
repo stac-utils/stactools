@@ -29,31 +29,23 @@ def print_info(catalog_path: str, skip_items: bool = False) -> None:
                     for ext in item.stac_extensions:
                         item_ext.add(ext)
 
-    cat_id_info = 'Catalog ID: {}'.format(cat.id)
-    cat_ext_info = '(extensions: {})'.format(
-        ','.join(cat_ext)) if cat_ext else ''
-    col_ext_info = '(extensions: {})'.format(
-        ','.join(col_ext)) if col_ext else ''
-    item_ext_info = '(extensions: {})'.format(
-        ','.join(item_ext)) if item_ext else ''
+    cat_id_info = "Catalog ID: {}".format(cat.id)
+    cat_ext_info = "(extensions: {})".format(",".join(cat_ext)) if cat_ext else ""
+    col_ext_info = "(extensions: {})".format(",".join(col_ext)) if col_ext else ""
+    item_ext_info = "(extensions: {})".format(",".join(item_ext)) if item_ext else ""
 
     print(cat_id_info)
-    print('-' * len(cat_id_info))
-    print('   CATALOGS: {} {}'.format(cat_count, cat_ext_info))
-    print('COLLECTIONS: {} {}'.format(col_count, col_ext_info))
+    print("-" * len(cat_id_info))
+    print("   CATALOGS: {} {}".format(cat_count, cat_ext_info))
+    print("COLLECTIONS: {} {}".format(col_count, col_ext_info))
     if not skip_items:
-        print('      ITEMS: {} {}'.format(item_count, item_ext_info))
+        print("      ITEMS: {} {}".format(item_count, item_ext_info))
 
 
 def create_info_command(cli: click.Group) -> click.Command:
-
-    @cli.command('info',
-                 short_help='Display info about a static STAC catalog.')
-    @click.argument('catalog_path')
-    @click.option('-s',
-                  '--skip_items',
-                  is_flag=True,
-                  help='Skip counting items')
+    @cli.command("info", short_help="Display info about a static STAC catalog.")
+    @click.argument("catalog_path")
+    @click.option("-s", "--skip_items", is_flag=True, help="Skip counting items")
     def info_command(catalog_path: str, skip_items: bool) -> None:
         print_info(catalog_path, skip_items)
 
@@ -61,16 +53,15 @@ def create_info_command(cli: click.Group) -> click.Command:
 
 
 def create_describe_command(cli: click.Group) -> click.Command:
-
     @cli.command(
-        'describe',
-        short_help='Prints out a list of all catalogs, collections and items '
-        'in this STAC.')
-    @click.argument('catalog_path')
-    @click.option('-h',
-                  '--include-hrefs',
-                  is_flag=True,
-                  help='Include HREFs in description.')
+        "describe",
+        short_help="Prints out a list of all catalogs, collections and items "
+        "in this STAC.",
+    )
+    @click.argument("catalog_path")
+    @click.option(
+        "-h", "--include-hrefs", is_flag=True, help="Include HREFs in description."
+    )
     def describe_command(catalog_path: str, include_hrefs: bool) -> None:
         cat = pystac.read_file(catalog_path)
         if not isinstance(cat, pystac.Catalog):

@@ -6,11 +6,13 @@ from pystac.layout import TemplateLayoutStrategy
 from stactools.core import move_all_assets
 
 
-def layout_catalog(catalog: Catalog,
-                   item_path_template: str,
-                   create_subcatalogs: bool = False,
-                   remove_existing_subcatalogs: bool = False,
-                   move_assets: bool = False) -> Catalog:
+def layout_catalog(
+    catalog: Catalog,
+    item_path_template: str,
+    create_subcatalogs: bool = False,
+    remove_existing_subcatalogs: bool = False,
+    move_assets: bool = False,
+) -> Catalog:
     """Modify the layout of a STAC.
 
     Given a catalog and a layout template, modify the layout of the STAC
@@ -52,8 +54,7 @@ def layout_catalog(catalog: Catalog,
         catalog.normalize_hrefs(os.path.dirname(catalog.self_href))
     else:
         strategy = TemplateLayoutStrategy(item_template=item_path_template)
-        catalog.normalize_hrefs(os.path.dirname(catalog.self_href),
-                                strategy=strategy)
+        catalog.normalize_hrefs(os.path.dirname(catalog.self_href), strategy=strategy)
 
     if move_assets:
         move_all_assets(catalog, ignore_conflicts=True)

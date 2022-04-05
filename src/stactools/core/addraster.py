@@ -4,8 +4,13 @@ from typing import List
 import numpy
 from pystac import Item
 from pystac.utils import make_absolute_href
-from pystac.extensions.raster import (DataType, Histogram, RasterBand,
-                                      RasterExtension, Statistics)
+from pystac.extensions.raster import (
+    DataType,
+    Histogram,
+    RasterBand,
+    RasterExtension,
+    Statistics,
+)
 import rasterio
 
 logger = logging.getLogger(__name__)
@@ -50,11 +55,12 @@ def _read_bands(href: str) -> List[RasterBand]:
             # `mypy.ini`.
             minimum = float(numpy.min(data))  # type: ignore
             maximum = float(numpy.max(data))  # type: ignore
-            band.statistics = Statistics.create(minimum=minimum,
-                                                maximum=maximum)
+            band.statistics = Statistics.create(minimum=minimum, maximum=maximum)
             hist_data, _ = numpy.histogram(  # type: ignore
-                data, range=(minimum, maximum), bins=BINS)
-            band.histogram = Histogram.create(BINS, minimum, maximum,
-                                              hist_data.tolist())
+                data, range=(minimum, maximum), bins=BINS
+            )
+            band.histogram = Histogram.create(
+                BINS, minimum, maximum, hist_data.tolist()
+            )
             bands.append(band)
     return bands

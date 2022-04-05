@@ -20,7 +20,6 @@ def create_temp_catalog_copy(tmp_dir):
 
 
 class AddRasterTest(CliTestCase):
-
     def create_subcommand_functions(self):
         return [create_addraster_command]
 
@@ -28,8 +27,9 @@ class AddRasterTest(CliTestCase):
         with TemporaryDirectory() as tmp_dir:
             catalog = create_temp_catalog_copy(tmp_dir)
             items = list(catalog.get_all_items())
-            item_path = make_absolute_href(items[0].get_self_href(),
-                                           catalog.get_self_href())
+            item_path = make_absolute_href(
+                items[0].get_self_href(), catalog.get_self_href()
+            )
 
             cmd = ["addraster", item_path]
             self.run_command(cmd)

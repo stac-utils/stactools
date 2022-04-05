@@ -6,18 +6,19 @@ from fsspec.core import split_protocol
 from fsspec.registry import get_filesystem_class
 
 from pystac import Catalog, CatalogType, Item
-from pystac.utils import (is_absolute_href, make_absolute_href,
-                          make_relative_href)
+from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
 from typing import Optional
 
 logger = logging.getLogger(__name__)
 
 
-def move_asset_file_to_item(item: Item,
-                            asset_href: str,
-                            asset_subdirectory: Optional[str] = None,
-                            copy: bool = False,
-                            ignore_conflicts: bool = False) -> str:
+def move_asset_file_to_item(
+    item: Item,
+    asset_href: str,
+    asset_subdirectory: Optional[str] = None,
+    copy: bool = False,
+    ignore_conflicts: bool = False,
+) -> str:
     """Moves an asset file to be alongside that item.
 
     Args:
@@ -39,10 +40,11 @@ def move_asset_file_to_item(item: Item,
     if item_href is None:
         raise ValueError(
             f"Self HREF is not available for item {item.id}. This operation "
-            "requires that the Item HREFs are available.")
+            "requires that the Item HREFs are available."
+        )
 
     if not is_absolute_href(asset_href):
-        raise ValueError('asset_href must be absolute.')
+        raise ValueError("asset_href must be absolute.")
 
     item_dir = os.path.dirname(item_href)
 
@@ -60,19 +62,18 @@ def move_asset_file_to_item(item: Item,
 
         if fs_dest.exists(new_asset_href):
             if not ignore_conflicts:
-                raise FileExistsError(
-                    '{} already exists'.format(new_asset_href))
+                raise FileExistsError("{} already exists".format(new_asset_href))
         else:
             if copy:
 
                 def _op1(dry_run: bool = False) -> None:
-                    logger.info("Copying {} to {}...".format(
-                        asset_href, new_asset_href))
+                    logger.info(
+                        "Copying {} to {}...".format(asset_href, new_asset_href)
+                    )
                     if not dry_run:
-                        fs_dest.makedirs(os.path.dirname(new_asset_href),
-                                         exist_ok=True)
-                        with fsspec.open(asset_href, 'rb') as f_src:
-                            with fsspec.open(new_asset_href, 'wb') as f_dst:
+                        fs_dest.makedirs(os.path.dirname(new_asset_href), exist_ok=True)
+                        with fsspec.open(asset_href, "rb") as f_src:
+                            with fsspec.open(new_asset_href, "wb") as f_dst:
                                 f_dst.write(f_src.read())
 
                 op = _op1
@@ -82,26 +83,29 @@ def move_asset_file_to_item(item: Item,
                 if source_protocol == dest_protocol:
 
                     def _op2(dry_run: bool = False) -> None:
-                        logger.info("Moving {} to {}...".format(
-                            asset_href, new_asset_href))
+                        logger.info(
+                            "Moving {} to {}...".format(asset_href, new_asset_href)
+                        )
                         if not dry_run:
-                            fs_dest.makedirs(os.path.dirname(new_asset_href),
-                                             exist_ok=True)
+                            fs_dest.makedirs(
+                                os.path.dirname(new_asset_href), exist_ok=True
+                            )
                             fs_dest.move(asset_href, new_asset_href)
 
                     op = _op2
                 else:
 
                     def _op3(dry_run: bool = False) -> None:
-                        logger.info("Moving {} to {}...".format(
-                            asset_href, new_asset_href))
+                        logger.info(
+                            "Moving {} to {}...".format(asset_href, new_asset_href)
+                        )
                         if not dry_run:
                             fs_source = get_filesystem_class(source_protocol)()
-                            fs_dest.makedirs(os.path.dirname(new_asset_href),
-                                             exist_ok=True)
-                            with fsspec.open(asset_href, 'rb') as f_src:
-                                with fsspec.open(new_asset_href,
-                                                 'wb') as f_dst:
+                            fs_dest.makedirs(
+                                os.path.dirname(new_asset_href), exist_ok=True
+                            )
+                            with fsspec.open(asset_href, "rb") as f_src:
+                                with fsspec.open(new_asset_href, "wb") as f_dst:
                                     f_dst.write(f_src.read())
                             fs_source.delete(asset_href)
 
@@ -113,11 +117,13 @@ def move_asset_file_to_item(item: Item,
     return new_asset_href
 
 
-def move_assets(item: Item,
-                asset_subdirectory: Optional[str] = None,
-                make_hrefs_relative: bool = True,
-                copy: bool = False,
-                ignore_conflicts: bool = False) -> Item:
+def move_assets(
+    item: Item,
+    asset_subdirectory: Optional[str] = None,
+    make_hrefs_relative: bool = True,
+    copy: bool = False,
+    ignore_conflicts: bool = False,
+) -> Item:
     """Moves assets for an item to be alongside that item.
 
     Args:
@@ -141,21 +147,24 @@ def move_assets(item: Item,
     if item_href is None:
         raise ValueError(
             f"Self HREF is not available for item {item.id}. This operation "
-            "requires that the Item HREFs are available.")
+            "requires that the Item HREFs are available."
+        )
 
     for asset in item.assets.values():
         abs_asset_href = asset.get_absolute_href()
         if abs_asset_href is None:
             raise ValueError(
                 f"Asset {asset.title} HREF is not available for item {item.id}. This operation "
-                "requires that the Asset HREFs are available.")
+                "requires that the Asset HREFs are available."
+            )
 
         new_asset_href = move_asset_file_to_item(
             item,
             abs_asset_href,
             asset_subdirectory=asset_subdirectory,
             copy=copy,
-            ignore_conflicts=ignore_conflicts)
+            ignore_conflicts=ignore_conflicts,
+        )
 
         if make_hrefs_relative:
             asset.href = make_relative_href(new_asset_href, item_href)
@@ -165,11 +174,13 @@ def move_assets(item: Item,
     return item
 
 
-def move_all_assets(catalog: Catalog,
-                    asset_subdirectory: Optional[str] = None,
-                    make_hrefs_relative: bool = True,
-                    copy: bool = False,
-                    ignore_conflicts: bool = False) -> Catalog:
+def move_all_assets(
+    catalog: Catalog,
+    asset_subdirectory: Optional[str] = None,
+    make_hrefs_relative: bool = True,
+    copy: bool = False,
+    ignore_conflicts: bool = False,
+) -> Catalog:
     """Moves assets in a catalog to be alongside the items that own them.
 
     Args:
@@ -191,17 +202,20 @@ def move_all_assets(catalog: Catalog,
     """
 
     for item in catalog.get_all_items():
-        move_assets(item, asset_subdirectory, make_hrefs_relative, copy,
-                    ignore_conflicts)
+        move_assets(
+            item, asset_subdirectory, make_hrefs_relative, copy, ignore_conflicts
+        )
 
     return catalog
 
 
-def copy_catalog(source_catalog: Catalog,
-                 dest_directory: str,
-                 catalog_type: Optional[CatalogType] = None,
-                 copy_assets: bool = False,
-                 publish_location: Optional[str] = None) -> None:
+def copy_catalog(
+    source_catalog: Catalog,
+    dest_directory: str,
+    catalog_type: Optional[CatalogType] = None,
+    copy_assets: bool = False,
+    publish_location: Optional[str] = None,
+) -> None:
     catalog = source_catalog.full_copy()
     dest_directory = make_absolute_href(dest_directory)
 

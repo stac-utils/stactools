@@ -16,7 +16,7 @@ class Logging:
 
         ch = logging.StreamHandler()
         ch.setLevel(level)
-        formatter = logging.Formatter('%(message)s')
+        formatter = logging.Formatter("%(message)s")
         ch.setFormatter(formatter)
 
         logger.addHandler(ch)

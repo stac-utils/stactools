@@ -4,18 +4,18 @@ from typing import Callable, Iterator, List
 from click import Command, Group
 
 
-class Registry():
+class Registry:
     """A registry for resources that are built-in or contributed by plugins."""
 
     def __init__(self) -> None:
         self._create_command_functions: List[Callable[[Group], Command]] = []
 
     def register_subcommand(
-            self, create_command_function: Callable[[Group], Command]) -> None:
+        self, create_command_function: Callable[[Group], Command]
+    ) -> None:
         self._create_command_functions.append(create_command_function)
 
-    def get_create_subcommand_functions(
-            self) -> List[Callable[[Group], Command]]:
+    def get_create_subcommand_functions(self) -> List[Callable[[Group], Command]]:
         return self._create_command_functions[:]
 
     def load_plugins(self) -> None:
@@ -33,7 +33,7 @@ class Registry():
             # returned name an absolute name instead of a relative one. This allows
             # import_module to work without having to do additional modification to
             # the name.
-            return pkgutil.iter_modules(ns_pkg.__path__, ns_pkg.__name__ + '.')
+            return pkgutil.iter_modules(ns_pkg.__path__, ns_pkg.__name__ + ".")
 
         discovered_plugins = {
             name: importlib.import_module(name)
@@ -41,6 +41,6 @@ class Registry():
         }
 
         for name, module in discovered_plugins.items():
-            register_plugin = getattr(module, 'register_plugin', None)
+            register_plugin = getattr(module, "register_plugin", None)
             if register_plugin:
                 register_plugin(self)

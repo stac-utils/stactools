@@ -4,11 +4,10 @@ from stac_check.lint import Linter  # type: ignore
 
 
 def create_lint_command(cli: click.Group) -> click.Command:
-
     @cli.command("lint", short_help="Lint a stac object with stac-check.")
-    @click.option("--quiet",
-                  is_flag=True,
-                  help=("Do not display the Ok no warnings message."))
+    @click.option(
+        "--quiet", is_flag=True, help=("Do not display the Ok no warnings message.")
+    )
     @click.argument("href")
     def lint_command(href: str, quiet: bool) -> None:
         """Lint a STAC object via stac-check.

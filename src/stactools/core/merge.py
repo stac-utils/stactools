@@ -3,17 +3,22 @@ import os
 import pystac
 from typing import Optional
 from pystac.layout import BestPracticesLayoutStrategy
-from pystac.utils import (is_absolute_href, make_relative_href)
+from pystac.utils import is_absolute_href, make_relative_href
 from shapely.geometry import shape, mapping
 
-from stactools.core.copy import (move_asset_file_to_item, copy_catalog,
-                                 move_assets as do_move_assets)
+from stactools.core.copy import (
+    move_asset_file_to_item,
+    copy_catalog,
+    move_assets as do_move_assets,
+)
 
 
-def merge_items(source_item: pystac.Item,
-                target_item: pystac.Item,
-                move_assets: bool = False,
-                ignore_conflicts: bool = False) -> None:
+def merge_items(
+    source_item: pystac.Item,
+    target_item: pystac.Item,
+    move_assets: bool = False,
+    ignore_conflicts: bool = False,
+) -> None:
     """Merges the assets from source_item into target_item.
 
     The geometry and bounding box of the items will also be merged.
@@ -30,29 +35,29 @@ def merge_items(source_item: pystac.Item,
     """
     target_item_href = target_item.get_self_href()
     if target_item_href is None:
-        raise ValueError(
-            f"Target Item {target_item.id} must have an HREF for merge")
+        raise ValueError(f"Target Item {target_item.id} must have an HREF for merge")
     for key, asset in source_item.assets.items():
         if key in target_item.assets:
             if ignore_conflicts:
                 continue
             else:
                 raise Exception(
-                    'Target item {} already has asset with key {}, '
-                    'cannot merge asset in from {}'.format(
-                        target_item, key, source_item))
+                    "Target item {} already has asset with key {}, "
+                    "cannot merge asset in from {}".format(
+                        target_item, key, source_item
+                    )
+                )
         else:
             asset_href = asset.get_absolute_href()
             if asset_href is None:
-                raise ValueError(
-                    f"Asset {asset.title} must have an HREF for merge")
+                raise ValueError(f"Asset {asset.title} must have an HREF for merge")
             if move_assets:
                 new_asset_href = move_asset_file_to_item(
-                    target_item, asset_href, ignore_conflicts=ignore_conflicts)
+                    target_item, asset_href, ignore_conflicts=ignore_conflicts
+                )
             else:
                 if not is_absolute_href(asset.href):
-                    asset_href = make_relative_href(asset_href,
-                                                    target_item_href)
+                    asset_href = make_relative_href(asset_href, target_item_href)
                 new_asset_href = asset_href
             new_asset = asset.clone()
             new_asset.href = new_asset_href
@@ -65,12 +70,14 @@ def merge_items(source_item: pystac.Item,
     target_item.bbox = list(union_geom.bounds)
 
 
-def merge_all_items(source_catalog: pystac.Catalog,
-                    target_catalog: pystac.Catalog,
-                    move_assets: bool = False,
-                    ignore_conflicts: bool = False,
-                    as_child: bool = False,
-                    child_folder: Optional[str] = None) -> pystac.Catalog:
+def merge_all_items(
+    source_catalog: pystac.Catalog,
+    target_catalog: pystac.Catalog,
+    move_assets: bool = False,
+    ignore_conflicts: bool = False,
+    as_child: bool = False,
+    child_folder: Optional[str] = None,
+) -> pystac.Catalog:
     """Merge all items from source_catalog into target_catalog.
 
     Calls merge_items on any items that have the same ID between the two catalogs.
@@ -103,24 +110,29 @@ def merge_all_items(source_catalog: pystac.Catalog,
     parent_dir = os.path.dirname(target_catalog.self_href)
     if as_child:
         child_dir = os.path.join(parent_dir, child_folder or source_catalog.id)
-        copy_catalog(source_catalog, child_dir, source_catalog.catalog_type,
-                     move_assets)
+        copy_catalog(
+            source_catalog, child_dir, source_catalog.catalog_type, move_assets
+        )
         child_catalog_path = os.path.join(
-            child_dir, os.path.basename(source_catalog.self_href))
+            child_dir, os.path.basename(source_catalog.self_href)
+        )
         new_source_catalog = pystac.read_file(child_catalog_path)
         if not isinstance(new_source_catalog, pystac.Catalog):
             raise ValueError(
-                f"Child catalog {child_catalog_path} is not a STAC Catalog")
+                f"Child catalog {child_catalog_path} is not a STAC Catalog"
+            )
         source_catalog = new_source_catalog
         target_catalog.add_child(source_catalog, source_catalog.title)
     else:
         for item in target_catalog.get_all_items():
             source_item = ids_to_items.get(item.id)
             if source_item is not None:
-                merge_items(source_item,
-                            item,
-                            move_assets=move_assets,
-                            ignore_conflicts=ignore_conflicts)
+                merge_items(
+                    source_item,
+                    item,
+                    move_assets=move_assets,
+                    ignore_conflicts=ignore_conflicts,
+                )
                 del ids_to_items[item.id]
 
         # Process source items that did not match existing target items
@@ -128,7 +140,8 @@ def merge_all_items(source_catalog: pystac.Catalog,
         for item in ids_to_items.values():
             item_copy = item.clone()
             item_copy.set_self_href(
-                layout_strategy.get_item_href(item_copy, parent_dir))
+                layout_strategy.get_item_href(item_copy, parent_dir)
+            )
             target_catalog.add_item(item_copy)
 
             if isinstance(target_catalog, pystac.Collection):

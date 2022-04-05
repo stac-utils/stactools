@@ -12,7 +12,6 @@ def add_raster(item_path: str) -> None:
 
 
 def create_addraster_command(cli: click.Group) -> click.Command:
-
     @cli.command("addraster", short_help="Add raster extension to an Item.")
     @click.argument("item_path")
     def addraster_command(item_path: str) -> None:
