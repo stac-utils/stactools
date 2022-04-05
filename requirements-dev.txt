@@ -1,3 +1,4 @@
+black
 codespell
 flake8
 importlib-metadata
@@ -15,10 +16,7 @@ sphinx-autobuild
 sphinx-click
 sphinxcontrib-fulltoc
 sphinxcontrib-napoleon
-# an explicit toml installation is required until https://github.com/google/yapf/commit/fb0fbb47723612608a7c64cb3835562160ea834c is released
-toml
 types-certifi
 types-orjson
 types-python-dateutil
 types-requests
-yapf

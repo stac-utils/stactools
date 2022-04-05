@@ -9,7 +9,7 @@ fi
 function usage() {
     echo -n \
         "Usage: $(basename "$0")
-Format code with yapf
+Format code with black
 "
 }
 
@@ -20,6 +20,6 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         usage
     else
         # Code formatting
-        yapf -ipr ${DIRS_TO_CHECK[@]}
+        black ${DIRS_TO_CHECK[@]}
     fi
 fi
