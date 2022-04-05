@@ -1,7 +1,7 @@
-from abc import ABC, abstractmethod
 import logging
-from typing import List, Callable
 import unittest
+from abc import ABC, abstractmethod
+from typing import Callable, List
 
 import click
 from click.testing import CliRunner, Result

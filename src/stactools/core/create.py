@@ -2,12 +2,13 @@ import datetime
 import os.path
 from typing import Optional
 
-import shapely.geometry
-from pystac import Item, Asset
-from pystac.extensions.projection import ProjectionExtension
 import rasterio
+import shapely.geometry
+from pystac import Asset, Item
+from pystac.extensions.projection import ProjectionExtension
 
 import stactools.core.projection
+
 from .io import ReadHrefModifier
 
 

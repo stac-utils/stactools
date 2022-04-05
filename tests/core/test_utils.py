@@ -1,14 +1,14 @@
-from contextlib import contextmanager
 import datetime
 import os.path
-from tempfile import TemporaryDirectory
 import unittest
-from pystac import Item
-import pytest
+from contextlib import contextmanager
+from tempfile import TemporaryDirectory
 
+import pytest
 import rasterio
 import shapely.geometry
-from shapely.geometry import Polygon, MultiPolygon
+from pystac import Item
+from shapely.geometry import MultiPolygon, Polygon
 
 from stactools.core.utils import antimeridian
 from stactools.core.utils.convert import cogify

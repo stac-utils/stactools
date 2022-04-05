@@ -18,8 +18,8 @@ def register_plugin(registry: "Registry") -> None:
         lint,
         merge,
         migrate,
-        version,
         validate,
+        version,
     )
 
     registry.register_subcommand(add.create_add_command)

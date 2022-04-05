@@ -1,5 +1,6 @@
-import click
 import sys
+
+import click
 from stac_check.lint import Linter  # type: ignore
 
 

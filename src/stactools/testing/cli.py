@@ -1,8 +1,8 @@
 """ CLI for test data maintenance and generation.
 """
+import logging
 import os
 import shutil
-import logging
 from tempfile import TemporaryDirectory
 
 import click

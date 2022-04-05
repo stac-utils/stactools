@@ -3,6 +3,7 @@ import unittest
 from tempfile import TemporaryDirectory
 
 import pystac
+
 from stactools.core import use_fsspec
 
 

@@ -1,11 +1,9 @@
-from typing import List, Callable
+from typing import Callable, List
 
-from click import Group, Command
-
-from stactools.testing import CliTestCase
+from click import Command, Group
 
 from stactools.cli.commands.lint import create_lint_command
-
+from stactools.testing import CliTestCase
 from tests import test_data
 
 

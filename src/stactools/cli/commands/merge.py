@@ -1,7 +1,8 @@
+from typing import Optional
+
 import click
 import pystac
 
-from typing import Optional
 from stactools.core import merge_all_items
 
 

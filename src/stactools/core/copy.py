@@ -1,13 +1,12 @@
-import os
 import logging
+import os
+from typing import Optional
 
 import fsspec
 from fsspec.core import split_protocol
 from fsspec.registry import get_filesystem_class
-
 from pystac import Catalog, CatalogType, Item
 from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 

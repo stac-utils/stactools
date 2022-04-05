@@ -1,7 +1,7 @@
-from typing import Callable, Optional, Any
+from typing import Any, Callable, Optional
 
-from pystac.stac_io import DefaultStacIO, StacIO
 import fsspec
+from pystac.stac_io import DefaultStacIO, StacIO
 
 ReadHrefModifier = Callable[[str], str]
 """Type alias for a function parameter

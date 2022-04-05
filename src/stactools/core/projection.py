@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Any, List, Optional, Union, Dict, Sequence
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 import pyproj
 import rasterio.crs

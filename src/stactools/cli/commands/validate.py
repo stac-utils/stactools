@@ -1,10 +1,10 @@
 import sys
-from typing import Optional, List
+from typing import List, Optional
 
 import click
 import pystac
-
 from pystac import Catalog, Collection, Item, STACObject, STACValidationError
+
 from stactools.core.utils import href_exists
 
 

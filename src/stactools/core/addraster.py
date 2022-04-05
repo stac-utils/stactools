@@ -2,8 +2,8 @@ import logging
 from typing import List
 
 import numpy
+import rasterio
 from pystac import Item
-from pystac.utils import make_absolute_href
 from pystac.extensions.raster import (
     DataType,
     Histogram,
@@ -11,7 +11,7 @@ from pystac.extensions.raster import (
     RasterExtension,
     Statistics,
 )
-import rasterio
+from pystac.utils import make_absolute_href
 
 logger = logging.getLogger(__name__)
 

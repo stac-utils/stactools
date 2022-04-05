@@ -1,6 +1,7 @@
 import stactools.core
-from .test_data import TestData
+
 from .cli_test import CliTestCase
+from .test_data import TestData
 
 __all__ = [TestData.__name__, CliTestCase.__name__]
 

@@ -1,7 +1,8 @@
 import logging
+from typing import Union
+
 import click
 
-from typing import Union
 from stactools.cli import registry
 
 

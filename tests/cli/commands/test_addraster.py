@@ -2,11 +2,13 @@ from tempfile import TemporaryDirectory
 
 import pystac
 from pystac.utils import make_absolute_href
-from stactools.core import move_all_assets
+
 from stactools.cli.commands.addraster import create_addraster_command
+from stactools.core import move_all_assets
 from stactools.testing import CliTestCase
-from .test_cases import TestCases
+
 from .cli_test_utils import expected_json
+from .test_cases import TestCases
 
 
 def create_temp_catalog_copy(tmp_dir):

@@ -1,10 +1,9 @@
 import pystac
 from pystac.version import get_stac_version
 
+from stactools.cli.commands.version import create_version_command
 from stactools.core import __version__
 from stactools.core.utils.subprocess import call
-from stactools.cli.commands.version import create_version_command
-
 from stactools.testing import CliTestCase
 
 

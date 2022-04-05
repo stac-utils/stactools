@@ -1,16 +1,13 @@
 import os
+from typing import Optional
 
 import pystac
-from typing import Optional
 from pystac.layout import BestPracticesLayoutStrategy
 from pystac.utils import is_absolute_href, make_relative_href
-from shapely.geometry import shape, mapping
+from shapely.geometry import mapping, shape
 
-from stactools.core.copy import (
-    move_asset_file_to_item,
-    copy_catalog,
-    move_assets as do_move_assets,
-)
+from stactools.core.copy import copy_catalog, move_asset_file_to_item
+from stactools.core.copy import move_assets as do_move_assets
 
 
 def merge_items(
