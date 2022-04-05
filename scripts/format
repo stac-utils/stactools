@@ -13,13 +13,11 @@ Format code with black
 "
 }
 
-DIRS_TO_CHECK=("src" "tests")
-
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
         # Code formatting
-        black ${DIRS_TO_CHECK[@]}
+        pre-commit run black --all-files
     fi
 fi

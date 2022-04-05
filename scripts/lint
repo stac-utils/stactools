@@ -19,11 +19,6 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
-        # Code formatting
-        scripts/format
-        # Lint
-        flake8 ${DIRS_TO_CHECK[@]}
-        # Type checking
-        mypy --install-types --non-interactive src
+        pre-commit run --all-files
     fi
 fi
