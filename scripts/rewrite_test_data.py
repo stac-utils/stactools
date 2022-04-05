@@ -38,7 +38,8 @@ for directory, _, file_names in os.walk(directory):
                 for j, datetime in enumerate(interval):
                     if datetime:
                         collection.extent.temporal.intervals[i][
-                            j] = datetime.astimezone(UTC)
+                            j
+                        ] = datetime.astimezone(UTC)
 
         if object.STAC_OBJECT_TYPE == "Feature":
             item = cast(Item, object)
@@ -51,17 +52,15 @@ for directory, _, file_names in os.walk(directory):
             remap_property(item, "eo:sun_azimuth", "view:sun_azimuth")
             remap_property(item, "eo:sun_elevation", "view:sun_elevation")
 
-            if item.collection_id is None and item.get_single_link(
-                    "collection"):
+            if item.collection_id is None and item.get_single_link("collection"):
                 item.collection_id = collection_id
 
             for key, asset in item.assets.items():
                 bands = asset.extra_fields.pop("eo:bands", None)
                 if bands:
-                    item.assets[key].extra_fields["eo:bands"] = [{
-                        "name":
-                        str(band)
-                    } for band in bands]
+                    item.assets[key].extra_fields["eo:bands"] = [
+                        {"name": str(band)} for band in bands
+                    ]
 
         if file_name not in invalid_file_names:
             try:

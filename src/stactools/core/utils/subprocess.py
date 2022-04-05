@@ -1,5 +1,5 @@
 import logging
-from subprocess import Popen, PIPE, STDOUT
+from subprocess import PIPE, STDOUT, Popen
 from typing import IO, List
 
 logger = logging.getLogger(__name__)

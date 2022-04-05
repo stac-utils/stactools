@@ -1,4 +1,4 @@
-from unittest import TestCase, SkipTest
+from unittest import SkipTest, TestCase
 
 import pystac
 

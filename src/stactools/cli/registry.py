@@ -1,6 +1,7 @@
 from pkgutil import ModuleInfo
 from types import ModuleType
 from typing import Callable, Iterator, List
+
 from click import Command, Group
 
 
@@ -25,6 +26,7 @@ class Registry:
         """
         import importlib
         import pkgutil
+
         import stactools
 
         # From https://packaging.python.org/guides/creating-and-discovering-plugins/#using-namespace-packages  # noqa

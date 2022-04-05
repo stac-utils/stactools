@@ -40,7 +40,8 @@ Use ``stac --help`` to navigate the varios commands.
 * ``stac info`` and ``stac describe`` display information about STACs
 * ``stac layout`` will modify the layout of a STAC based on item properties
 
-One of the focuses of ``stactools`` is to provide an easy way to plug in functionality for different data sources. For example:
+One of the focuses of ``stactools`` is to provide an easy way to plug in
+functionality for different data sources. For example:
 
 * ``stac planet convert-order`` will convert a Planet order into a STAC.
 

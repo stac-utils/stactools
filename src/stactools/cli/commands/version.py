@@ -1,10 +1,9 @@
-from click import echo
-
 import pystac
+from click import echo
+from click.core import Command, Group
 from pystac.version import get_stac_version
 
 from stactools.core import __version__
-from click.core import Command, Group
 
 
 def create_version_command(cli: Group) -> Command:

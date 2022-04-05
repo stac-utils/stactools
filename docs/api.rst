@@ -8,7 +8,8 @@ Core
 
 The ``stactools.core`` package contains utility methods for dealing with STACs.
 
-Functions are organized into subpackages but can be imported directly from ``stactools.core``, e.g.:
+Functions are organized into subpackages but can be imported directly from
+``stactools.core``, e.g.:
 
 .. code-block:: python
 

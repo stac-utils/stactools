@@ -7,6 +7,7 @@ from pystac.utils import is_absolute_href, make_absolute_href
 
 from stactools.cli.commands.copy import create_copy_command, create_move_assets_command
 from stactools.testing import CliTestCase
+
 from .test_cases import TestCases
 
 

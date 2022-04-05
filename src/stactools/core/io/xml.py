@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, cast
 
 from lxml import etree
 from lxml.etree import _Element as lxmlElement
@@ -65,7 +65,7 @@ class XmlElement:
 
     @lru_cache(maxsize=100)
     def get_attr(self, attr: str) -> Optional[str]:
-        return self.element.get(attr, None)
+        return cast(Optional[str], self.element.get(attr, None))
 
     @classmethod
     def from_file(

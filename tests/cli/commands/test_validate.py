@@ -1,8 +1,7 @@
-from typing import List, Callable
+from typing import Callable, List
+
 from stactools.cli.commands.validate import create_validate_command
-
 from stactools.testing import CliTestCase
-
 from tests import test_data
 
 

@@ -1,12 +1,12 @@
-from enum import Enum, auto
 import math
+from enum import Enum, auto
 from typing import Optional
 
 import shapely.affinity
 import shapely.geometry
 import shapely.ops
 from pystac import Item
-from shapely.geometry import Polygon, MultiPolygon, LineString
+from shapely.geometry import LineString, MultiPolygon, Polygon
 
 
 class Strategy(Enum):

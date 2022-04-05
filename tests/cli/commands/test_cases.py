@@ -3,19 +3,19 @@ from datetime import datetime
 
 import pystac
 from pystac import (
-    Catalog,
-    Item,
     Asset,
+    Catalog,
     Extent,
-    TemporalExtent,
-    SpatialExtent,
+    Item,
     MediaType,
+    SpatialExtent,
+    TemporalExtent,
 )
 from pystac.extensions.label import (
-    LabelOverview,
     LabelClasses,
     LabelCount,
     LabelExtension,
+    LabelOverview,
     LabelType,
 )
 
