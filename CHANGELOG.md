@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - CI check for Python 3.10 (requires pre-release version of rasterio 1.3) ([#271](https://github.com/stac-utils/stactools/pull/271))
+- pre-commit and isort ([#275](https://github.com/stac-utils/stactools/pull/275))
 
 ### Changed
 
