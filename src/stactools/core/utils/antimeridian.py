@@ -86,6 +86,7 @@ def split(polygon: Polygon) -> Optional[MultiPolygon]:
         return None
     geoms = list()
     for geom in split.geoms:
+        geom = shapely.geometry.polygon.orient(geom)
         bounds = geom.bounds
         if bounds[0] < -180:
             geoms.append(shapely.affinity.translate(geom, xoff=360))
@@ -129,7 +130,7 @@ def normalize(polygon: Polygon) -> Optional[Polygon]:
             coords[index + 1] = (end[0] - math.copysign(360, delta), end[1])
     if not has_changes:
         return None
-    polygon = Polygon(coords)
+    polygon = shapely.geometry.polygon.orient(Polygon(coords))
     centroid = polygon.centroid
     if centroid.x > 180:
         return shapely.affinity.translate(polygon, xoff=-360)
