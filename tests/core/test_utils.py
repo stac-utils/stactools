@@ -51,6 +51,7 @@ def test_antimeridian_split() -> None:
         )
     )
     for actual, expected in zip(split.geoms, expected.geoms):
+        assert actual.exterior.is_ccw
         assert actual.equals(expected)
 
     doesnt_cross = Polygon(((170, 40), (170, 50), (180, 50), (180, 40), (170, 40)))
@@ -69,6 +70,7 @@ def test_antimeridian_split() -> None:
         )
     )
     for actual, expected in zip(split.geoms, expected.geoms):
+        assert actual.exterior.is_ccw
         assert actual.equals(expected), f"actual={actual}, expected={expected}"
 
 
@@ -80,13 +82,30 @@ def test_antimeridian_split_complicated() -> None:
     assert split
     expected = MultiPolygon(
         (
-            Polygon(((170, 40), (170, 45), (180, 42.5), (180, 40), (170, 40))),
-            Polygon(((170, 45), (170, 50), (180, 50), (180, 47.5), (170, 45))),
-            Polygon(((-180, 50), (-170, 50), (-180, 47.5), (-180, 50))),
-            Polygon(((-180, 42.5), (-170, 40), (-180, 40), (-180, 42.5))),
+            Polygon(
+                [
+                    (180.0, 40.0),
+                    (180.0, 42.5),
+                    (170.0, 45.0),
+                    (170.0, 40.0),
+                    (180.0, 40.0),
+                ]
+            ),
+            Polygon([(-180.0, 42.5), (-180.0, 40.0), (-170.0, 40.0), (-180.0, 42.5)]),
+            Polygon(
+                [
+                    (180.0, 47.5),
+                    (180.0, 50.0),
+                    (170.0, 50.0),
+                    (170.0, 45.0),
+                    (180.0, 47.5),
+                ]
+            ),
+            Polygon([(-180.0, 50.0), (-180.0, 47.5), (-170.0, 50.0), (-180.0, 50.0)]),
         )
     )
     for actual, expected in zip(split.geoms, expected.geoms):
+        assert actual.exterior.is_ccw
         assert actual.equals(expected), f"actual={actual}, expected={expected}"
 
 
@@ -94,6 +113,7 @@ def test_antimeridian_normalize() -> None:
     canonical = Polygon(((170, 40), (170, 50), (-170, 50), (-170, 40), (170, 40)))
     normalized = antimeridian.normalize(canonical)
     assert normalized
+    assert normalized.exterior.is_ccw
     expected = shapely.geometry.box(170, 40, 190, 50)
     assert normalized.equals(expected), f"actual={normalized}, expected={expected}"
 
@@ -102,6 +122,7 @@ def test_antimeridian_normalize() -> None:
     )
     normalized = antimeridian.normalize(canonical_other_way)
     assert normalized
+    assert normalized.exterior.is_ccw
     expected = shapely.geometry.box(-170, 40, -190, 50)
     assert normalized.equals(expected), f"actual={normalized}, expected={expected}"
 
@@ -110,6 +131,8 @@ def test_antimeridian_normalize_westerly() -> None:
     westerly = Polygon(((170, 40), (170, 50), (-140, 50), (-140, 40), (170, 40)))
     normalized = antimeridian.normalize(westerly)
     assert normalized
+    assert normalized.exterior.is_ccw
+    expected = shapely.geometry.box(-170, 40, -190, 50)
     expected = shapely.geometry.box(-190, 40, -140, 50)
     assert normalized.equals(expected), f"actual={normalized}, expected={expected}"
 
@@ -118,6 +141,8 @@ def test_antimeridian_normalize_easterly() -> None:
     easterly = Polygon(((-170, 40), (140, 40), (140, 50), (-170, 50), (-170, 40)))
     normalized = antimeridian.normalize(easterly)
     assert normalized
+    assert normalized.exterior.is_ccw
+    expected = shapely.geometry.box(-170, 40, -190, 50)
     expected = shapely.geometry.box(140, 40, 190, 50)
     assert normalized.equals(expected), f"actual={normalized}, expected={expected}"
 
