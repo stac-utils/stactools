@@ -16,11 +16,11 @@ dependencies:
       - lxml-stubs
       - mypy
       - nbsphinx
+      - pydata-sphinx-theme
       - pylint
       - sphinx
       - sphinx-autobuild
       - sphinx-click
-      - sphinxcontrib-fulltoc
       - sphinxcontrib-napoleon
       - types-certifi
       - types-orjson
