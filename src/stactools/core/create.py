@@ -20,21 +20,6 @@ def item(href: str, read_href_modifier: Optional[ReadHrefModifier] = None) -> It
 
     This function is intentionally minimal in its signature and capabilities. If
     you need to customize your Item, do so after creation.
-
-    This function sets:
-    - id
-    - geometry
-    - bbox
-    - datetime (to the time of item creation): you'll probably want to change this
-    - the proj extension
-        - either the EPSG code or, if not available, the WKT2
-        - transform
-        - shape
-    - a single asset with key 'data'
-        - asset href
-        - asset roles to ['data']
-
-    In particular, the datetime and asset media type fields most likely need to be updated.
     """
     id = os.path.splitext(os.path.basename(href))[0]
     if read_href_modifier:

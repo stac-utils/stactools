@@ -1,57 +1,54 @@
-``stactools`` Documentation
+``stactools`` documentation
 ###########################
 
-``stactools`` is a library for working with `SpatioTemporal Asset Catalogs (STAC) <https://stacspec.org/>`_ based on `PySTAC <https://github.com/stac-utils/pystac>`_.
+``stactools`` is a library for working with `SpatioTemporal Asset Catalogs (STAC) <https://stacspec.org/>`_.
+It is based on `PySTAC <https://github.com/stac-utils/pystac>`_.
+The ``stactools`` package provides:
 
-``stactools`` provides a CLI via the ``stac`` command:
+- A core Python API, available via :py:mod:`stactools.core`, which provides
+  high-level utility functions for working with STAC objects
+- A command-line interface, available via the ``stac`` command, e.g.:
 
-.. code-block:: console
+.. code-block:: shell
 
-   > stac --help
+   $ stac --help
+
+There are a variety of ``stactools`` packages built for specific datasets or to provide extra functionality.
+See the `stactools-packages website <https://stactools-packages.github.io>`_ and the `stactools-packages Github organization <https://github.com/stactools-packages>`_ for more information.
 
 Requirements
 ============
-* `Python 3 <https://www.python.org/>`_
 
-STAC Versions
-=============
+* `Python 3.7 or greater <https://www.python.org/>`_
 
-* 0.1 -> STAC Version 1.0
-
-Standard pip install
+STAC version support
 ====================
 
-.. code-block:: console
+All versions of ``stactools`` support STAC v1.0.0.
 
-   pip install stactools
+Installation
+============
 
-Core subpackages are available from PyPI:
+.. code-block:: shell
 
-.. code-block:: console
+   $ pip install stactools
 
-   pip install stactools-planet
+Filesystem I/O is provided by `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_.
+To enable AWS S3 support via `s3fs <https://github.com/fsspec/s3fs>`_, you can enable it during installation.
 
-``stactools`` Features
-======================
+.. code-block:: shell
 
-Use ``stac --help`` to navigate the varios commands.
+    $ pip install 'stactools[s3]'
 
-* ``stac copy`` copies STACs and optionally assets
-* ``stac info`` and ``stac describe`` display information about STACs
-* ``stac layout`` will modify the layout of a STAC based on item properties
+.. note::
 
-One of the focuses of ``stactools`` is to provide an easy way to plug in
-functionality for different data sources. For example:
+    If you need to access s3 data via requester pays, use this environment variable: ``AWS_REQUEST_PAYER='requester'``.
 
-* ``stac planet convert-order`` will convert a Planet order into a STAC.
-
-See the :ref:`cli` documentation for more details about each command.
-
-Table of Contents
-=================
+More information
+================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   api
    cli
+   api

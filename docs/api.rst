@@ -1,39 +1,102 @@
 API Reference
 =============
 
-This API reference is auto-generated for the Python docstrings.
+This is the auto-generated API reference documentation.
 
 Core
 ----
 
-The ``stactools.core`` package contains utility methods for dealing with STACs.
+The :py:mod:`stactools.core` module contains utility methods for working with
+STAC objects.
 
-Functions are organized into subpackages but can be imported directly from
-``stactools.core``, e.g.:
+Input and output
+~~~~~~~~~~~~~~~~
 
-.. code-block:: python
+.. automodule:: stactools.core.io
+    :members:
 
-   from stactools.core import (copy_catalog, merge_catalogs)
+.. automodule:: stactools.core.io.xml
+    :members:
 
-Copying and Moving
-~~~~~~~~~~~~~~~~~~
+General utilities
+~~~~~~~~~~~~~~~~~
 
-.. autofunction:: stactools.core.copy.copy_catalog
+.. automodule:: stactools.core.utils
+    :members:
 
-.. autofunction:: stactools.core.copy.move_all_assets
+Antimeridian support
+~~~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: stactools.core.copy.move_assets
+.. automodule:: stactools.core.utils.antimeridian
+    :members:
 
-.. autofunction:: stactools.core.copy.move_asset_file_to_item
+Converting assets
+~~~~~~~~~~~~~~~~~
+
+.. automodule:: stactools.core.utils.convert
+    :members:
+
+Running subprocesses
+~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: stactools.core.utils.subprocess
+    :members:
+
+Adding items to catalogs
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: stactools.core.add
+    :members:
+
+Adding the raster extension
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: stactools.core.addraster
+    :members:
+
+Copying
+~~~~~~~
+
+.. automodule:: stactools.core.copy
+    :members:
+
+Creating
+~~~~~~~~
+
+.. automodule:: stactools.core.create
+    :members:
+
+Laying out STAC catalogs
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: stactools.core.layout
+    :members:
 
 Merging
 ~~~~~~~
 
-.. autofunction:: stactools.core.merge.merge_all_items
+.. automodule:: stactools.core.merge
+    :members:
 
-.. autofunction:: stactools.core.merge.merge_items
+Reprojection
+~~~~~~~~~~~~
 
-Layout
-~~~~~~
+.. automodule:: stactools.core.projection
+    :members:
 
-.. autofunction:: stactools.core.layout.layout_catalog
+Testing
+-------
+
+Utilities for tests, usually used in stactools-packages.
+
+Command line testing
+~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: stactools.testing.cli_test
+    :members:
+
+Fetching and referencing test data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: stactools.testing.test_data
+    :members:
