@@ -9,13 +9,13 @@ mypy
 nbsphinx
 packaging
 pre-commit
+pydata-sphinx-theme
 pylint
 pytest
 pytest-cov
 sphinx
 sphinx-autobuild
 sphinx-click
-sphinxcontrib-fulltoc
 sphinxcontrib-napoleon
 types-certifi
 types-orjson
