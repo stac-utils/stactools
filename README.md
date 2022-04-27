@@ -12,6 +12,18 @@ This is the core `stactools` repository, which provides a basic command line int
 There are a suite of packages available in other repositories for working with a variety of datasets and for doing more complicated operations on STAC data.
 See [packages](#packages) for more information.
 
+#### Table of Contents
+
+[Installation](#installation)
+
+[Running](#running)
+
+[Documentation](#documentation)
+
+[Packages](#packages)
+
+[Developing](#developing)
+
 ## Installation
 
 To install the latest version:
@@ -83,30 +95,30 @@ Officially supported packages are hosted in the Github [`stactools-packages` org
 
 There are over 25 packages that translate specific types of data into STAC,
 including imagery sources like
-[aster](https://github.com/stactools-packages/aster), 
+[aster](https://github.com/stactools-packages/aster),
 [landsat](https://github.com/stactools-packages/landsat),
 [modis](https://github.com/stactools-packages/modis),
 [naip](https://github.com/stactools-packages/naip),
 [planet](https://github.com/stactools-packages/planet),
-[sentinel1](https://github.com/stactools-packages/sentinel1), 
+[sentinel1](https://github.com/stactools-packages/sentinel1),
 [sentinel1-grd](https://github.com/stactools-packages/sentinel1-grd),
 [sentinel2](https://github.com/stactools-packages/sentinel2),
 [sentinel3](https://github.com/stactools-packages/sentinel3), landuse/landcover
-data ([corine](https://github.com/stactools-packages/corine), 
+data ([corine](https://github.com/stactools-packages/corine),
 [cgls_lc100](https://github.com/stactools-packages/cgls_lc100),
 [aafc-landuse](https://github.com/stactools-packages/aafc-landuse)), Digital
-Elevation Models (DEMs) 
+Elevation Models (DEMs)
 ([cop-dem](https://github.com/stactools-packages/cop-dem),
-[alos-dem](https://github.com/stactools-packages/alos-dem)), population data 
+[alos-dem](https://github.com/stactools-packages/alos-dem)), population data
 ([gpw](https://github.com/stactools-packages/gpw),
-[worldpop](https://github.com/stactools-packages/worldpop)), 
+[worldpop](https://github.com/stactools-packages/worldpop)),
 [pointclouds](https://github.com/stactools-packages/pointcloud) and many more.
 
-There are also cool tools like [stactools-browse](https://github.com/stactools-packages/stactools-browse) which makes it super easy to deploy a 
+There are also cool tools like [stactools-browse](https://github.com/stactools-packages/stactools-browse) which makes it super easy to deploy a
 [STAC Browser](https://github.com/radiantearth/stac-browser) from the command line to browse any local data.
 
 For the list of officially supported packages see the [list of STAC packages](https://github.com/stactools-packages/stactools-packages.github.io#list-of-stac-packages)
-on the [stactools-packages GitHub organization](https://github.com/stactools-packages). 
+on the [stactools-packages GitHub organization](https://github.com/stactools-packages).
 Each package can be installed via `pip install stactools-{package}`, e.g. `pip install stactools-landsat`.
 Third-party packages can be installed in the same way, or, if they are not on PyPI, directly from the source repository, e.g. `pip install /path/to/my/code/stactools-greatdata`.
 
