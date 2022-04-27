@@ -15,13 +15,9 @@ See [packages](#packages) for more information.
 ## Table of Contents
 
 [Installation](#installation)
-
 [Running](#running)
-
 [Documentation](#documentation)
-
 [Packages](#packages)
-
 [Developing](#developing)
 
 ## Installation
