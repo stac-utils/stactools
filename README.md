@@ -12,7 +12,7 @@ This is the core `stactools` repository, which provides a basic command line int
 There are a suite of packages available in other repositories for working with a variety of datasets and for doing more complicated operations on STAC data.
 See [packages](#packages) for more information.
 
-#### Table of Contents
+## Table of Contents
 
 [Installation](#installation)
 
