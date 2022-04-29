@@ -5,6 +5,7 @@ import pystac
 from pystac import (
     Asset,
     Catalog,
+    Collection,
     Extent,
     Item,
     MediaType,
@@ -95,7 +96,7 @@ class TestCases:
         ]
 
     @staticmethod
-    def planet_disaster():
+    def planet_disaster() -> Collection:
         return pystac.read_file(
             test_data.get_path("data-files/planet-disaster/collection.json")
         )
