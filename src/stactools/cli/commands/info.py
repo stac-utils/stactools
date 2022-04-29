@@ -22,7 +22,7 @@ def print_info(
         nonlocal max_line_length
         line = (
             f"\rCatalogs={cat_count}, Collections={col_count}, "
-            "Items={item_count}: Reading {root}"
+            f"Items={item_count}: Reading {root}"
         )
         if len(line) > max_line_length:
             max_line_length = len(line)
