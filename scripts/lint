@@ -13,12 +13,13 @@ Execute project linters.
 "
 }
 
-DIRS_TO_CHECK=("src" "tests")
-
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
-        pre-commit run --all-files
+        pre-commit run codespell --all-files
+        pre-commit run doc8 --all-files
+        pre-commit run flake8 --all-files
+        pre-commit run mypy --all-files
     fi
 fi

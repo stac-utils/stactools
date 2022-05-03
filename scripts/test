@@ -20,13 +20,6 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         ./scripts/lint
         ./scripts/format
 
-        codespell -I .codespellignore -f \
-            scripts/* \
-            *.py ./**/*.py \
-            *.md \
-            docs/*.rst docs/**/*.rst \
-            docs/*.ipynb docs/**/*.ipynb
-
         pytest --cov=stactools tests/
         coverage xml
     fi
