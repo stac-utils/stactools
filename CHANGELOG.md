@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use black (instead of yapf) for formatting ([#274](https://github.com/stac-utils/stactools/pull/274))
 - stac-check version and lint reporting ([#258](https://github.com/stac-utils/stactools/pull/258))
 - Sphinx theme ([#284](https://github.com/stac-utils/stactools/pull/284))
+- Use stac-validator for validation ([#289](https://github.com/stac-utils/stactools/pull/289))
 
 ### Fixed
 
