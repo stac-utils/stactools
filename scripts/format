@@ -17,7 +17,7 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
-        # Code formatting
         pre-commit run black --all-files
+        pre-commit run isort --all-files
     fi
 fi
