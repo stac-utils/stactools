@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Antimeridian winding order ([#278](https://github.com/stac-utils/stactools/pull/278))
+- Test, lint, and format scripts ([#290](https://github.com/stac-utils/stactools/pull/290))
 
 ## [0.3.0] - 2022-03-25
 
