@@ -5,6 +5,7 @@ import pystac
 from pystac import (
     Asset,
     Catalog,
+    Collection,
     Extent,
     Item,
     MediaType,
@@ -75,6 +76,8 @@ RANDOM_EXTENT = Extent(
 
 
 class TestCases:
+    __test__ = False
+
     @staticmethod
     def get_path(rel_path):
         return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", rel_path))
@@ -93,7 +96,7 @@ class TestCases:
         ]
 
     @staticmethod
-    def planet_disaster():
+    def planet_disaster() -> Collection:
         return pystac.read_file(
             test_data.get_path("data-files/planet-disaster/collection.json")
         )
