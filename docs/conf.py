@@ -45,7 +45,6 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.githubpages",
     "sphinx.ext.extlinks",
-    "sphinxcontrib.fulltoc",
     "sphinx_click",
     "nbsphinx",
 ]
@@ -84,20 +83,29 @@ autodoc_typehints = "description"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "alabaster"
+html_theme = "pydata_sphinx_theme"
+html_logo = "_static/stactools.png"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
 html_theme_options = {
-    "show_powered_by": False,
-    "github_user": "stac-utils",
-    "github_repo": "stactools",
-    "github_banner": True,
-    "show_related": False,
-    "note_bg": "#FFF59C",
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/stac-utils/stactools",
+            "icon": "fab fa-github-square",
+            "type": "fontawesome",
+        }
+    ],
+    "external_links": [
+        {"name": "STAC spec", "url": "https://stacspec.org/"},
+        {"name": "PySTAC", "url": "https://pystac.readthedocs.io/en/stable/"},
+    ],
+    "show_nav_level": 3,
 }
+
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -112,7 +120,14 @@ html_theme_options = {
 # default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
 # 'searchbox.html']``.
 #
-# html_sidebars = {}
+html_sidebars = {
+    "**": [
+        "search-field.html",
+        "globaltoc.html",
+        "sourcelink.html",
+    ],
+}
+
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
