@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - pre-commit and isort ([#275](https://github.com/stac-utils/stactools/pull/275))
 - `stac info` now has option `-p` or `--progress` to update console output while reading the catalog ([#262](https://github.com/stac-utils/stactools/pull/262))
 - More API documentation ([#282](https://github.com/stac-utils/stactools/pull/282))
+- `FsspecStacIO.write_text_to_href` ([#291](https://github.com/stac-utils/stactools/pull/291))
 
 ### Changed
 
@@ -25,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Antimeridian winding order ([#278](https://github.com/stac-utils/stactools/pull/278))
 - Test, lint, and format scripts ([#290](https://github.com/stac-utils/stactools/pull/290))
+
+### Deprecated
+
+- `FsspecStacIO.write_text_from_href` will be removed in v0.5.0 ([#291](https://github.com/stac-utils/stactools/pull/291))
 
 ## [0.3.0] - 2022-03-25
 
