@@ -1,3 +1,4 @@
+import warnings
 from typing import Callable, Optional, TypeVar
 
 import fsspec
@@ -28,3 +29,12 @@ def gdal_driver_is_enabled(name: str) -> bool:
     """Checks to see if the named GDAL driver is enabled."""
     with rasterio.Env() as env:
         return name in env.drivers().keys()
+
+
+def deprecate(from_: str, to: str, version: str) -> None:
+    """Warn with DeprecationWarning and a pre-canned message."""
+    warnings.warn(
+        f"{from_} is deprecated and will be removed in {version}. Use {to} instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )

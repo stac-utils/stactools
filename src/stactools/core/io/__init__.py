@@ -3,6 +3,8 @@ from typing import Any, Callable, Optional
 import fsspec
 from pystac.stac_io import DefaultStacIO, StacIO
 
+from stactools.core import utils
+
 ReadHrefModifier = Callable[[str], str]
 """Type alias for a function parameter
 that allows users to manipulate HREFs for reading,
@@ -32,6 +34,15 @@ class FsspecStacIO(DefaultStacIO):
     def write_text_from_href(
         self, href: str, txt: str, *args: Any, **kwargs: Any
     ) -> None:
+        utils.deprecate(
+            "FsspecStacIO.write_text_from_href",
+            "FsspecStacIO.write_text_to_href",
+            "v0.5.0",
+        )
+        return self.write_text_to_href(href, txt)
+
+    def write_text_to_href(self, href: str, txt: str) -> None:
+        """Writes text to an href using fsspec."""
         with fsspec.open(href, "w") as destination:
             destination.write(txt)
 
