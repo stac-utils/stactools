@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.3.1]
+
 ### Added
 
 - CI check for Python 3.10 (requires pre-release version of rasterio 1.3) ([#271](https://github.com/stac-utils/stactools/pull/271))
@@ -257,7 +259,8 @@ See [#9](https://github.com/stac-utils/stactools/pull/9)
 - `stac.cli.command.layout` for modfiygin the layout of STACs
 - `stac.browse` for launching a local instance of stac-browser using docker.
 
-[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.3.0..main>
+[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.3.1..main>
+[0.3.1]: <https://github.com/stac-utils/stactools/compare/v0.3.0..v0.3.1>
 [0.3.0]: <https://github.com/stac-utils/stactools/compare/v0.2.6..v0.3.0>
 [0.2.6]: <https://github.com/stac-utils/stactools/compare/v0.2.5..v0.2.6>
 [0.2.5]: <https://github.com/stac-utils/stactools/compare/v0.2.4..v0.2.5>
