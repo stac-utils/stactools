@@ -57,7 +57,7 @@ jobs:
           tags: |
             type=pep440,pattern={{version}}
       - name: Build and push main
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
           file: docker/Dockerfile
@@ -76,7 +76,7 @@ jobs:
           tags: |
             type=pep440,pattern={{version}}
       - name: Build and push dev
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
           file: docker/Dockerfile
