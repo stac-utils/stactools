@@ -41,14 +41,22 @@ If your system GDAL is older than version 3.1, consider using [Docker](#using-do
 
 ### Optional dependencies
 
-`stactools` includes one optional dependency:
+`stactools` includes two optional dependencies:
 
 - `s3`: Enables s3 hrefs via `fsspec` and `s3fs`
+- `numpy`: Add histrogram generation to `addraster`
 
-To install the single optional dependency:
+To install a single optional dependency:
 
 ```sh
-pip install stactools[s3]
+pip install 'stactools[s3]'
+pip install 'stactools[numpy]'
+```
+
+To install all optional dependencies:
+
+```sh
+pip install 'stactools[all]'
 ```
 
 ### Python 3.10
