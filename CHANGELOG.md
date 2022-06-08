@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Set strict channel priority for conda to reduce package incompatibility ([#301](https://github.com/stac-utils/stactools/pull/301))
+
 ## [v0.3.1]
 
 ### Added
