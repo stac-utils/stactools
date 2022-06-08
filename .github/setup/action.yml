@@ -34,6 +34,9 @@ runs:
       with:
         auto-update-conda: true
         python-version: ${{ inputs.python-version }}
+    - name: Set strict channel priority
+      run: conda config --set channel_priority strict
+      shell: bash -l {0}
     - name: Update Conda's environemnt
       run: conda env update -f environment.yml -n test
       shell: bash -l {0}
