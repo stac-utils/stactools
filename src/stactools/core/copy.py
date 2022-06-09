@@ -131,7 +131,7 @@ def move_assets(
         asset_subdirectory (str or None): A subdirectory that will be used
             to store the assets. If not supplied, the assets will be moved
             or copied to the same directory as their item.
-        make_assets_relative (bool): If True, will make the asset HREFs relative
+        make_hrefs_relative (bool): If True, will make the asset HREFs relative
             to the assets. If false, the asset will be an absolute href.
         copy (bool): If False this function will move the asset file; if True,
             the asset file will be copied.
@@ -188,7 +188,7 @@ def move_all_assets(
         asset_subdirectory (str or None): A subdirectory that will be used
             to store the assets. If not supplied, the assets will be moved
             or copied to the same directory as their item.
-        make_assets_relative (bool): If True, will make the asset HREFs relative
+        make_hrefs_relative (bool): If True, will make the asset HREFs relative
             to the assets. If false, the asset will be an absolute href.
         copy (bool): If False this function will move the asset file; if True,
             the asset file will be copied.
