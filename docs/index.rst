@@ -52,3 +52,4 @@ More information
 
    cli
    api
+   footprint
