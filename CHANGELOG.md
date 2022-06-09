@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow MultiPolygons when fixing antimeridian issues ([#317](https://github.com/stac-utils/stactools/pull/317))
 - Conda package, via [conda-forge](https://anaconda.org/conda-forge/stactools) ([#324](https://github.com/stac-utils/stactools/pull/324))
 - Context manager to ignore rasterio's NotGeoreferencedWarning ([#331](https://github.com/stac-utils/stactools/pull/331))
+- Added `raster_footprint` module to assist in populating the geometry of an Item from data coverage of its data assets ([#307](https://github.com/stac-utils/stactools/pull/307))
 
 ### Changed
 
