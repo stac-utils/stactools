@@ -1,3 +1,4 @@
+"""`Antimeridian <https://en.wikipedia.org/wiki/180th_meridian>`_ utilities."""
 import math
 from enum import Enum, auto
 from typing import Optional
@@ -10,14 +11,15 @@ from shapely.geometry import LineString, MultiPolygon, Polygon
 
 
 class Strategy(Enum):
-    """Strategy for handling antimeridian-crossing polygons.
-
-    - SPLIT: split the polygon at the antimeridian
-    - NORMALIZE: keep the polygon as one, but extend it to > 180 or < -180.
-    """
+    """Strategy for handling antimeridian-crossing polygons."""
 
     SPLIT = auto()
+    """Split the polygon into multiple polygons so none cross the antimeridian."""
+
     NORMALIZE = auto()
+    """Keep the polygon as one polygon, but extend its values to be greater than
+    180 or less than -180.
+    """
 
 
 def fix_item(item: Item, strategy: Strategy) -> Item:
@@ -64,15 +66,18 @@ def split(polygon: Polygon) -> Optional[MultiPolygon]:
     If the polygon does not cross the antimeridian, returns None. Only handles
     exterior rings (can't handle interior).
 
-    NOTE: Will not work on polygons that enclose the north or south poles.
-    TODO: Fix this
+    Note:
+        Will not work on polygons that enclose the north or south poles.
+
+    Todo:
+        Fix this
 
     Args:
-        polygon (shapely.geometry.Polygon): The input polygon.
+        polygon (:py:class:`shapely.geometry.Polygon`): The input polygon.
 
     Returns:
-        Optional[shapely.geometry.MultiPolygon]: The output polygons, or None if
-            no split occurred.
+        Optional[:py:class:`shapely.geometry.MultiPolygon`]:
+            The output polygons, or None if no split occurred.
     """
     normalized = normalize(polygon)
     if normalized is None:
@@ -106,23 +111,26 @@ def normalize(polygon: Polygon) -> Optional[Polygon]:
     This converts the polygon's x coordinates to all be the same sign, even if
     the polygon crosses the antimeridian. E.g.:
 
-    ```
-    canonical = Polygon(((170, 40), (170, 50), (-170, 50), (-170, 40), (170, 40)))
-    normalized = stactools.core.utils.antimeridian.normalize(canonical)
-    assert normalized.equals(shapely.geometry.box(170, 40, 190, 50))
-    ```
+    .. code-block:: python
+
+        canonical = Polygon(((170, 40), (170, 50), (-170, 50), (-170, 40), (170, 40)))
+        normalized = stactools.core.utils.antimeridian.normalize(canonical)
+        assert normalized.equals(shapely.geometry.box(170, 40, 190, 50))
 
     Inspired by
     https://towardsdatascience.com/around-the-world-in-80-lines-crossing-the-antimeridian-with-python-and-shapely-c87c9b6e1513.
 
-    NOTE: Will not work on polygons that enclose the north or south poles.
-    TODO: Fix this
+    Note:
+        Will not work on polygons that enclose the north or south poles.
+
+    Todo:
+        Fix this
 
     Args:
-        polygon (shapely.geometry.Polygon): The input polygon.
+        polygon (:py:class:`shapely.geometry.Polygon`): The input polygon.
 
     Returns:
-        Optional[shapely.geometry.Polygon]: The normalized polygon.
+        Optional[:py:class:`shapely.geometry.Polygon`]: The normalized polygon.
     """
     coords = list(polygon.exterior.coords)
     has_changes = False

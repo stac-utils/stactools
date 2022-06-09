@@ -15,11 +15,19 @@ from .io import ReadHrefModifier
 def item(href: str, read_href_modifier: Optional[ReadHrefModifier] = None) -> Item:
     """Creates a STAC Item from the asset at the provided href.
 
-    The `read_href_modifer` argument can be used to modify the href for the
+    The ``read_href_modifer`` argument can be used to modify the href for the
     rasterio read, e.g. if you need to sign a url.
 
     This function is intentionally minimal in its signature and capabilities. If
     you need to customize your Item, do so after creation.
+
+    Args:
+        href (str): The href of the asset that will be used to create the item.
+        read_href_modifier (Optional[ReadHrefModifier]):
+            An optional callable that will be used to modify the href before reading.
+
+    Returns:
+        pystac.Item: A PySTAC Item.
     """
     id = os.path.splitext(os.path.basename(href))[0]
     if read_href_modifier:

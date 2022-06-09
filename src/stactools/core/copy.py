@@ -18,22 +18,25 @@ def move_asset_file_to_item(
     copy: bool = False,
     ignore_conflicts: bool = False,
 ) -> str:
-    """Moves an asset file to be alongside that item.
+    """Moves an asset file to be alongside an item.
 
     Args:
-        item (Item): The PySTAC Item
-            to perform the asset transformation on.
+        item (Item):
+            The PySTAC Item to perform the asset transformation on.
         asset_href (str): The absolute HREF to the asset file.
-        asset_subdirectory (str or None): A subdirectory that will be used
-            to store the assets. If not supplied, the assets will be moved
-            or copied to the same directory as their item.
-        copy (bool): If False this function will move the asset file; if True,
-            the asset file will be copied.
-        ignore_conflicts (bool): If the asset destination file already exists,
-            this function will throw an error unless ignore_conflicts is True.
+        asset_subdirectory (str or None):
+            A subdirectory that will be used to store the assets. If not
+            supplied, the assets will be moved or copied to the same directory
+            as their item.
+        copy (bool):
+            If False this function will move the asset file; if True, the asset
+            file will be copied.
+        ignore_conflicts (bool):
+            If the asset destination file already exists, this function will
+            throw an error unless ignore_conflicts is True.
 
     Returns:
-        str: The new absolute href for the asset file
+        str: The new absolute href for the asset file.
     """
     item_href = item.get_self_href()
     if item_href is None:
@@ -42,6 +45,7 @@ def move_asset_file_to_item(
             "requires that the Item HREFs are available."
         )
 
+    # TODO this shouldn't have to be absolute
     if not is_absolute_href(asset_href):
         raise ValueError("asset_href must be absolute.")
 
@@ -123,24 +127,29 @@ def move_assets(
     copy: bool = False,
     ignore_conflicts: bool = False,
 ) -> Item:
-    """Moves assets for an item to be alongside that item.
+    """Moves an Item's assets to be alongside that item.
 
     Args:
-        item (Item): The PySTAC Item
-            to perform the asset transformation on.
-        asset_subdirectory (str or None): A subdirectory that will be used
-            to store the assets. If not supplied, the assets will be moved
-            or copied to the same directory as their item.
-        make_hrefs_relative (bool): If True, will make the asset HREFs relative
-            to the assets. If false, the asset will be an absolute href.
-        copy (bool): If False this function will move the asset file; if True,
+        item (Item):
+            The PySTAC Item to perform the asset transformation on.
+        asset_subdirectory (str or None):
+            A subdirectory that will be used to store the assets. If not
+            supplied, the assets will be moved or copied to the same directory
+            as the item.
+        make_assets_relative (bool):
+            If True, will make the asset HREFs relative to the assets. If false,
+            the asset will be an absolute href. Defaults to True.
+        copy (bool):
+            If False this function will move the asset file; if True,
             the asset file will be copied.
-        ignore_conflicts (bool): If the asset destination file already exists,
-            this function will throw an error unless ignore_conflicts is True.
+        ignore_conflicts (bool):
+            If the asset destination file already exists, this function will
+            throw an error unless ignore_conflicts is True.
 
     Returns:
-        Item: Returns an updated catalog or collection.
-            This operation mutates the Item.
+        Item:
+            Returns an updated catalog or collection.  This operation mutates
+            the Item.
     """
     item_href = item.get_self_href()
     if item_href is None:
@@ -183,21 +192,27 @@ def move_all_assets(
     """Moves assets in a catalog to be alongside the items that own them.
 
     Args:
-        catalog (Catalog or Collection): The PySTAC Catalog or Collection
-            to perform the asset transformation on.
-        asset_subdirectory (str or None): A subdirectory that will be used
-            to store the assets. If not supplied, the assets will be moved
-            or copied to the same directory as their item.
-        make_hrefs_relative (bool): If True, will make the asset HREFs relative
-            to the assets. If false, the asset will be an absolute href.
-        copy (bool): If False this function will move the asset file; if True,
-            the asset file will be copied.
-        ignore_conflicts (bool): If the asset destination file already exists,
-            this function will throw an error unless ignore_conflicts is True.
+        catalog (Catalog or Collection):
+            The PySTAC Catalog or Collection to perform the asset transformation
+            on.
+        asset_subdirectory (str or None):
+            A subdirectory that will be used to store the assets. If not
+            supplied, the assets will be moved or copied to the same directory
+            as their item.
+        make_assets_relative (bool):
+            If True, will make the asset HREFs relative to the assets. If false,
+            the asset will be an absolute href.
+        copy (bool):
+            If False this function will move the asset file; if True, the asset
+            file will be copied.
+        ignore_conflicts (bool):
+            If the asset destination file already exists, this function will
+            throw an error unless ignore_conflicts is True.
 
     Returns:
-        [Catalog or Collection]: Returns the updated catalog.
-            This operation mutates the catalog.
+        Catalog or Collection:
+            Returns the updated catalog or collection.  This operation mutates
+            the catalog or collection.
     """
 
     for item in catalog.get_all_items():

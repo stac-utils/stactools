@@ -1,7 +1,10 @@
+"""General utility functions."""
+
 import warnings
 from typing import Callable, Optional, TypeVar
 
 import fsspec
+import pystac.utils
 import rasterio
 
 T = TypeVar("T")
@@ -9,30 +12,55 @@ U = TypeVar("U")
 
 
 def map_opt(fn: Callable[[T], U], v: Optional[T]) -> Optional[U]:
-    """Maps the value of an option to another value, returning
-    None if the input option is None.
-    """
-    return v if v is None else fn(v)
+    """DEPRECATED: use :py:meth:`pystac.utils.map_opt` instead."""
+    deprecate("stactools.core.utils.map_opt", "pystac.utils.map_opt", "v0.5.0")
+    return pystac.utils.map_opt(fn, v)
 
 
 def href_exists(href: str) -> bool:
-    """Returns true if the asset exists.
+    """Returns true if there is a file at the given href.
 
-    Uses fssepc and its `exists` method:
-    https://filesystem-spec.readthedocs.io/en/latest/api.html#fsspec.spec.AbstractFileSystem.exists.
+    Uses fssepc and its `exists
+    <https://filesystem-spec.readthedocs.io/en/latest/api.html#fsspec.spec.AbstractFileSystem.exists>`_
+    method.
+
+    Args:
+        href (str): The href to check.
+
+    Returns:
+        bool: True if the href exists, False if not.
     """
     fs, _, paths = fsspec.get_fs_token_paths(href)
     return bool(paths and fs.exists(paths[0]))
 
 
 def gdal_driver_is_enabled(name: str) -> bool:
-    """Checks to see if the named GDAL driver is enabled."""
+    """Checks to see if the named GDAL driver is enabled.
+
+    Checks for the name in :py:meth:`rasterio.Env.drivers`.
+
+    Args:
+        name (str): The name of the driver.
+
+    Returns:
+        bool: True if the driver is enabled, False otherwise.
+    """
     with rasterio.Env() as env:
         return name in env.drivers().keys()
 
 
 def deprecate(from_: str, to: str, version: str) -> None:
-    """Warn with DeprecationWarning and a pre-canned message."""
+    r"""Warn with :py:class:`DeprecationWarning` and a pre-canned message.
+
+    The message is something like:
+
+        Foo is deprecated and will be removed in v0.42.0. Use Bar instead.
+
+    Args:
+        from\_ (str): The current function/method/class name.
+        to (str): The name that should be used instead.
+        version (str): The version at which the function/method/class will be removed.
+    """
     warnings.warn(
         f"{from_} is deprecated and will be removed in {version}. Use {to} instead.",
         DeprecationWarning,

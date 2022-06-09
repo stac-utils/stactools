@@ -7,7 +7,7 @@ import rasterio.transform
 
 
 def epsg_from_utm_zone_number(utm_zone_number: int, south: bool) -> int:
-    """Return the EPSG code for a UTM zone number.
+    """Returns the EPSG code for a UTM zone number.
 
     Args:
         utm_zone_number (int): The UTM zone number.
@@ -27,16 +27,14 @@ def reproject_geom(
     geom: Dict[str, Any],
     precision: Optional[int] = None,
 ) -> Dict[str, Any]:
-    """Reprojects a geometry represented as GeoJSON
-    from the src_crs to the dest crs.
+    """Reprojects a geometry represented as GeoJSON from the src_crs to the dest
+    crs.
 
     Args:
-        src_crs: pyproj.crs.CRS, rasterio.crs.CRS or str used to create one
-            Projection of input data.
-        dest_crs: pyproj.crs.CRS, rasterio.crs.CRS or str used to create one
-            Projection of output data.
+        src_crs (pyproj.crs.CRS, rasterio.crs.CRS, or str): Projection of input data.
+        dest_crs (pyproj.crs.CRS, rasterio.crs.CRS, or str): Projection of output data.
         geom (dict): The GeoJSON geometry
-        precision
+        precision (int, optional): The precision of the reprojection operation.
 
     Returns:
         dict: The reprojected geometry
@@ -66,10 +64,16 @@ def reproject_geom(
 
 
 def transform_from_bbox(bbox: List[float], shape: List[int]) -> List[float]:
-    """Calculate the affine transformation (proj:transform)
-    from the bbox (proj:bbox) and shape (proj:shape)
+    """Calculate the affine transformation from the bbox and shape.
 
     Only take the first 6 elements, as that is all that is necessary.
+
+    Args:
+        bbox (list[float]): The bounding box of the transform.
+        shape (list[int]): The shape of the transform.
+
+    Returns:
+        list[float]: The six-element GDAL transform.
     """
     return list(
         rasterio.transform.from_bounds(
