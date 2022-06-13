@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added geometry.py for handling common geometrical operations like bounding boxes from GeoJSON ([#184](https://github.com/stac-utils/stactools/issues/184))
 - Specify installation channel to use for all conda packages to avoid incompatibility ([#301](https://github.com/stac-utils/stactools/pull/301))
 
 ### Changed
