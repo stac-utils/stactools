@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Unnecessary and incorrect `args` and `kwargs` from `StacIO` subclass ([#315](https://github.com/stac-utils/stactools/pull/315))
 
+### Removed
+
+- Dropped support for Python 3.7 ([#223](https://github.com/stac-utils/stactools/issues/223))
+
 ## [v0.3.1]
 
 ### Added
