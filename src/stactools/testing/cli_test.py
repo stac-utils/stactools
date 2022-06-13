@@ -1,7 +1,7 @@
 import logging
 import unittest
 from abc import ABC, abstractmethod
-from typing import Callable, List
+from typing import Callable, List, Optional, Sequence, Union
 
 import click
 from click.testing import CliRunner, Result
@@ -28,7 +28,7 @@ class CliTestCase(unittest.TestCase, ABC):
             create_subcommand(cli)
         self.cli = cli
 
-    def run_command(self, cmd: str) -> Result:
+    def run_command(self, cmd: Optional[Union[str, Sequence[str]]]) -> Result:
         runner = CliRunner()
         result = runner.invoke(self.cli, cmd, catch_exceptions=False)
         if result.output:

@@ -20,13 +20,15 @@ class Strategy(Enum):
     NORMALIZE = auto()
 
 
-def fix_item(item: Item, strategy: Strategy) -> None:
+def fix_item(item: Item, strategy: Strategy) -> Item:
     """Modifies an item in-place to deal with antimeridian issues.
-
     If the item's geometry is not a `Polygon`, raises a `ValueError`.
 
     Args:
         item (pystac.Item): The item to be modified.
+
+    Returns:
+        Item: The input item, whether it was modified or not.
     """
     geometry = shapely.geometry.shape(item.geometry)
     if not isinstance(geometry, Polygon):
@@ -53,6 +55,7 @@ def fix_item(item: Item, strategy: Strategy) -> None:
             # https://datatracker.ietf.org/doc/html/rfc7946#section-5.2
             item.bbox = [xmax, bounds[1], xmin, bounds[3]]
             item.geometry = shapely.geometry.mapping(split_geometry)
+    return item
 
 
 def split(polygon: Polygon) -> Optional[MultiPolygon]:
