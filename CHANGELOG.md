@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Specify installation channel to use for all conda packages to avoid incompatibility ([#301](https://github.com/stac-utils/stactools/pull/301))
 
+### Changed
+
+- Modified stactools.core.utils.antimeridian.fix_item to return the item and updated 2 unit tests
+- Relaxed typing for cmd parameter for the CliTestCase.run_command in cli_test.py
+
 ## [v0.3.1]
 
 ### Added

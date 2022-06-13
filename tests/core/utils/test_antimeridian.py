@@ -125,7 +125,7 @@ def test_item_fix_antimeridian_split() -> None:
         datetime=datetime.datetime.now(),
         properties={},
     )
-    antimeridian.fix_item(item, antimeridian.Strategy.SPLIT)
+    fix = antimeridian.fix_item(item, antimeridian.Strategy.SPLIT)
     expected = MultiPolygon(
         (
             shapely.geometry.box(170, 40, 180, 50),
@@ -133,10 +133,10 @@ def test_item_fix_antimeridian_split() -> None:
         )
     )
     for actual, expected in zip(
-        shapely.geometry.shape(item.geometry).geoms, expected.geoms
+        shapely.geometry.shape(fix.geometry).geoms, expected.geoms
     ):
         assert actual.equals(expected)
-    assert item.bbox == [170, 40, -170, 50]
+    assert fix.bbox == [170, 40, -170, 50]
 
 
 def test_item_fix_antimeridian_normalize() -> None:
@@ -148,11 +148,11 @@ def test_item_fix_antimeridian_normalize() -> None:
         datetime=datetime.datetime.now(),
         properties={},
     )
-    antimeridian.fix_item(item, antimeridian.Strategy.NORMALIZE)
+    fix = antimeridian.fix_item(item, antimeridian.Strategy.NORMALIZE)
     expected = shapely.geometry.box(170, 40, 190, 50)
-    assert shapely.geometry.shape(item.geometry).equals(expected)
-    assert item.bbox
-    assert list(item.bbox) == [170.0, 40.0, 190.0, 50.0]
+    assert shapely.geometry.shape(fix.geometry).equals(expected)
+    assert fix.bbox
+    assert list(fix.bbox) == [170.0, 40.0, 190.0, 50.0]
 
 
 def test_item_fix_antimeridian_multipolygon_failure() -> None:
