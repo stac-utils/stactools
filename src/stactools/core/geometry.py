@@ -6,7 +6,7 @@ import rasterio.features
 def bounding_box(
     geom: Dict[str, Any]
 ) -> List[float]:
-    """Extracts and returns the bounding box of a GeoJSON geomtry.
+    """Extracts and returns the bounding box of a GeoJSON geometry.
 
     Args:
         geom (dict): A STAC Item, FeatureCollection, or GeoJSON geometry
