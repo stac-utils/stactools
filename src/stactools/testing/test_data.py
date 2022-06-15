@@ -7,6 +7,8 @@ from zipfile import ZipFile
 import fsspec
 import requests
 
+# TODO make external data a dataclass
+
 # example external data:
 # {
 #     'AST_L1T_00305032000040446_20150409135350_78838.hdf': {
@@ -20,25 +22,65 @@ import requests
 
 
 class TestData:
+    """A structure for getting paths to test data files, and fetching external
+    data for local testing.
+
+    Initialize this from, e.g., ``tests/__init__.py``:
+
+    .. code-block:: python
+
+        test_data = TestData(__file__)
+
+    The external data dictionary should look something like this:
+
+    .. code-block:: python
+
+        {
+            'AST_L1T_00305032000040446_20150409135350_78838.hdf': {
+                'url':
+                    ('https://ai4epublictestdata.blob.core.windows.net/'
+                    'stactools/aster/AST_L1T_00305032000040446_20150409135350_78838.zip'),
+                'compress': 'zip'
+            }
+        }
+
+    Args:
+        path (str): The path to the file at the root of the test data directory.
+        external_data (dict[str, Any]):
+            External data configurations. These dictionaries can be used to
+            configure files that are fetched from remote locations and stored
+            locally for testing.
+    """
 
     __test__ = False
 
     def __init__(self, path: str, external_data: Dict[str, Any] = {}) -> None:
-        """Creates a test data object for a given test script.
-
-        Initialize this from, e.g., `tests/__init__.py`:
-
-        ```
-        test_data = TestData(__file__)
-        ```
-        """
         self.path = path
         self.external_data = external_data
 
     def get_path(self, rel_path: str) -> str:
+        """Returns an absolute path to a local test file.
+
+        Args:
+            rel_path (str):
+                The relative path to the test data file. The path is
+                assumed to be relative to the directory containing ``self.path``.
+
+        Returns:
+            str: An absolute path.
+        """
         return os.path.abspath(os.path.join(os.path.dirname(self.path), rel_path))
 
     def get_external_data(self, rel_path: str) -> str:
+        """Returns an absolute path to a local test file after downloading it
+        from an external source.
+
+        Args:
+            rel_path (str): The key to the external data, as configured in class instantiation.
+
+        Returns:
+            str: The absolute path to the external data file.
+        """
         path = self.get_path(os.path.join("data-files/external", rel_path))
         if not os.path.exists(path):
             entry = self.external_data.get(rel_path)

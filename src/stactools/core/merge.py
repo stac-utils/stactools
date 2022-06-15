@@ -16,19 +16,22 @@ def merge_items(
     move_assets: bool = False,
     ignore_conflicts: bool = False,
 ) -> None:
-    """Merges the assets from source_item into target_item.
+    """Merges the assets from ``source_item`` into ``target_item``.
 
     The geometry and bounding box of the items will also be merged.
 
     Args:
-        source_item (pystac.Item): The Item that will be merged into target_item.
-            This item is not mutated in this operation.
-        target_item (pystac.Item): The target item that will be merged into.
-            This item will be mutated in this operation.
+        source_item (pystac.Item):
+            The Item that will be merged into target_item.  This item is not
+            mutated in this operation.
+        target_item (pystac.Item):
+            The target item that will be merged into.  This item will be mutated
+            in this operation.
         move_assets (bool): If true, move the asset files alongside the target item.
-        ignore_conflicts (bool): If True, assets with the same keys will not be merged,
-            and asset files that would be moved to overwrite an existing file
-            will not be moved. If False, either of these situations will throw an error.
+        ignore_conflicts (bool):
+            If True, assets with the same keys will not be merged, and asset
+            files that would be moved to overwrite an existing file will not be
+            moved. If False, either of these situations will throw an error.
     """
     target_item_href = target_item.get_self_href()
     if target_item_href is None:
@@ -75,31 +78,36 @@ def merge_all_items(
     as_child: bool = False,
     child_folder: Optional[str] = None,
 ) -> pystac.Catalog:
-    """Merge all items from source_catalog into target_catalog.
+    """Merge all items from ``source_catalog`` into ``target_catalog``.
 
-    Calls merge_items on any items that have the same ID between the two catalogs.
-    Any items that don't exist in the taret_catalog will be added to the target_catalog.
-    If the target_catalog is a Collection, it will be set as the collection of any
-    new items.
+    Calls :py:mod:`stactools.core.merge.merge_items` on any items that have the
+    same ID between the two catalogs.  Any items that don't exist in the
+    target_catalog will be added to the target_catalog.  If the target_catalog
+    is a Collection, it will be set as the collection of any new items.
 
     Args:
-        source_catalog (Catalog or Collection): The catalog or collection that items
-            will be drawn from to merge into the target catalog.
-            This catalog is not mutated in this operation.
-        target_item (Catalog or Collection): The target catalog that will be merged into.
-            This catalog will not be mutated in this operation.
+        source_catalog (pystac.Catalog or pystac.Collection):
+            The catalog or collection that items will be drawn from to merge
+            into the target catalog.  This catalog is not mutated in this
+            operation.
+        target_catalog (pystac.Catalog or pystac.Collection):
+            The target catalog that will be merged into.  This catalog will not
+            be mutated in this operation.
         move_assets (bool): If true, move the asset files alongside the target item.
-        ignore_conflicts (bool): If True, assets with the same keys will not be merged,
-            and asset files that would be moved to overwrite an existing file
-            will not be moved. If False, either of these situations will throw an error.
-        as_child (bool): If True, a child catalog will be added with the content of the
-            source catalog. Otherwise, items will be added directly to the destination
-            catalog.
-        child_folder (str): name of the subfolder to use in case the as_child option is
-            set to True. If None, the id of the catalog will be used as folder name.
+        ignore_conflicts (bool):
+            If True, assets with the same keys will not be merged, and asset
+            files that would be moved to overwrite an existing file will not be
+            moved. If False, either of these situations will throw an error.
+        as_child (bool):
+            If True, a child catalog will be added with the content of the
+            source catalog. Otherwise, items will be added directly to the
+            destination catalog.
+        child_folder (Optional[str]):
+            Name of the subfolder to use in case the as_child option is set to
+            True. If None, the id of the catalog will be used as folder name.
 
     Returns:
-        Catalog or Collection: The target_catalog
+        pystac.Catalog or pystac.Collection: The ``target_catalog``
     """
     source_items = source_catalog.get_all_items()
     ids_to_items = {item.id: item for item in source_items}

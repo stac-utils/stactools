@@ -1,3 +1,5 @@
+"""Add items to catalogs."""
+
 import os
 
 from pystac import Catalog, Collection, Item
@@ -9,12 +11,14 @@ from stactools.core.copy import move_assets as do_move_assets
 def add_item(
     source_item: Item, target_catalog: Catalog, move_assets: bool = False
 ) -> None:
-    """Add a item into a catalog.
+    """Adds an item to a catalog.
 
     Args:
-        source_item (pystac.Item): The Item that will be added.
+        source_item (pystac.Item):
+            The Item that will be added.
             This item is not mutated in this operation.
-        target_catalog (pystac.Item): The destination catalog.
+        target_catalog (pystac.Catalog):
+            The destination catalog.
             This catalog will be mutated in this operation.
         move_assets (bool): If true, move the asset files alongside the target item.
     """

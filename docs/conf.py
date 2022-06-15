@@ -40,13 +40,15 @@ release = __version__
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx.ext.napoleon",
-    "sphinx.ext.autodoc",
-    "sphinx.ext.viewcode",
-    "sphinx.ext.githubpages",
-    "sphinx.ext.extlinks",
-    "sphinx_click",
     "nbsphinx",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.extlinks",
+    "sphinx.ext.githubpages",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.todo",
+    "sphinx.ext.viewcode",
+    "sphinx_click",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -199,3 +201,9 @@ epub_title = project
 epub_exclude_files = ["search.html"]
 
 # -- Extension configuration -------------------------------------------------
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "pystac": ("https://pystac.readthedocs.io/en/stable", None),
+    "rasterio": ("https://rasterio.readthedocs.io/en/stable", None),
+    "shapely": ("https://shapely.readthedocs.io/en/stable", None),
+}

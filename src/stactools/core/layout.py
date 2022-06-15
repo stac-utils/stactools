@@ -13,30 +13,37 @@ def layout_catalog(
     remove_existing_subcatalogs: bool = False,
     move_assets: bool = False,
 ) -> Catalog:
-    """Modify the layout of a STAC.
+    """Modifies the layout of a STAC.
 
-    Given a catalog and a layout template, modify the layout of the STAC
-    to either generate subcatalogs based on item properties, or create subdirectories
-    to organize item properties. Both of these are based on the template string
-    provided. See the ``LayoutTemplate`` PySTAC API docs for more information on
-    template strings.
+    Given a catalog and a layout template, modifies the layout of the STAC to
+    either generate subcatalogs based on item properties, or create
+    subdirectories to organize item properties. Both of these are based on the
+    template string provided. See the ``LayoutTemplate`` PySTAC API docs for
+    more information on template strings.
 
     Args:
-        catalog (Catalog or Collection): The Catalog or Collection to change the layout of.
-        item_path_template (str): A string that represents a path of item properties,
-            e.g. "${year}/${month}"
-        create_subcatalogs (bool): If True, create subcatalogs for each of the
-            template directory levels using the item properties to determine which
-            catalog it belongs to.
-        remove_existing_subcatalogs (bool): If True, apply the subcatalogs to all
-            items throughout the catalog and clear any child catalogs, using
-            the newly generated subcatalogs or item paths.
-        move_assets (bool): If True, the assets of the Items will be moved alongside
-            of the Items. Otherwise the asset will remain in place, with the moved
+        catalog (pystac.Catalog or pystac.Collection):
+            The Catalog or Collection to change the layout of.
+        item_path_template (str):
+            A string that represents a path of item properties, e.g.
+            ``"${year}/${month}"``
+        create_subcatalogs (bool):
+            If True, create subcatalogs for each of the template directory
+            levels using the item properties to determine which catalog it
+            belongs to.
+        remove_existing_subcatalogs (bool):
+            If True, apply the subcatalogs to all items throughout the catalog
+            and clear any child catalogs, using the newly generated subcatalogs
+            or item paths.
+        move_assets (bool):
+            If True, the assets of the Items will be moved alongside of the
+            Items. Otherwise the asset will remain in place, with the moved
             Item's asset HREFs reflecting the existing location.
 
     Returns:
-        Catalog or Collection: The passed in Catalog. This operation mutates the catalog.
+        pystac.Catalog or pystac.Collection:
+            The passed in Catalog or Collection. This operation mutates the
+            catalog or collection.
     """
 
     if remove_existing_subcatalogs:
