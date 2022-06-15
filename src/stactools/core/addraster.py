@@ -49,17 +49,10 @@ def _read_bands(href: str) -> List[RasterBand]:
             band.nodata = dataset.nodatavals[i]
             band.spatial_resolution = dataset.transform[0]
             band.data_type = DataType(dataset.dtypes[i])
-            # These `type: ignore` comments are required until `numpy>=1.22.0`.
-            # When the minimum numpy version reaches v1.22.0 (which requires us
-            # to drop Python 3.7), then we can remove these `type: ignore`
-            # comments and remove the `warn_unused_ignores = True` line from
-            # `mypy.ini`.
-            minimum = float(numpy.min(data))  # type: ignore
-            maximum = float(numpy.max(data))  # type: ignore
+            minimum = float(numpy.min(data))
+            maximum = float(numpy.max(data))
             band.statistics = Statistics.create(minimum=minimum, maximum=maximum)
-            hist_data, _ = numpy.histogram(  # type: ignore
-                data, range=(minimum, maximum), bins=BINS
-            )
+            hist_data, _ = numpy.histogram(data, range=(minimum, maximum), bins=BINS)
             band.histogram = Histogram.create(
                 BINS, minimum, maximum, hist_data.tolist()
             )
