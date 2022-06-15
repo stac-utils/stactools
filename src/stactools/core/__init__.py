@@ -1,5 +1,3 @@
-# flake8: noqa
-
 from stactools.core.add import add_item
 from stactools.core.addraster import add_raster_to_item
 from stactools.core.copy import (

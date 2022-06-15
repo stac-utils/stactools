@@ -19,13 +19,14 @@ BINS = 256
 
 
 def add_raster_to_item(item: Item) -> Item:
-    """Adds raster extension values to an item.
+    """Adds the raster extension to an item.
 
     Args:
         item (Item): The PySTAC Item to extend.
 
     Returns:
-        Item: Returns an updated Item.
+        Item:
+            Returns an updated Item.
             This operation mutates the Item.
     """
     RasterExtension.add_to(item)
