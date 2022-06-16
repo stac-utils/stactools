@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added geometry.py for handling common geometrical operations like bounding boxes from GeoJSON ([#314](https://github.com/stac-utils/stactools/pull/314))
 - Specify installation channel to use for all conda packages to avoid incompatibility ([#301](https://github.com/stac-utils/stactools/pull/301))
+- Allow MultiPolygons when fixing antimeridian issues ([#317](https://github.com/stac-utils/stactools/pull/317))
 
 ### Changed
 
