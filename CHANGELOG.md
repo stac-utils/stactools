@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Modified stactools.core.utils.convert with functions to export subdatasets from HDF files as separate COGs and
+single bands from multiband files ([#224](https://github.com/stac-utils/stactools/issues/224))
 - Modified stactools.core.utils.antimeridian.fix_item to return the item and updated 2 unit tests ([#309](https://github.com/stac-utils/stactools/issues/309))
 - Relaxed typing for cmd parameter for the CliTestCase.run_command in cli_test.py ([#306](https://github.com/stac-utils/stactools/issues/306))
 - Cleaned up API documentation ([#315](https://github.com/stac-utils/stactools/pull/315))
