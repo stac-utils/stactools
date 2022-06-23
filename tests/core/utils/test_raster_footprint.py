@@ -188,12 +188,45 @@ def test_sentinel2_full():
     assert shape(geometry) == shape(item.geometry)
 
 
+def test_landsat8():
+    use_fsspec()
+
+    item = pystac.read_file(
+        test_data.get_path(
+            "data-files/raster_footprint/LC08_L1TP_198029_20220331_20220406_02_T1_B2.json"
+            # noqa
+        )
+    )
+
+    item = update_geometry_from_asset_footprint(
+        item, asset_names=["B2"], simplify_tolerance=0.005
+    )
+
+    geometry = {
+        "type": "Polygon",
+        "coordinates": [
+            [
+                [1.375, 45.667],
+                [2.528, 45.467],
+                [3.739, 45.242],
+                [3.099, 43.534],
+                [1.945, 43.753],
+                [0.802, 43.955],
+                [1.375, 45.667],
+            ]
+        ],
+    }
+
+    assert shape(geometry) == shape(item.geometry)
+
+
 def test_data_footprint_precision():
     use_fsspec()
 
     polygon = data_footprint(
         test_data.get_path(
             "data-files/raster_footprint/S2A_OPER_MSI_L2A_TL_ATOS_20220620T162319_A036527_T32TLS_N04.00_R60m_B01.jp2"  # noqa
+            # noqa
         ),
         precision=1,
         simplify_tolerance=0.01,
