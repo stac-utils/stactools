@@ -23,9 +23,6 @@ single bands from multiband files ([#318](https://github.com/stac-utils/stactool
 ### Removed
 
 - Unnecessary and incorrect `args` and `kwargs` from `StacIO` subclass ([#315](https://github.com/stac-utils/stactools/pull/315))
-
-### Removed
-
 - Dropped support for Python 3.7 ([#313](https://github.com/stac-utils/stactools/pull/313))
 
 ## [v0.3.1]
