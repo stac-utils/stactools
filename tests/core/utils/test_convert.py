@@ -5,7 +5,7 @@ from tempfile import TemporaryDirectory
 
 import rasterio
 
-from src.stactools.core.utils.convert import cogify, cogify_subdatasets
+from stactools.core.utils.convert import cogify, cogify_subdatasets
 from tests import test_data
 
 
