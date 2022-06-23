@@ -117,5 +117,4 @@ def cogify_subdatasets(
                 destination_profile = DEFAULT_PROFILE.copy()
                 rasterio.shutil.copy(subdataset, outfile, **destination_profile)
                 paths.append(outfile)
-                subd.close()
         return (paths, names)
