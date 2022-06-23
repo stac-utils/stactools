@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Specify installation channel to use for all conda packages to avoid incompatibility ([#301](https://github.com/stac-utils/stactools/pull/301))
+- Added `raster_footprint` module to assist in populating the geometry of an Item from data coverage of its data assets
 
 ## [v0.3.1]
 
