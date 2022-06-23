@@ -31,6 +31,7 @@ def cogify(
     profile: Optional[Dict[str, Any]] = None,
 ) -> None:
     """Creates a Cloud-Optimized GeoTIFF (COG) from a GDAL-readable file.
+
     A band number can optionally be provided to extract a single band from a
     multiband file. To create COGs from subdatasets, use
     :py:meth:`stactools.core.utils.convert.cogify_subdatasets`.
@@ -78,21 +79,23 @@ def cogify_subdatasets(
     infile: str, outdir: str, subdataset_names: Optional[List[str]] = None
 ) -> Tuple[List[str], List[str]]:
     """Creates Cloud-Optimized GeoTIFFs for all subdatasets in a multi-dataset raster file.
+
     The created files will be named the same as the source file, with a ``_SUBDATASET`` suffix.
     E.g. if the source file is named ``foo.hdf`` and the subdataset is named ``bar``, the output
-    COG will be named ``foo_bar.tif``.
-     Args:
+    COG will be named ``foo_bar.tif``. Only 2D (and not 3D) subdatasets are supported.
+
+    Args:
          infile (str): The input file containing subdatasets.
          outdir (str): The output directory where the COGs will be created.
-     Returns:
+    Returns:
          Tuple[List[str], List[str]]:
              A two tuple (paths, names):
                  - The first element is a list of the output COG paths
                  - The second element is a list of subdataset names
     """
 
+    assert_cog_driver_is_enabled()
     with rasterio.open(infile) as dataset:
-        assert_cog_driver_is_enabled()
         subdatasets = cast(List[str], dataset.subdatasets)
         base_file_name = os.path.splitext(os.path.basename(infile))[0]
         paths = []
