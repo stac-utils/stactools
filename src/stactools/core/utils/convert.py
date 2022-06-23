@@ -101,20 +101,21 @@ def cogify_subdatasets(
         paths = []
         names = []
         for subdataset in subdatasets:
-            subd = rasterio.open(subdataset)
-            if len(subd.shape) != 2:
-                continue
-            parts = subdataset.split(":")
-            subdataset_name = parts[-1]
-            if subdataset_names and subdataset_name not in subdataset_names:
-                continue
-            sanitized_subdataset_name = subdataset_name.replace(" ", "_").replace(
-                "/", "_"
-            )
-            names.append(sanitized_subdataset_name)
-            file_name = f"{base_file_name}_{sanitized_subdataset_name}.tif"
-            outfile = os.path.join(outdir, file_name)
-            destination_profile = DEFAULT_PROFILE.copy()
-            rasterio.shutil.copy(subdataset, outfile, **destination_profile)
-            paths.append(outfile)
+            with rasterio.open(subdataset) as subd:
+                if len(subd.shape) != 2:
+                    continue
+                parts = subdataset.split(":")
+                subdataset_name = parts[-1]
+                if subdataset_names and subdataset_name not in subdataset_names:
+                    continue
+                sanitized_subdataset_name = subdataset_name.replace(" ", "_").replace(
+                    "/", "_"
+                )
+                names.append(sanitized_subdataset_name)
+                file_name = f"{base_file_name}_{sanitized_subdataset_name}.tif"
+                outfile = os.path.join(outdir, file_name)
+                destination_profile = DEFAULT_PROFILE.copy()
+                rasterio.shutil.copy(subdataset, outfile, **destination_profile)
+                paths.append(outfile)
+                subd.close()
         return (paths, names)
