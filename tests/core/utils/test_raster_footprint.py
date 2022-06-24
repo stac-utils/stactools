@@ -7,7 +7,7 @@ from shapely.geometry.polygon import Polygon
 from stactools.core import use_fsspec
 from stactools.core.utils.raster_footprint import (
     data_footprint,
-    reproject,
+    densify_reproject_simplify,
     update_geometry_from_asset_footprint,
 )
 from tests import test_data
@@ -365,7 +365,7 @@ def test_reproject():
     ]
     polygon = MultiPolygon(data_polygons).convex_hull
 
-    reprojected_polygon = reproject(polygon, CRS.from_epsg(32632))
+    reprojected_polygon = densify_reproject_simplify(polygon, CRS.from_epsg(32632))
 
     expected = shape(
         {

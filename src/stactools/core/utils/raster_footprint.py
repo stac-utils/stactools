@@ -248,7 +248,7 @@ def data_footprint(
     else:
         polygon = MultiPolygon(data_polygons).convex_hull
 
-    polygon = reproject(
+    polygon = densify_reproject_simplify(
         polygon,
         src.crs,
         densification_factor=densification_factor,
@@ -257,10 +257,14 @@ def data_footprint(
         preserve_topology=preserve_topology,
     )
 
+    import json
+
+    print(json.dumps(mapping(polygon)))
+
     return mapping(polygon)  # type: ignore
 
 
-def reproject(
+def densify_reproject_simplify(
     polygon: Polygon,
     crs: CRS,
     *,
@@ -269,6 +273,29 @@ def reproject(
     simplify_tolerance: Optional[float] = None,
     preserve_topology: bool = True,
 ) -> Polygon:
+    """
+        From the input Polygon, densifies the polygon, reprojects it to EPSG:4326, and then
+        simplifies the resulting polygon.
+
+        See :py:meth:`update_geometry_from_asset_footprint` for more details about densification
+        and simplification.
+
+     Args:
+        polygon (Polygon): The input Polygon
+        crs (CRS): The CRS of the input Polygon
+        densification_factor (Optional[int]): The factor by which to increase point density
+            within the polygon. A factor of 2 would double the density of points (placing one
+            new point between each existing pair of points), a factor of 3 would place two points
+            between each point, etc.
+        precision (int): The number of decimal places to include in the coordinates for the
+            reprojected geometry. Defaults to 3 decimal places.
+        simplify_tolerance (Optional[float]): The minimum distance to maintain between points,
+            in degrees.
+        preserve_topology (bool): Preserve topology during simplification.
+
+    Returns:
+        Polygon: the reprojected Polygon
+    """
     if densification_factor is not None:
         polygon = Polygon(_densify(polygon.exterior.coords, densification_factor))
 
