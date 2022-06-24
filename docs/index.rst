@@ -19,7 +19,7 @@ See the `stactools-packages website <https://stactools-packages.github.io>`_ and
 Requirements
 ============
 
-* `Python 3.7 or greater <https://www.python.org/>`_
+* `Python 3.8 or greater <https://www.python.org/>`_
 
 STAC version support
 ====================

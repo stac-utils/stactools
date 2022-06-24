@@ -1,3 +1,4 @@
+"""`Antimeridian <https://en.wikipedia.org/wiki/180th_meridian>`_ utilities."""
 import math
 from enum import Enum, auto
 from typing import Optional
@@ -10,37 +11,52 @@ from shapely.geometry import LineString, MultiPolygon, Polygon
 
 
 class Strategy(Enum):
-    """Strategy for handling antimeridian-crossing polygons.
-
-    - SPLIT: split the polygon at the antimeridian
-    - NORMALIZE: keep the polygon as one, but extend it to > 180 or < -180.
-    """
+    """Strategy for handling antimeridian-crossing polygons."""
 
     SPLIT = auto()
+    """Split the polygon into multiple polygons so none cross the antimeridian."""
+
     NORMALIZE = auto()
+    """Keep the polygon as one polygon, but extend its values to be greater than
+    180 or less than -180.
+    """
 
 
-def fix_item(item: Item, strategy: Strategy) -> None:
+def fix_item(item: Item, strategy: Strategy) -> Item:
     """Modifies an item in-place to deal with antimeridian issues.
 
-    If the item's geometry is not a `Polygon`, raises a `ValueError`.
+    If the item's geometry is not a :py:class:`Polygon`` or a
+    :py:class:`MultiPolygon`, raises a :py:class:`ValueError`.
 
     Args:
         item (pystac.Item): The item to be modified.
+
+    Returns:
+        Item: The input item, whether it was modified or not.
     """
     geometry = shapely.geometry.shape(item.geometry)
-    if not isinstance(geometry, Polygon):
+    if isinstance(geometry, Polygon):
+        multi_polygon = False
+    elif isinstance(geometry, MultiPolygon):
+        multi_polygon = True
+    else:
         raise ValueError(
-            f"Can only fix antimeridian issues for Polygons, geometry={geometry}"
+            f"Can only fix antimeridian issues for Polygons or MultiPolygons, geometry={geometry}"
         )
     if strategy == Strategy.NORMALIZE:
-        normalized_geometry = normalize(geometry)
+        if multi_polygon:
+            normalized_geometry = normalize_multipolygon(geometry)
+        else:
+            normalized_geometry = normalize(geometry)
         if normalized_geometry:
             bbox = normalized_geometry.bounds
             item.geometry = shapely.geometry.mapping(normalized_geometry)
             item.bbox = bbox
     elif strategy == Strategy.SPLIT:
-        split_geometry = split(geometry)
+        if multi_polygon:
+            split_geometry = split_multipolygon(geometry)
+        else:
+            split_geometry = split(geometry)
         if split_geometry:
             xmin = 180
             xmax = -180
@@ -53,6 +69,7 @@ def fix_item(item: Item, strategy: Strategy) -> None:
             # https://datatracker.ietf.org/doc/html/rfc7946#section-5.2
             item.bbox = [xmax, bounds[1], xmin, bounds[3]]
             item.geometry = shapely.geometry.mapping(split_geometry)
+    return item
 
 
 def split(polygon: Polygon) -> Optional[MultiPolygon]:
@@ -61,15 +78,18 @@ def split(polygon: Polygon) -> Optional[MultiPolygon]:
     If the polygon does not cross the antimeridian, returns None. Only handles
     exterior rings (can't handle interior).
 
-    NOTE: Will not work on polygons that enclose the north or south poles.
-    TODO: Fix this
+    Note:
+        Will not work on polygons that enclose the north or south poles.
+
+    Todo:
+        Fix this
 
     Args:
-        polygon (shapely.geometry.Polygon): The input polygon.
+        polygon (:py:class:`shapely.geometry.Polygon`): The input polygon.
 
     Returns:
-        Optional[shapely.geometry.MultiPolygon]: The output polygons, or None if
-            no split occurred.
+        Optional[:py:class:`shapely.geometry.MultiPolygon`]:
+            The output polygons, or None if no split occurred.
     """
     normalized = normalize(polygon)
     if normalized is None:
@@ -97,29 +117,62 @@ def split(polygon: Polygon) -> Optional[MultiPolygon]:
     return MultiPolygon(geoms)
 
 
+def split_multipolygon(multi_polygon: MultiPolygon) -> Optional[MultiPolygon]:
+    """Splits multiple WGS84 polygons into a multipolygon across the antimeridian.
+
+    If none of the contained polygons cross the antimeridian, returns None. Only
+    handles exterior rings (can't handle interior).
+
+    Note:
+        Will not work on polygons that enclose the north or south poles.
+
+    Todo:
+        Fix this
+
+    Args:
+        multi_polygon (:py:class:`shapely.geometry.MultiPolygon`): The input multi polygon.
+
+    Returns:
+        Optional[:py:class:`shapely.geometry.MultiPolygon`]:
+            The output polygons, or None if no split occurred.
+    """
+    polygons = []
+    for polygon in multi_polygon.geoms:
+        split_polygon = split(polygon)
+        if split_polygon:
+            polygons.extend(split_polygon.geoms)
+    if polygons:
+        return MultiPolygon(polygons)
+    else:
+        return None
+
+
 def normalize(polygon: Polygon) -> Optional[Polygon]:
     """'Normalizes' a WGS84 lat/lon polygon, or returns None if no changes were made.
 
     This converts the polygon's x coordinates to all be the same sign, even if
     the polygon crosses the antimeridian. E.g.:
 
-    ```
-    canonical = Polygon(((170, 40), (170, 50), (-170, 50), (-170, 40), (170, 40)))
-    normalized = stactools.core.utils.antimeridian.normalize(canonical)
-    assert normalized.equals(shapely.geometry.box(170, 40, 190, 50))
-    ```
+    .. code-block:: python
+
+        canonical = Polygon(((170, 40), (170, 50), (-170, 50), (-170, 40), (170, 40)))
+        normalized = stactools.core.utils.antimeridian.normalize(canonical)
+        assert normalized.equals(shapely.geometry.box(170, 40, 190, 50))
 
     Inspired by
     https://towardsdatascience.com/around-the-world-in-80-lines-crossing-the-antimeridian-with-python-and-shapely-c87c9b6e1513.
 
-    NOTE: Will not work on polygons that enclose the north or south poles.
-    TODO: Fix this
+    Note:
+        Will not work on polygons that enclose the north or south poles.
+
+    Todo:
+        Fix this
 
     Args:
-        polygon (shapely.geometry.Polygon): The input polygon.
+        polygon (:py:class:`shapely.geometry.Polygon`): The input polygon.
 
     Returns:
-        Optional[shapely.geometry.Polygon]: The normalized polygon.
+        Optional[:py:class:`shapely.geometry.Polygon`]: The normalized polygon.
     """
     coords = list(polygon.exterior.coords)
     has_changes = False
@@ -138,3 +191,39 @@ def normalize(polygon: Polygon) -> Optional[Polygon]:
         return shapely.affinity.translate(polygon, xoff=+360)
     else:
         return polygon
+
+
+def normalize_multipolygon(multi_polygon: MultiPolygon) -> Optional[MultiPolygon]:
+    """'Normalizes' a WGS84 lat/lon multi polygon, or returns None if no changes were made.
+
+    For each polygon in the multi-polygon, this converts the x coordinates to
+    all be the same sign, even if the polygon crosses the antimeridian. Although
+    the x coordinate sign within each polygon will be made the same, the sign
+    may differ between polygons depending on their position relative to the
+    antimeridian.
+
+    Note:
+        Will not work on polygons that enclose the north or south poles.
+
+    Todo:
+        Fix this
+
+    Args:
+        multi_polygon (:py:class:`shapely.geometry.MultiPolygon`): The input multi-polygon.
+
+    Returns:
+        Optional[:py:class:`shapely.geometry.MultiPolygon`]: The normalized multi-polygon.
+    """
+    polygons = list()
+    changes_made = False
+    for polygon in multi_polygon.geoms:
+        normalized_polygon = normalize(polygon)
+        if normalized_polygon:
+            polygons.append(normalized_polygon)
+            changes_made = True
+        else:
+            polygons.append(polygon)
+    if changes_made:
+        return MultiPolygon(polygons)
+    else:
+        return None

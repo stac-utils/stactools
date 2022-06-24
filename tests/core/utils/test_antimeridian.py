@@ -1,42 +1,10 @@
 import datetime
-import os.path
-import unittest
-from contextlib import contextmanager
-from tempfile import TemporaryDirectory
 
-import pytest
-import rasterio
 import shapely.geometry
 from pystac import Item
 from shapely.geometry import MultiPolygon, Polygon
 
 from stactools.core.utils import antimeridian
-from stactools.core.utils.convert import cogify
-from tests import test_data
-
-
-class CogifyTest(unittest.TestCase):
-    @contextmanager
-    def cogify(self, **kwargs):
-        infile = test_data.get_path("data-files/core/byte.tif")
-        with TemporaryDirectory() as directory:
-            outfile = os.path.join(directory, "byte.tif")
-            cogify(infile, outfile, **kwargs)
-            yield outfile
-
-    def test_default(self):
-        with self.cogify() as outfile:
-            self.assertTrue(os.path.exists(outfile))
-            with rasterio.open(outfile) as dataset:
-                self.assertEqual(
-                    dataset.compression, rasterio.enums.Compression.deflate
-                )
-
-    def test_profile(self):
-        with self.cogify(profile={"compress": "lzw"}) as outfile:
-            self.assertTrue(os.path.exists(outfile))
-            with rasterio.open(outfile) as dataset:
-                self.assertEqual(dataset.compression, rasterio.enums.Compression.lzw)
 
 
 def test_antimeridian_split() -> None:
@@ -156,7 +124,7 @@ def test_item_fix_antimeridian_split() -> None:
         datetime=datetime.datetime.now(),
         properties={},
     )
-    antimeridian.fix_item(item, antimeridian.Strategy.SPLIT)
+    fix = antimeridian.fix_item(item, antimeridian.Strategy.SPLIT)
     expected = MultiPolygon(
         (
             shapely.geometry.box(170, 40, 180, 50),
@@ -164,10 +132,10 @@ def test_item_fix_antimeridian_split() -> None:
         )
     )
     for actual, expected in zip(
-        shapely.geometry.shape(item.geometry).geoms, expected.geoms
+        shapely.geometry.shape(fix.geometry).geoms, expected.geoms
     ):
         assert actual.equals(expected)
-    assert item.bbox == [170, 40, -170, 50]
+    assert fix.bbox == [170, 40, -170, 50]
 
 
 def test_item_fix_antimeridian_normalize() -> None:
@@ -179,14 +147,14 @@ def test_item_fix_antimeridian_normalize() -> None:
         datetime=datetime.datetime.now(),
         properties={},
     )
-    antimeridian.fix_item(item, antimeridian.Strategy.NORMALIZE)
+    fix = antimeridian.fix_item(item, antimeridian.Strategy.NORMALIZE)
     expected = shapely.geometry.box(170, 40, 190, 50)
-    assert shapely.geometry.shape(item.geometry).equals(expected)
-    assert item.bbox
-    assert list(item.bbox) == [170.0, 40.0, 190.0, 50.0]
+    assert shapely.geometry.shape(fix.geometry).equals(expected)
+    assert fix.bbox
+    assert list(fix.bbox) == [170.0, 40.0, 190.0, 50.0]
 
 
-def test_item_fix_antimeridian_multipolygon_failure() -> None:
+def test_item_fix_antimeridian_multipolygon_ok() -> None:
     split = MultiPolygon(
         (
             shapely.geometry.box(170, 40, 180, 50),
@@ -200,7 +168,39 @@ def test_item_fix_antimeridian_multipolygon_failure() -> None:
         datetime=datetime.datetime.now(),
         properties={},
     )
-    with pytest.raises(ValueError):
-        antimeridian.fix_item(item, antimeridian.Strategy.SPLIT)
-    with pytest.raises(ValueError):
-        antimeridian.fix_item(item, antimeridian.Strategy.NORMALIZE)
+    antimeridian.fix_item(item, antimeridian.Strategy.SPLIT)
+    antimeridian.fix_item(item, antimeridian.Strategy.NORMALIZE)
+
+
+def test_antimeridian_multipolygon() -> None:
+    multi_polygon = MultiPolygon(
+        [
+            Polygon(((170, 40), (170, 42), (-170, 42), (-170, 40), (170, 40))),
+            Polygon(((170, 48), (170, 50), (-170, 50), (-170, 48), (170, 48))),
+        ]
+    )
+    split = antimeridian.split_multipolygon(multi_polygon)
+    assert split
+    expected = MultiPolygon(
+        (
+            shapely.geometry.box(170, 40, 180, 42),
+            shapely.geometry.box(-180, 40, -170, 42),
+            shapely.geometry.box(170, 48, 180, 50),
+            shapely.geometry.box(-180, 48, -170, 50),
+        )
+    )
+    for actual, expected in zip(split.geoms, expected.geoms):
+        assert actual.exterior.is_ccw
+        assert actual.equals(expected), f"actual={actual}, expected={expected}"
+
+    normalized = antimeridian.normalize_multipolygon(multi_polygon)
+    assert normalized
+    expected = MultiPolygon(
+        (
+            Polygon(((170, 40), (170, 42), (190, 42), (190, 40), (170, 40))),
+            Polygon(((170, 48), (170, 50), (190, 50), (190, 48), (170, 48))),
+        )
+    )
+    for actual, expected in zip(normalized.geoms, expected.geoms):
+        assert actual.exterior.is_ccw
+        assert actual.equals(expected), f"actual={actual}, expected={expected}"

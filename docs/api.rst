@@ -6,8 +6,10 @@ This is the auto-generated API reference documentation.
 Core
 ----
 
-The :py:mod:`stactools.core` module contains utility methods for working with
-STAC objects.
+The top-level stactools namespace.
+
+These core functions and classes provide building blocks for working with STAC
+catalogs and creating new STAC metadata.
 
 Input and output
 ~~~~~~~~~~~~~~~~
@@ -101,8 +103,8 @@ Command line testing
 .. automodule:: stactools.testing.cli_test
     :members:
 
-Fetching and referencing test data
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Fetching and using test data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. automodule:: stactools.testing.test_data
     :members:
