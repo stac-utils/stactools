@@ -20,6 +20,7 @@ single bands from multiband files ([#318](https://github.com/stac-utils/stactool
 - Modified stactools.core.utils.antimeridian.fix_item to return the item and updated 2 unit tests ([#317](https://github.com/stac-utils/stactools/pull/317))
 - Relaxed typing for cmd parameter for the CliTestCase.run_command in cli_test.py ([#312](https://github.com/stac-utils/stactools/pull/312))
 - Cleaned up API documentation ([#315](https://github.com/stac-utils/stactools/pull/315))
+- Renamed command `addraster` to `add-raster` ([#321](https://github.com/stac-utils/stactools/pull/321))
 
 ### Removed
 
