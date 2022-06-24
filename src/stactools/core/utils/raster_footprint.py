@@ -1,4 +1,5 @@
 import logging
+from itertools import groupby
 from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 import numpy
@@ -305,5 +306,8 @@ def densify_reproject_simplify(
         polygon = polygon.simplify(
             tolerance=simplify_tolerance, preserve_topology=preserve_topology
         ).simplify(0)
+
+    # simplify does not remove duplicate sequential points, so do that
+    polygon = Polygon([k for k, _ in groupby(polygon.exterior.coords)])
 
     return polygon
