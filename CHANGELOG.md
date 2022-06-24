@@ -18,13 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Modified stactools.core.utils.antimeridian.fix_item to return the item and updated 2 unit tests ([#309](https://github.com/stac-utils/stactools/issues/309))
 - Relaxed typing for cmd parameter for the CliTestCase.run_command in cli_test.py ([#306](https://github.com/stac-utils/stactools/issues/306))
 - Cleaned up API documentation ([#315](https://github.com/stac-utils/stactools/pull/315))
+- Renamed command `addraster` to `add-raster` ([]())
 
 ### Removed
 
 - Unnecessary and incorrect `args` and `kwargs` from `StacIO` subclass ([#315](https://github.com/stac-utils/stactools/pull/315))
-
-### Removed
-
 - Dropped support for Python 3.7 ([#223](https://github.com/stac-utils/stactools/issues/223))
 
 ## [v0.3.1]

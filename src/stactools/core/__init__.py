@@ -1,5 +1,5 @@
 from stactools.core.add import add_item
-from stactools.core.addraster import add_raster_to_item
+from stactools.core.add_raster import add_raster_to_item
 from stactools.core.copy import (
     copy_catalog,
     move_all_assets,

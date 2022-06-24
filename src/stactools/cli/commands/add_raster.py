@@ -12,10 +12,10 @@ def add_raster(item_path: str) -> None:
     item.save_object()
 
 
-def create_addraster_command(cli: click.Group) -> click.Command:
-    @cli.command("addraster", short_help="Add raster extension to an Item.")
+def create_add_raster_command(cli: click.Group) -> click.Command:
+    @cli.command("add-raster", short_help="Add raster extension to an Item.")
     @click.argument("item_path")
-    def addraster_command(item_path: str) -> None:
+    def add_raster_command(item_path: str) -> None:
         add_raster(item_path)
 
-    return addraster_command
+    return add_raster_command
