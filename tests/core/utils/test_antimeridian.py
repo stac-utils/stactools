@@ -1,6 +1,5 @@
 import datetime
 
-import pytest
 import shapely.geometry
 from pystac import Item
 from shapely.geometry import MultiPolygon, Polygon
@@ -155,7 +154,7 @@ def test_item_fix_antimeridian_normalize() -> None:
     assert list(fix.bbox) == [170.0, 40.0, 190.0, 50.0]
 
 
-def test_item_fix_antimeridian_multipolygon_failure() -> None:
+def test_item_fix_antimeridian_multipolygon_ok() -> None:
     split = MultiPolygon(
         (
             shapely.geometry.box(170, 40, 180, 50),
@@ -169,7 +168,39 @@ def test_item_fix_antimeridian_multipolygon_failure() -> None:
         datetime=datetime.datetime.now(),
         properties={},
     )
-    with pytest.raises(ValueError):
-        antimeridian.fix_item(item, antimeridian.Strategy.SPLIT)
-    with pytest.raises(ValueError):
-        antimeridian.fix_item(item, antimeridian.Strategy.NORMALIZE)
+    antimeridian.fix_item(item, antimeridian.Strategy.SPLIT)
+    antimeridian.fix_item(item, antimeridian.Strategy.NORMALIZE)
+
+
+def test_antimeridian_multipolygon() -> None:
+    multi_polygon = MultiPolygon(
+        [
+            Polygon(((170, 40), (170, 42), (-170, 42), (-170, 40), (170, 40))),
+            Polygon(((170, 48), (170, 50), (-170, 50), (-170, 48), (170, 48))),
+        ]
+    )
+    split = antimeridian.split_multipolygon(multi_polygon)
+    assert split
+    expected = MultiPolygon(
+        (
+            shapely.geometry.box(170, 40, 180, 42),
+            shapely.geometry.box(-180, 40, -170, 42),
+            shapely.geometry.box(170, 48, 180, 50),
+            shapely.geometry.box(-180, 48, -170, 50),
+        )
+    )
+    for actual, expected in zip(split.geoms, expected.geoms):
+        assert actual.exterior.is_ccw
+        assert actual.equals(expected), f"actual={actual}, expected={expected}"
+
+    normalized = antimeridian.normalize_multipolygon(multi_polygon)
+    assert normalized
+    expected = MultiPolygon(
+        (
+            Polygon(((170, 40), (170, 42), (190, 42), (190, 40), (170, 40))),
+            Polygon(((170, 48), (170, 50), (190, 50), (190, 48), (170, 48))),
+        )
+    )
+    for actual, expected in zip(normalized.geoms, expected.geoms):
+        assert actual.exterior.is_ccw
+        assert actual.equals(expected), f"actual={actual}, expected={expected}"
