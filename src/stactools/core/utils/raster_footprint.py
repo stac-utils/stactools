@@ -29,7 +29,6 @@ def update_geometry_from_asset_footprint(
     precision: int = DEFAULT_PRECISION,
     densification_factor: Optional[int] = None,
     simplify_tolerance: Optional[float] = None,
-    preserve_topology: bool = True,
     no_data: Optional[int] = None,
 ) -> Optional[Item]:
     """
@@ -64,8 +63,6 @@ def update_geometry_from_asset_footprint(
             of points), a factor of 3 would place two points between each point, etc.
         simplify_tolerance (Optional[float]): All points in the simplified object will be within
             the tolerance distance of the original geometry, in degrees.
-        preserve_topology (bool): Preserve topology during simplification.
-        no_data(Optional[int]): explicitly set the no data value if not in image metadata
 
     Returns:
         Iterator[Tuple[str, Dict[str, Any]]]: Iterator of the data extent as a geojson dict
@@ -79,7 +76,6 @@ def update_geometry_from_asset_footprint(
             precision=precision,
             densification_factor=densification_factor,
             simplify_tolerance=simplify_tolerance,
-            preserve_topology=preserve_topology,
             no_data=no_data,
         ),
         None,
@@ -100,7 +96,6 @@ def data_footprints_for_data_assets(
     precision: int = DEFAULT_PRECISION,
     densification_factor: Optional[int] = None,
     simplify_tolerance: Optional[float] = None,
-    preserve_topology: bool = True,
     no_data: Optional[int] = None,
 ) -> Iterator[Tuple[str, Dict[str, Any]]]:
     """
@@ -126,7 +121,6 @@ def data_footprints_for_data_assets(
             between each point, etc.
         simplify_tolerance (Optional[float]): All points in the simplified object will be within
             the tolerance distance of the original geometry, in degrees.
-        preserve_topology (bool): Preserve topology during simplification.
         no_data(Optional[int]): explicitly set the no data value if not in image metadata
 
     Returns:
@@ -146,7 +140,6 @@ def data_footprints_for_data_assets(
                 precision=precision,
                 densification_factor=densification_factor,
                 simplify_tolerance=simplify_tolerance,
-                preserve_topology=preserve_topology,
                 no_data=no_data,
             )
             if extent:
@@ -190,7 +183,6 @@ def data_footprint(
     precision: int = DEFAULT_PRECISION,
     densification_factor: Optional[int] = None,
     simplify_tolerance: Optional[float] = None,
-    preserve_topology: bool = True,
     no_data: Optional[int] = None,
 ) -> Optional[Dict[str, Any]]:
     """
@@ -210,7 +202,6 @@ def data_footprint(
             between each point, etc.
         simplify_tolerance (Optional[float]): All points in the simplified object will be within
             the tolerance distance of the original geometry, in degrees.
-        preserve_topology (bool): Preserve topology during simplification.
         no_data(Optional[int]): explicitly set the no data value if not in image metadata. If
             set to None, this will return the footprint including no data values.
 
@@ -255,7 +246,6 @@ def data_footprint(
         densification_factor=densification_factor,
         precision=precision,
         simplify_tolerance=simplify_tolerance,
-        preserve_topology=preserve_topology,
     )
 
     import json
@@ -272,7 +262,6 @@ def densify_reproject_simplify(
     densification_factor: Optional[int] = None,
     precision: int = DEFAULT_PRECISION,
     simplify_tolerance: Optional[float] = None,
-    preserve_topology: bool = True,
 ) -> Polygon:
     """
         From the input Polygon, densifies the polygon, reprojects it to EPSG:4326, and then
@@ -292,7 +281,6 @@ def densify_reproject_simplify(
             reprojected geometry. Defaults to 3 decimal places.
         simplify_tolerance (Optional[float]): All points in the simplified object will be within
             the tolerance distance of the original geometry, in degrees.
-        preserve_topology (bool): Preserve topology during simplification.
 
     Returns:
         Polygon: the reprojected Polygon
@@ -304,7 +292,7 @@ def densify_reproject_simplify(
 
     if simplify_tolerance is not None:
         polygon = polygon.simplify(
-            tolerance=simplify_tolerance, preserve_topology=preserve_topology
+            tolerance=simplify_tolerance, preserve_topology=False
         ).simplify(0)
 
     # simplify does not remove duplicate sequential points, so do that
