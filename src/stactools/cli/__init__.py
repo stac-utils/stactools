@@ -10,7 +10,7 @@ def register_plugin(registry: "Registry") -> None:
 
     from stactools.cli.commands import (
         add,
-        addraster,
+        add_raster,
         copy,
         create,
         info,
@@ -23,7 +23,7 @@ def register_plugin(registry: "Registry") -> None:
     )
 
     registry.register_subcommand(add.create_add_command)
-    registry.register_subcommand(addraster.create_addraster_command)
+    registry.register_subcommand(add_raster.create_add_raster_command)
     registry.register_subcommand(copy.create_copy_command)
     registry.register_subcommand(create.create_create_item_command)
     registry.register_subcommand(copy.create_move_assets_command)

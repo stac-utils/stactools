@@ -3,7 +3,7 @@ from tempfile import TemporaryDirectory
 import pystac
 from pystac.utils import make_absolute_href
 
-from stactools.cli.commands.addraster import create_addraster_command
+from stactools.cli.commands.add_raster import create_add_raster_command
 from stactools.core import move_all_assets
 from stactools.testing import CliTestCase
 
@@ -23,7 +23,7 @@ def create_temp_catalog_copy(tmp_dir):
 
 class AddRasterTest(CliTestCase):
     def create_subcommand_functions(self):
-        return [create_addraster_command]
+        return [create_add_raster_command]
 
     def test_add_raster_to_item(self):
         with TemporaryDirectory() as tmp_dir:
@@ -33,7 +33,7 @@ class AddRasterTest(CliTestCase):
                 items[0].get_self_href(), catalog.get_self_href()
             )
 
-            cmd = ["addraster", item_path]
+            cmd = ["add-raster", item_path]
             self.run_command(cmd)
 
             updated = pystac.read_file(catalog.get_self_href())
