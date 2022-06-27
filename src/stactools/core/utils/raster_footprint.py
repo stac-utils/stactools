@@ -62,8 +62,8 @@ def update_geometry_from_asset_footprint(
             A factor of 2 would double the density of points (placing one new point between each
             existing pair
             of points), a factor of 3 would place two points between each point, etc.
-        simplify_tolerance (Optional[float]): The minimum distance to maintain between points,
-            in degrees.
+        simplify_tolerance (Optional[float]): All points in the simplified object will be within
+            the tolerance distance of the original geometry, in degrees.
         preserve_topology (bool): Preserve topology during simplification.
         no_data(Optional[int]): explicitly set the no data value if not in image metadata
 
@@ -124,8 +124,8 @@ def data_footprints_for_data_assets(
             within the polygon. A factor of 2 would double the density of points (placing one
             new point between each existing pair of points), a factor of 3 would place two points
             between each point, etc.
-        simplify_tolerance (Optional[float]): The minimum distance to maintain between points,
-            in degrees.
+        simplify_tolerance (Optional[float]): All points in the simplified object will be within
+            the tolerance distance of the original geometry, in degrees.
         preserve_topology (bool): Preserve topology during simplification.
         no_data(Optional[int]): explicitly set the no data value if not in image metadata
 
@@ -208,8 +208,8 @@ def data_footprint(
             within the polygon. A factor of 2 would double the density of points (placing one
             new point between each existing pair of points), a factor of 3 would place two points
             between each point, etc.
-        simplify_tolerance (Optional[float]): The minimum distance to maintain between points,
-            in degrees.
+        simplify_tolerance (Optional[float]): All points in the simplified object will be within
+            the tolerance distance of the original geometry, in degrees.
         preserve_topology (bool): Preserve topology during simplification.
         no_data(Optional[int]): explicitly set the no data value if not in image metadata. If
             set to None, this will return the footprint including no data values.
@@ -290,8 +290,8 @@ def densify_reproject_simplify(
             between each point, etc.
         precision (int): The number of decimal places to include in the coordinates for the
             reprojected geometry. Defaults to 3 decimal places.
-        simplify_tolerance (Optional[float]): The minimum distance to maintain between points,
-            in degrees.
+        simplify_tolerance (Optional[float]): All points in the simplified object will be within
+            the tolerance distance of the original geometry, in degrees.
         preserve_topology (bool): Preserve topology during simplification.
 
     Returns:
