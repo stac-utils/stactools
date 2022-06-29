@@ -189,7 +189,7 @@ def data_footprint(
     no_data: Optional[int] = None,
 ) -> Optional[Dict[str, Any]]:
     """
-        Produces a data footprint from an asset.
+        Produces a data footprint from the href of a raster file.
 
         See :py:meth:`update_geometry_from_asset_footprint` for more details about densification
         and simplification.
