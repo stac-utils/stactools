@@ -29,7 +29,7 @@ def update_geometry_from_asset_footprint(
     densification_factor: Optional[int] = None,
     simplify_tolerance: Optional[float] = None,
     no_data: Optional[int] = None,
-) -> Optional[Item]:
+) -> bool:
     """
     Accepts an Item and an optional list of asset names within that item, and updates
     the geometry of that Item in-place with the data footprint derived from the first
@@ -65,8 +65,7 @@ def update_geometry_from_asset_footprint(
         no_data(Optional[int]): explicitly set the no data value if not in image metadata
 
     Returns:
-        Iterator[Tuple[str, Dict[str, Any]]]: Iterator of the data extent as a geojson dict
-            for each asset.
+        bool: True if the extent was successfully updated, False if not
     """
     asset_name_and_extent = next(
         data_footprints_for_data_assets(
@@ -83,9 +82,9 @@ def update_geometry_from_asset_footprint(
     if asset_name_and_extent is not None:
         _, extent = asset_name_and_extent
         item.geometry = extent
-        return item
+        return True
     else:
-        return None
+        return False
 
 
 def data_footprints_for_data_assets(

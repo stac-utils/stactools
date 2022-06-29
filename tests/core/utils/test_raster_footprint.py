@@ -22,12 +22,11 @@ def test_non_existent_asset():
         )
     )
 
-    assert (
+    assert not (
         update_geometry_from_asset_footprint(
             item,
             asset_names=["B01_doesnt_exist"],
         )
-        is None
     )
 
 
@@ -40,7 +39,7 @@ def test_modis():
         )
     )
 
-    item = update_geometry_from_asset_footprint(
+    update_geometry_from_asset_footprint(
         item, asset_names=["B01"], densification_factor=10
     )
 
@@ -135,7 +134,7 @@ def test_sentinel2_sliver():
         )
     )
 
-    item = update_geometry_from_asset_footprint(
+    update_geometry_from_asset_footprint(
         item, asset_names=["R60m_B01"], simplify_tolerance=0.005, no_data=0
     )
 
@@ -166,7 +165,7 @@ def test_sentinel2_full():
         )
     )
 
-    item = update_geometry_from_asset_footprint(
+    update_geometry_from_asset_footprint(
         item,
         asset_names=["R60m_B01"],
     )
@@ -197,7 +196,7 @@ def test_landsat8():
         )
     )
 
-    item = update_geometry_from_asset_footprint(
+    update_geometry_from_asset_footprint(
         item, asset_names=["B2"], simplify_tolerance=0.005
     )
 
