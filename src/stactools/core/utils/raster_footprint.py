@@ -7,7 +7,6 @@ import numpy as np
 import rasterio
 import rasterio.features
 from pystac import Item
-from pystac.utils import make_absolute_href
 from rasterio import Affine
 from rasterio.crs import CRS
 from rasterio.warp import transform_geom
@@ -63,6 +62,7 @@ def update_geometry_from_asset_footprint(
             of points), a factor of 3 would place two points between each point, etc.
         simplify_tolerance (Optional[float]): All points in the simplified object will be within
             the tolerance distance of the original geometry, in degrees.
+        no_data(Optional[int]): explicitly set the no data value if not in image metadata
 
     Returns:
         Iterator[Tuple[str, Dict[str, Any]]]: Iterator of the data extent as a geojson dict
@@ -134,21 +134,23 @@ def data_footprints_for_data_assets(
             and (asset_names is None or name in asset_names)
         ):
             href = asset.get_absolute_href()
-            if href is none:
-                logger.error(f"Could not determine extent for asset '{name}'")
-                continue
-            extent = data_footprint(
-                href,
-                scale=scale,
-                precision=precision,
-                densification_factor=densification_factor,
-                simplify_tolerance=simplify_tolerance,
-                no_data=no_data,
-            )
-            if extent:
-                yield name, extent
+            if href is None:
+                logger.error(
+                    f"Could not determine extent for asset '{name}', missing href"
+                )
             else:
-                logger.error(f"Could not determine extent for asset '{name}'")
+                extent = data_footprint(
+                    href,
+                    scale=scale,
+                    precision=precision,
+                    densification_factor=densification_factor,
+                    simplify_tolerance=simplify_tolerance,
+                    no_data=no_data,
+                )
+                if extent:
+                    yield name, extent
+                else:
+                    logger.error(f"Could not determine extent for asset '{name}'")
 
 
 def _densify(
@@ -195,7 +197,7 @@ def data_footprint(
         and simplification.
 
      Args:
-        href (str):
+        href (str): The href of the image to process.
         scale (int): A factor to scale out the shape to. Defaults to 1.
         precision (int): The number of decimal places to include in the coordinates for the
             reprojected geometry. Defaults to 3 decimal places.
@@ -250,10 +252,6 @@ def data_footprint(
         precision=precision,
         simplify_tolerance=simplify_tolerance,
     )
-
-    import json
-
-    print(json.dumps(mapping(polygon)))
 
     return mapping(polygon)  # type: ignore
 

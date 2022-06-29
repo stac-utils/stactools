@@ -43,7 +43,6 @@ def test_modis():
     item = update_geometry_from_asset_footprint(
         item, asset_names=["B01"], densification_factor=10
     )
-    # print(json.dumps(item.geometry))
 
     geometry = {
         "type": "Polygon",
@@ -235,17 +234,15 @@ def test_data_footprint_precision():
         "type": "Polygon",
         "coordinates": (
             (
-                (7.8, 46.9),
-                (7.8, 46.0),
-                (7.4, 46.0),
                 (7.5, 46.0),
-                (7.5, 46.1),
                 (7.5, 46.3),
                 (7.6, 46.3),
                 (7.6, 46.6),
                 (7.7, 46.6),
                 (7.7, 46.9),
                 (7.8, 46.9),
+                (7.8, 46.0),
+                (7.5, 46.0),
             ),
         ),
     }
@@ -300,7 +297,6 @@ def test_reproject():
 
 
 def test_remove_duplicate_points():
-
     redundant_shape = shape(
         {
             "type": "Polygon",
