@@ -121,17 +121,12 @@ def data_footprints_for_data_assets(
         simplify_tolerance (Optional[float]): All points in the simplified object will be within
             the tolerance distance of the original geometry, in degrees.
         no_data(Optional[int]): explicitly set the no data value if not in image metadata
-
     Returns:
         Iterator[Tuple[str, Dict[str, Any]]]: Iterator of the data extent as a geojson dict
             for each asset.
     """
     for name, asset in item.assets.items():
-        if (
-            asset.roles
-            and "data" in asset.roles
-            and (asset_names is None or name in asset_names)
-        ):
+        if asset.roles and (asset_names is None or name in asset_names):
             href = asset.get_absolute_href()
             if href is None:
                 logger.error(
