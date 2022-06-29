@@ -133,7 +133,10 @@ def data_footprints_for_data_assets(
             and "data" in asset.roles
             and (asset_names is None or name in asset_names)
         ):
-            href = make_absolute_href(asset.href, item.get_self_href())
+            href = asset.get_absolute_href()
+            if href is none:
+                logger.error(f"Could not determine extent for asset '{name}'")
+                continue
             extent = data_footprint(
                 href,
                 scale=scale,
