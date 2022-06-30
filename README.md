@@ -1,8 +1,9 @@
-## stactools
+# stactools
 
 ![Build Status](https://github.com/stac-utils/stactools/workflows/CI/badge.svg)
 [![Documentation](https://readthedocs.org/projects/stactools/badge/?version=latest)](https://stactools.readthedocs.io/en/latest/)
 [![PyPI version](https://img.shields.io/pypi/v/stactools)](https://pypi.org/project/stactools/)
+[![Conda (channel only)](https://img.shields.io/conda/vn/conda-forge/stactools)](https://anaconda.org/conda-forge/stactools)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 `stactools` is a high-level command line tool and Python library for working with [STAC](https://stacspec.org).
@@ -22,10 +23,16 @@ See [packages](#packages) for more information.
 
 ## Installation
 
-To install the latest version:
+To install the latest version via pip:
 
 ```sh
 pip install stactools
+```
+
+To install the latest version with [conda](https://docs.conda.io/en/latest/):
+
+```sh
+conda install -c conda-forge stactools
 ```
 
 To install the latest development version from the source repository:
@@ -146,7 +153,7 @@ pytest
 
 Run a Juypter notebook:
 
-```
+```sh
 scripts/notebook
 ```
 
@@ -194,13 +201,13 @@ docker/stac --help
 [conda](https://docs.conda.io/en/latest/) is a useful tool for managing dependencies, both binary and Python-based.
 If you have conda installed, you can create a new environment for `stactools` development by running the following command from the top-level directory in this repo:
 
-```
+```sh
 conda env create -f environment.yml
 ```
 
 Then activate the `stactools` environment:
 
-```
+```sh
 conda activate stactools
 ```
 
@@ -236,7 +243,6 @@ docker/console
 To create a new `stactools` package, use the [`stactools` package template](https://github.com/stactools-packages/template).
 `stactools` utilizes Python's [namespace packages](https://packaging.python.org/guides/packaging-namespace-packages/) to provide a suite of tools all under the `stactools` namespace.
 If you would like your package to be considered for inclusion as a core `stactools` package, please open an issue on this repository with a link to your package repository.
-
 
 ### Releasing
 
