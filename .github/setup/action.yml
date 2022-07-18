@@ -40,7 +40,3 @@ runs:
     - name: Update pip
       run: python -m pip install --upgrade pip
       shell: bash -l {0}
-    - name: Install rasterio pre-release if python 3.10
-      if: matrix.python-version == '3.10'
-      run: pip install --pre rasterio
-      shell: bash -l {0}
