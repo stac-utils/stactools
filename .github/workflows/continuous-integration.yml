@@ -94,7 +94,7 @@ jobs:
       - name: Install pre-release versions of rasterio and pystac
         run: pip install -U --pre pystac rasterio
       - name: Run tests
-        run: unset PROJ_LIB && scripts/test
+        run: scripts/test
   codecov:
     name: Codecov
     needs:
