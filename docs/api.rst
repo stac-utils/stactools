@@ -53,7 +53,7 @@ Adding items to catalogs
 Adding the raster extension
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. automodule:: stactools.core.addraster
+.. automodule:: stactools.core.add_raster
     :members:
 
 Copying
