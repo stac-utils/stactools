@@ -92,11 +92,12 @@ def data_footprints_for_data_assets(
     no_data: Optional[int] = None,
 ) -> Iterator[Tuple[str, Dict[str, Any]]]:
     """
-    Accepts an Item and an optional list of asset names within that item, and produces
-    an iterator over the same asset names (if they exist and have the role "data") and
-    a dictionary representing a GeoJSON Polygon of the data footprint of the asset.
-    The data footprint is considered to be a convex hull around all areas within the
-    raster that have data values (e.g., they do not have the "no data" value).
+    Accepts an Item and an optional list of asset names within that item, and
+    produces an iterator over the same asset names (if they exist) and a
+    dictionary representing a GeoJSON Polygon of the data footprint of the
+    asset.  The data footprint is considered to be a convex hull around all
+    areas within the raster that have data values (e.g., they do not have the
+    "no data" value).
 
     See :py:meth:`update_geometry_from_asset_footprint` for more details about
     densification and simplification.
