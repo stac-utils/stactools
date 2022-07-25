@@ -7,7 +7,6 @@ import numpy as np
 import rasterio
 import rasterio.features
 from pystac import Item
-from rasterio import Affine
 from rasterio.crs import CRS
 from rasterio.warp import transform_geom
 from shapely.geometry import mapping, shape
@@ -16,7 +15,6 @@ from shapely.geometry.polygon import Polygon
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_SCALE = 1
 DEFAULT_PRECISION = 3
 
 
@@ -24,7 +22,6 @@ def update_geometry_from_asset_footprint(
     item: Item,
     *,
     asset_names: Optional[List[str]] = None,
-    scale: int = DEFAULT_SCALE,
     precision: int = DEFAULT_PRECISION,
     densification_factor: Optional[int] = None,
     simplify_tolerance: Optional[float] = None,
@@ -52,7 +49,6 @@ def update_geometry_from_asset_footprint(
     Args:
         item (Item): The PySTAC Item to extend.
         asset_names (Optional[List[str]]): The names of the assets for which to extract footprints.
-        scale (int): A factor to scale out the shape to. Defaults to 1.
         precision (int): The number of decimal places to include in the coordinates for the
             reprojected geometry. Defaults to 3 decimal places.
         densification_factor (Optional[int]): The factor by which to increase point density within
@@ -71,7 +67,6 @@ def update_geometry_from_asset_footprint(
         data_footprints_for_data_assets(
             item,
             asset_names=asset_names,
-            scale=scale,
             precision=precision,
             densification_factor=densification_factor,
             simplify_tolerance=simplify_tolerance,
@@ -91,7 +86,6 @@ def data_footprints_for_data_assets(
     item: Item,
     *,
     asset_names: Optional[List[str]] = None,
-    scale: int = DEFAULT_SCALE,
     precision: int = DEFAULT_PRECISION,
     densification_factor: Optional[int] = None,
     simplify_tolerance: Optional[float] = None,
@@ -111,7 +105,6 @@ def data_footprints_for_data_assets(
         item (Item): The PySTAC Item to extend.
         asset_names (Optional[List[str]]): The names of the assets for which to extract
             footprints.
-        scale (int): A factor to scale out the shape to. Defaults to 1.
         precision (int): The number of decimal places to include in the coordinates for
             the reprojected geometry. Defaults to 3 decimal places.
         densification_factor (Optional[int]): The factor by which to increase point density
@@ -126,7 +119,7 @@ def data_footprints_for_data_assets(
             for each asset.
     """
     for name, asset in item.assets.items():
-        if asset.roles and (asset_names is None or name in asset_names):
+        if asset_names is None or name in asset_names:
             href = asset.get_absolute_href()
             if href is None:
                 logger.error(
@@ -135,7 +128,6 @@ def data_footprints_for_data_assets(
             else:
                 extent = data_footprint(
                     href,
-                    scale=scale,
                     precision=precision,
                     densification_factor=densification_factor,
                     simplify_tolerance=simplify_tolerance,
@@ -178,7 +170,6 @@ def _densify(
 def data_footprint(
     href: str,
     *,
-    scale: int = DEFAULT_SCALE,
     precision: int = DEFAULT_PRECISION,
     densification_factor: Optional[int] = None,
     simplify_tolerance: Optional[float] = None,
@@ -192,7 +183,6 @@ def data_footprint(
 
      Args:
         href (str): The href of the image to process.
-        scale (int): A factor to scale out the shape to. Defaults to 1.
         precision (int): The number of decimal places to include in the coordinates for the
             reprojected geometry. Defaults to 3 decimal places.
         densification_factor (Optional[int]): The factor by which to increase point density
@@ -213,8 +203,7 @@ def data_footprint(
     if no_data is None:
         no_data = src.nodata
 
-    scaled_out_shape = (int(src.shape[0] / scale), int(src.shape[1] / scale))
-    arr = src.read(1, out_shape=scaled_out_shape)
+    arr = src.read(1, out_shape=src.shape)
     data_val = 1 if no_data != 1 else 0
 
     if no_data is not None:
@@ -222,12 +211,10 @@ def data_footprint(
     else:
         arr.fill(data_val)
 
-    shapes_transform = src.transform * Affine.scale(scale)
-
     data_polygons = [
         shape(polygon_dict)
         for polygon_dict, region_value in rasterio.features.shapes(
-            arr, transform=shapes_transform
+            arr, transform=src.transform
         )
         if region_value == data_val
     ]
