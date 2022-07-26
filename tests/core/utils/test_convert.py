@@ -5,6 +5,7 @@ from tempfile import TemporaryDirectory
 
 import rasterio
 
+from stactools.core import utils
 from stactools.core.utils.convert import cogify, cogify_subdatasets
 from tests import test_data
 
@@ -35,7 +36,8 @@ class CogifyTest(unittest.TestCase):
     def test_subdataset(self):
         infile = test_data.get_path("data-files/hdf/AMSR_E_L3_RainGrid_B05_200707.h5")
         with TemporaryDirectory() as directory:
-            paths, names = cogify_subdatasets(infile, directory)
+            with utils.ignore_not_georeferenced():
+                paths, names = cogify_subdatasets(infile, directory)
             self.assertEqual(
                 names,
                 [
@@ -45,7 +47,8 @@ class CogifyTest(unittest.TestCase):
             )
             for path in paths:
                 self.assertTrue(os.path.exists(path))
-                with rasterio.open(path) as dataset:
-                    self.assertEqual(
-                        dataset.compression, rasterio.enums.Compression.deflate
-                    )
+                with utils.ignore_not_georeferenced():
+                    with rasterio.open(path) as dataset:
+                        self.assertEqual(
+                            dataset.compression, rasterio.enums.Compression.deflate
+                        )

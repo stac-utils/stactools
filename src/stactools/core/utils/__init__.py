@@ -1,11 +1,13 @@
 """General utility functions."""
 
 import warnings
-from typing import Callable, Optional, TypeVar
+from contextlib import contextmanager
+from typing import Callable, Generator, Optional, TypeVar
 
 import fsspec
 import pystac.utils
 import rasterio
+from rasterio.errors import NotGeoreferencedWarning
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -66,3 +68,13 @@ def deprecate(from_: str, to: str, version: str) -> None:
         DeprecationWarning,
         stacklevel=2,
     )
+
+
+@contextmanager
+def ignore_not_georeferenced() -> Generator[None, None, None]:
+    """Suppress rasterio's warning when opening a dataset that contains no
+    georeferencing information.
+    """
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=NotGeoreferencedWarning)
+        yield

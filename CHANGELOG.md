@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Specify installation channel to use for all conda packages to avoid incompatibility ([#301](https://github.com/stac-utils/stactools/pull/301))
 - Allow MultiPolygons when fixing antimeridian issues ([#317](https://github.com/stac-utils/stactools/pull/317))
 - Conda package, via [conda-forge](https://anaconda.org/conda-forge/stactools) ([#324](https://github.com/stac-utils/stactools/pull/324))
+- Context manager to ignore rasterio's NotGeoreferencedWarning ([#331](https://github.com/stac-utils/stactools/pull/331))
 
 ### Changed
 
