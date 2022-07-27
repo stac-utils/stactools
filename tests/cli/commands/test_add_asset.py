@@ -3,6 +3,7 @@ from tempfile import TemporaryDirectory
 from typing import Callable, List
 
 import pystac
+import pystac.utils
 from click import Command, Group
 from pystac import Item
 
@@ -53,3 +54,24 @@ class AddAssetTest(CliTestCase):
             assert asset.description == "placeholder asset", asset.to_dict()
             assert asset.roles
             self.assertListEqual(asset.roles, ["thumbnail", "overview"])
+
+    def test_add_asset_to_item_with_relative_paths(self) -> None:
+        with TemporaryDirectory() as tmp_dir:
+            item_path = create_temp_copy(
+                test_data.get_path("data-files/core/simple-item.json"),
+                tmp_dir,
+                "item.json",
+            )
+            asset_path = test_data.get_path("data-files/core/byte.tif")
+            cmd = [
+                "add-asset",
+                pystac.utils.make_relative_href(
+                    item_path, os.getcwd(), start_is_dir=True
+                ),
+                "test-asset",
+                pystac.utils.make_relative_href(
+                    asset_path, os.getcwd(), start_is_dir=True
+                ),
+            ]
+            result = self.run_command(cmd)
+            self.assertEqual(result.exit_code, 0)

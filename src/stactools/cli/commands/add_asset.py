@@ -2,6 +2,7 @@ from typing import List, Optional
 
 import click
 import pystac
+import pystac.utils
 
 from stactools.core import add_asset_to_item
 
@@ -78,9 +79,9 @@ def create_add_asset_command(cli: click.Group) -> click.Command:
         ignore_conflicts: bool = False,
     ) -> None:
         _add_asset(
-            item_path,
+            pystac.utils.make_absolute_href(item_path),
             asset_key,
-            asset_path,
+            pystac.utils.make_absolute_href(asset_path),
             title,
             description,
             media_type,
