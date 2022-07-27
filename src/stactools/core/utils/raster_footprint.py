@@ -44,7 +44,7 @@ def update_geometry_from_asset_footprint(
 
     After reprojection to EPSG 4326, the footprint may have more points than desired.
     This can be simplified to a polygon with fewer points that maintain a minimum distance
-    between each point.
+    to the original geometry.
 
     Args:
         item (Item): The PySTAC Item to extend.
