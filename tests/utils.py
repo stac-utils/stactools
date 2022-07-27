@@ -1,11 +1,8 @@
 import os
 import shutil
-from tempfile import TemporaryDirectory
 
 
-def create_temp_copy(
-    src_path: str, tmp_dir: TemporaryDirectory, target_name: str
-) -> str:
+def create_temp_copy(src_path: str, tmp_dir: str, target_name: str) -> str:
     """Create a temporary copy of a file
 
     Args:
