@@ -89,7 +89,7 @@ Reprojection
 Raster Footprint Generation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. automodule:: stactools.core.raster_footprint
+.. automodule:: stactools.core.utils.raster_footprint
     :members:
 
 Testing
