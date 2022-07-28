@@ -18,6 +18,7 @@ def register_plugin(registry: "Registry") -> None:
         lint,
         merge,
         migrate,
+        update_geometry,
         validate,
         version,
     )
@@ -34,6 +35,7 @@ def register_plugin(registry: "Registry") -> None:
     registry.register_subcommand(merge.create_merge_command)
     registry.register_subcommand(validate.create_validate_command)
     registry.register_subcommand(version.create_version_command)
+    registry.register_subcommand(update_geometry.create_update_geometry_command)
 
     # TODO
     # registry.register_subcommand(migrate.create_migrate_command)
