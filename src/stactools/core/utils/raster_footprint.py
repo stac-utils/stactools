@@ -177,12 +177,12 @@ def data_footprint(
     no_data: Optional[int] = None,
 ) -> Optional[Dict[str, Any]]:
     """
-        Produces a data footprint from the href of a raster file.
+    Produces a data footprint from the href of a raster file.
 
-        See :py:meth:`update_geometry_from_asset_footprint` for more details about densification
-        and simplification.
+    See :py:meth:`update_geometry_from_asset_footprint` for more details about densification
+    and simplification.
 
-     Args:
+    Args:
         href (str): The href of the image to process.
         precision (int): The number of decimal places to include in the coordinates for the
             reprojected geometry. Defaults to 3 decimal places.
@@ -247,13 +247,13 @@ def densify_reproject_simplify(
     simplify_tolerance: Optional[float] = None,
 ) -> Polygon:
     """
-        From the input Polygon, densifies the polygon, reprojects it to EPSG:4326, and then
-        simplifies the resulting polygon.
+    From the input Polygon, densifies the polygon, reprojects it to EPSG:4326, and then
+    simplifies the resulting polygon.
 
-        See :py:meth:`update_geometry_from_asset_footprint` for more details about densification
-        and simplification.
+    See :py:meth:`update_geometry_from_asset_footprint` for more details about densification
+    and simplification.
 
-     Args:
+    Args:
         polygon (Polygon): The input Polygon
         crs (CRS): The CRS of the input Polygon
         densification_factor (Optional[int]): The factor by which to increase point density
