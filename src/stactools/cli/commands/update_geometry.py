@@ -55,11 +55,9 @@ def create_update_geometry_command(cli: Group) -> Command:
         no_data: Optional[int],
     ) -> None:
         item = Item.from_file(item_path)
-        if not asset_names:
-            optional_asset_names = None
         success = raster_footprint.update_geometry_from_asset_footprint(
             item,
-            asset_names=optional_asset_names,
+            asset_names=asset_names,
             precision=precision,
             densification_factor=densification_factor,
             simplify_tolerance=simplify_tolerance,

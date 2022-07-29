@@ -21,7 +21,7 @@ DEFAULT_PRECISION = 3
 def update_geometry_from_asset_footprint(
     item: Item,
     *,
-    asset_names: Optional[List[str]] = None,
+    asset_names: List[str] = [],
     precision: int = DEFAULT_PRECISION,
     densification_factor: Optional[int] = None,
     simplify_tolerance: Optional[float] = None,
@@ -48,7 +48,8 @@ def update_geometry_from_asset_footprint(
 
     Args:
         item (Item): The PySTAC Item to extend.
-        asset_names (Optional[List[str]]): The names of the assets for which to extract footprints.
+        asset_names (List[str]): The names of the assets for which to extract footprints. If the
+            list is empty, the first asset is used.
         precision (int): The number of decimal places to include in the coordinates for the
             reprojected geometry. Defaults to 3 decimal places.
         densification_factor (Optional[int]): The factor by which to increase point density within
@@ -85,7 +86,7 @@ def update_geometry_from_asset_footprint(
 def data_footprints_for_data_assets(
     item: Item,
     *,
-    asset_names: Optional[List[str]] = None,
+    asset_names: List[str] = [],
     precision: int = DEFAULT_PRECISION,
     densification_factor: Optional[int] = None,
     simplify_tolerance: Optional[float] = None,
@@ -104,8 +105,8 @@ def data_footprints_for_data_assets(
 
     Args:
         item (Item): The PySTAC Item to extend.
-        asset_names (Optional[List[str]]): The names of the assets for which to extract
-            footprints.
+        asset_names (List[str]): The names of the assets for which to extract
+            footprints. If the list is empty, the first asset is used.
         precision (int): The number of decimal places to include in the coordinates for
             the reprojected geometry. Defaults to 3 decimal places.
         densification_factor (Optional[int]): The factor by which to increase point density
@@ -120,7 +121,7 @@ def data_footprints_for_data_assets(
             for each asset.
     """
     for name, asset in item.assets.items():
-        if asset_names is None or name in asset_names:
+        if not asset_names or name in asset_names:
             href = asset.get_absolute_href()
             if href is None:
                 logger.error(
