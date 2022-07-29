@@ -23,7 +23,7 @@ def create_update_geometry_command(cli: Group) -> Command:
         "-p",
         "--precision",
         type=int,
-        help="The number of decimal places to include in the coordinates for the"
+        help="The number of decimal places to include in the coordinates for the "
         "reprojected geometry.",
         default=raster_footprint.DEFAULT_PRECISION,
     )
@@ -31,13 +31,13 @@ def create_update_geometry_command(cli: Group) -> Command:
         "-d",
         "--densification-factor",
         type=int,
-        help="The factor by which to increase point density within" "the polygon.",
+        help="The factor by which to increase point density within the polygon.",
     )
     @click.option(
         "-s",
         "--simplify-tolerance",
         type=float,
-        help="All points in the simplified object will be within"
+        help="All points in the simplified object will be within "
         "the tolerance distance of the original geometry, in degrees.",
     )
     @click.option(
