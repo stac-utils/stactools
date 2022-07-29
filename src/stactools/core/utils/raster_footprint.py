@@ -15,7 +15,8 @@ from shapely.geometry.polygon import Polygon
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_PRECISION = 3
+# Roughly 1 centimeter in geodetic coordinates
+DEFAULT_PRECISION = 7
 
 
 def update_geometry_from_asset_footprint(
