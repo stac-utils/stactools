@@ -1,4 +1,4 @@
-import pystac
+from pystac import Item
 from rasterio.crs import CRS
 from shapely.geometry import shape
 from shapely.geometry.multipolygon import MultiPolygon
@@ -13,10 +13,10 @@ from stactools.core.utils.raster_footprint import (
 from tests import test_data
 
 
-def test_non_existent_asset():
+def test_non_existent_asset() -> None:
     use_fsspec()
 
-    item = pystac.read_file(
+    item = Item.from_file(
         test_data.get_path(
             "data-files/raster_footprint/MCD43A4.A2001055.h25v06.006.2016113010159.json"
         )
@@ -30,10 +30,10 @@ def test_non_existent_asset():
     )
 
 
-def test_modis():
+def test_modis() -> None:
     use_fsspec()
 
-    item = pystac.read_file(
+    item = Item.from_file(
         test_data.get_path(
             "data-files/raster_footprint/MCD43A4.A2001055.h25v06.006.2016113010159.json"
         )
@@ -125,10 +125,10 @@ def test_modis():
     assert shape(geometry) == shape(item.geometry)
 
 
-def test_sentinel2_sliver():
+def test_sentinel2_sliver() -> None:
     use_fsspec()
 
-    item = pystac.read_file(
+    item = Item.from_file(
         test_data.get_path(
             "data-files/raster_footprint/S2A_OPER_MSI_L2A_TL_ATOS_20220620T162319_A036527_T32TLS_N04.00.json"  # noqa
         )
@@ -156,10 +156,10 @@ def test_sentinel2_sliver():
     assert shape(geometry) == shape(item.geometry)
 
 
-def test_sentinel2_full():
+def test_sentinel2_full() -> None:
     use_fsspec()
 
-    item = pystac.read_file(
+    item = Item.from_file(
         test_data.get_path(
             "data-files/raster_footprint/S2B_OPER_MSI_L2A_TL_2BPS_20220618T135630_A027590_T32TLS_N04.00.json"  # noqa
         )
@@ -186,10 +186,10 @@ def test_sentinel2_full():
     assert shape(geometry) == shape(item.geometry)
 
 
-def test_landsat8():
+def test_landsat8() -> None:
     use_fsspec()
 
-    item = pystac.read_file(
+    item = Item.from_file(
         test_data.get_path(
             "data-files/raster_footprint/LC08_L1TP_198029_20220331_20220406_02_T1_B2.json"
             # noqa
@@ -217,7 +217,7 @@ def test_landsat8():
     assert shape(geometry) == shape(item.geometry)
 
 
-def test_data_footprint_precision():
+def test_data_footprint_precision() -> None:
     use_fsspec()
 
     polygon = data_footprint(
@@ -248,7 +248,7 @@ def test_data_footprint_precision():
     assert shape(geometry) == shape(polygon)
 
 
-def test_reproject():
+def test_reproject() -> None:
     data_polygons = [
         Polygon([[0, 0], [10000, 0], [10000, 10000], [0, 10000], [0, 0]]),
         Polygon(
@@ -294,7 +294,7 @@ def test_reproject():
     assert reprojected_polygon == expected
 
 
-def test_remove_duplicate_points():
+def test_remove_duplicate_points() -> None:
     redundant_shape = shape(
         {
             "type": "Polygon",
