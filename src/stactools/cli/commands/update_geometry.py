@@ -17,7 +17,11 @@ def create_update_geometry_command(cli: Group) -> Command:
         "--asset-name",
         "asset_names",
         multiple=True,
-        help="The names of the assets for which to extract footprints",
+        help=(
+            "The names of the assets to try for footprint extraction. "
+            "The first successful footprint will be used. "
+            "If no assets are provided, all assets will be tried until one is successful."
+        ),
     )
     @click.option(
         "-p",
