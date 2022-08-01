@@ -24,9 +24,10 @@ To release a new version of **stactools** or a [stactools-package](https://githu
    If you're in a package, update the appropriate `__init__.py` file.
 7. Update [CHANGELOG.md](CHANGELOG.md):
    1. Change `[Unreleased]` to your new version number and add a date.
-   2. Add a link to your new version at the bottom of the page, e.g. `[0.3.0]: <https://github.com/stac-utils/stactools/compare/v0.2.5..v0.3.0>`.
-   3. Update the `[Unreleased]` link at the bottom of the page to start at your new release.
-   4. Audit your new section of the CHANGELOG to ensure all relevant changes are captured.
+   2. Add a new `[Unreleased]` section at the top of the page with the appropriate subheaders.
+   3. Add a link to your new version at the bottom of the page, e.g. `[0.3.0]: <https://github.com/stac-utils/stactools/compare/v0.2.5..v0.3.0>`.
+   4. Update the `[Unreleased]` link at the bottom of the page to start at your new release.
+   5. Audit your new section of the CHANGELOG to ensure all relevant changes are captured.
 8. Open a pull request for your branch.
    Include a "Release summary" section which includes the contents of your section of the CHANGELOG.
 9. Once approved, merge the branch.

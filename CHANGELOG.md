@@ -9,19 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added geometry.py for handling common geometrical operations like bounding boxes from GeoJSON ([#314](https://github.com/stac-utils/stactools/pull/314))
+### Changed
+
+### Removed
+
+## [0.4.0] - 2022-08-01
+
+### Added
+
+- `stactools.core.geometry` for handling common geometrical operations like creating bounding boxes from GeoJSON ([#314](https://github.com/stac-utils/stactools/pull/314))
 - Specify installation channel to use for all conda packages to avoid incompatibility ([#301](https://github.com/stac-utils/stactools/pull/301))
 - Allow MultiPolygons when fixing antimeridian issues ([#317](https://github.com/stac-utils/stactools/pull/317))
 - Conda package, via [conda-forge](https://anaconda.org/conda-forge/stactools) ([#324](https://github.com/stac-utils/stactools/pull/324))
 - Context manager to ignore rasterio's NotGeoreferencedWarning ([#331](https://github.com/stac-utils/stactools/pull/331))
-- Added `raster_footprint` module to assist in populating the geometry of an Item from data coverage of its data assets ([#307](https://github.com/stac-utils/stactools/pull/307))
-- `stac add-asset` command to add an asset to an item ([#300](https://github.com/stac-utils/stactools/pull/300))
+- `stactools.core.utils.raster_footprint` and `stac update-geometry`  to assist in populating the geometry of an Item from data coverage of its data assets ([#307](https://github.com/stac-utils/stactools/pull/307))
+- `stactools.core.add_asset` and `stac add-asset` to add an asset to an item ([#300](https://github.com/stac-utils/stactools/pull/300))
 
 ### Changed
 
-- Modified stactools.core.utils.convert with functions to export subdatasets from HDF files as separate COGs and
-single bands from multiband files ([#318](https://github.com/stac-utils/stactools/pull/318))
-- Modified stactools.core.utils.antimeridian.fix_item to return the item and updated 2 unit tests ([#317](https://github.com/stac-utils/stactools/pull/317))
+- Modified `stactools.core.utils.convert` with functions to export subdatasets from HDF files as separate COGs and
+  single bands from multiband files ([#318](https://github.com/stac-utils/stactools/pull/318))
+- Modified `stactools.core.utils.antimeridian.fix_item` to return the item and updated 2 unit tests ([#317](https://github.com/stac-utils/stactools/pull/317))
 - Relaxed typing for cmd parameter for the CliTestCase.run_command in cli_test.py ([#312](https://github.com/stac-utils/stactools/pull/312))
 - Cleaned up API documentation ([#315](https://github.com/stac-utils/stactools/pull/315))
 - Renamed command `addraster` to `add-raster` ([#321](https://github.com/stac-utils/stactools/pull/321))
@@ -283,7 +291,8 @@ See [#9](https://github.com/stac-utils/stactools/pull/9)
 - `stac.cli.command.layout` for modfiygin the layout of STACs
 - `stac.browse` for launching a local instance of stac-browser using docker.
 
-[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.3.1..main>
+[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.4.0..main>
+[0.4.0]: <https://github.com/stac-utils/stactools/compare/v0.3.1..v0.4.0>
 [0.3.1]: <https://github.com/stac-utils/stactools/compare/v0.3.0..v0.3.1>
 [0.3.0]: <https://github.com/stac-utils/stactools/compare/v0.2.6..v0.3.0>
 [0.2.6]: <https://github.com/stac-utils/stactools/compare/v0.2.5..v0.2.6>
