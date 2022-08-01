@@ -49,8 +49,9 @@ def update_geometry_from_asset_footprint(
 
     Args:
         item (Item): The PySTAC Item to extend.
-        asset_names (List[str]): The names of the assets for which to extract footprints. If the
-            list is empty, the first asset is used.
+        asset_names (List[str]): The names of the assets for which to attempt to
+            extract footprints. The first successful footprint will be used. If the
+            list is empty, all assets will be tried until one is successful.
         precision (int): The number of decimal places to include in the coordinates for the
             reprojected geometry. Defaults to 3 decimal places.
         densification_factor (Optional[int]): The factor by which to increase point density within
@@ -106,8 +107,9 @@ def data_footprints_for_data_assets(
 
     Args:
         item (Item): The PySTAC Item to extend.
-        asset_names (List[str]): The names of the assets for which to extract
-            footprints. If the list is empty, the first asset is used.
+        asset_names (List[str]): The names of the assets for which to attempt to
+            extract footprints. The first successful footprint will be used. If the
+            list is empty, all assets will be tried until one is successful.
         precision (int): The number of decimal places to include in the coordinates for
             the reprojected geometry. Defaults to 3 decimal places.
         densification_factor (Optional[int]): The factor by which to increase point density
