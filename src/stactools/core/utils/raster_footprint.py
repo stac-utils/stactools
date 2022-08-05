@@ -212,7 +212,10 @@ def data_footprint(
     data_val = 1 if no_data != 1 else 0
 
     if no_data is not None:
-        arr[numpy.where(arr != no_data)] = data_val
+        if numpy.isnan(no_data):
+            arr[~numpy.isnan(arr)] = data_val
+        else:
+            arr[numpy.where(arr != no_data)] = data_val
     else:
         arr.fill(data_val)
 
