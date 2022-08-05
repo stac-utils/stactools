@@ -217,6 +217,28 @@ def test_landsat8() -> None:
     assert shape(geometry) == shape(item.geometry)
 
 
+def test_nan_as_nodata() -> None:
+
+    polygon = data_footprint(
+        test_data.get_path("data-files/raster_footprint/LC08_LST_crop.tif"),  # noqa
+        simplify_tolerance=0.01,
+    )
+    geometry = {
+        "type": "Polygon",
+        "coordinates": (
+            (
+                (-94.721661, 42.4207891),
+                (-94.7199638, 42.3586741),
+                (-94.6649849, 42.359756),
+                (-94.6483633, 42.406737),
+                (-94.721661, 42.4207891),
+            ),
+        ),
+    }
+
+    assert shape(geometry) == shape(polygon)
+
+
 def test_data_footprint_precision() -> None:
     use_fsspec()
 
