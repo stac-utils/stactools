@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+
+### Fixed
+
+- `stactools.core.utils.raster_footprint` now handles nan nodata values correctly ([#344](https://github.com/stac-utils/stactools/pull/344))
+
 ### Removed
 
 ## [0.4.0] - 2022-08-01
