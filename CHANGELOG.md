@@ -11,12 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+### Fixed
+
+### Removed
+
+## [0.4.1] - 2022-08-08
 
 ### Fixed
 
 - `stactools.core.utils.raster_footprint` now handles nan nodata values correctly ([#344](https://github.com/stac-utils/stactools/pull/344))
-
-### Removed
 
 ## [0.4.0] - 2022-08-01
 
@@ -296,7 +299,8 @@ See [#9](https://github.com/stac-utils/stactools/pull/9)
 - `stac.cli.command.layout` for modfiygin the layout of STACs
 - `stac.browse` for launching a local instance of stac-browser using docker.
 
-[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.4.0..main>
+[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.4.1..main>
+[0.4.1]: <https://github.com/stac-utils/stactools/compare/v0.4.0..v0.4.1>
 [0.4.0]: <https://github.com/stac-utils/stactools/compare/v0.3.1..v0.4.0>
 [0.3.1]: <https://github.com/stac-utils/stactools/compare/v0.3.0..v0.3.1>
 [0.3.0]: <https://github.com/stac-utils/stactools/compare/v0.2.6..v0.3.0>
