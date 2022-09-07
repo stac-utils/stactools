@@ -53,7 +53,7 @@ def update_geometry_from_asset_footprint(
             extract footprints. The first successful footprint will be used. If the
             list is empty, all assets will be tried until one is successful.
         precision (int): The number of decimal places to include in the coordinates for the
-            reprojected geometry. Defaults to 3 decimal places.
+            reprojected geometry.
         densification_factor (Optional[int]): The factor by which to increase point density within
             the polygon.
             A factor of 2 would double the density of points (placing one new point between each
@@ -111,7 +111,7 @@ def data_footprints_for_data_assets(
             extract footprints. The first successful footprint will be used. If the
             list is empty, all assets will be tried until one is successful.
         precision (int): The number of decimal places to include in the coordinates for
-            the reprojected geometry. Defaults to 3 decimal places.
+            the reprojected geometry.
         densification_factor (Optional[int]): The factor by which to increase point density
             within the polygon. A factor of 2 would double the density of points (placing one
             new point between each existing pair of points), a factor of 3 would place two points
@@ -189,7 +189,7 @@ def data_footprint(
     Args:
         href (str): The href of the image to process.
         precision (int): The number of decimal places to include in the coordinates for the
-            reprojected geometry. Defaults to 3 decimal places.
+            reprojected geometry.
         densification_factor (Optional[int]): The factor by which to increase point density
             within the polygon. A factor of 2 would double the density of points (placing one
             new point between each existing pair of points), a factor of 3 would place two points
@@ -268,7 +268,7 @@ def densify_reproject_simplify(
             new point between each existing pair of points), a factor of 3 would place two points
             between each point, etc.
         precision (int): The number of decimal places to include in the coordinates for the
-            reprojected geometry. Defaults to 3 decimal places.
+            reprojected geometry.
         simplify_tolerance (Optional[float]): All points in the simplified object will be within
             the tolerance distance of the original geometry, in degrees.
 
