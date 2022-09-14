@@ -9,9 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Multi-band support for raster footprint generation ([#355](https://github.com/stac-utils/stactools/pull/355))
+
 ### Changed
 
 ### Fixed
+
+- `stac create-item` JSON output ([#355](https://github.com/stac-utils/stactools/pull/355))
 
 ### Removed
 
@@ -94,6 +98,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Test items are now valid STAC v1.0.0 ([#243](https://github.com/stac-utils/stactools/pull/243))
 - Move asset tests now have all the assets they need ([#243](https://github.com/stac-utils/stactools/pull/243))
+
 ### Changed
 
 - Use [pytest](https://docs.pytest.org/) for unit testing instead of `unittest` ([#220](https://github.com/stac-utils/stactools/pull/220))
@@ -247,6 +252,7 @@ Most packages have been moved to the [stactools-packages](https://github.com/sta
 ## [0.1.4] - 2021-02-21
 
 ### Added
+
 - Implementation of Landsat STAC handling ([#23](https://github.com/stac-utils/stactools/pull/23))
 - Add NAIP subpackage for deriving NAIP STAC items and collection ([#18](https://github.com/stac-utils/stactools/pull/18))
 - Add catalog type option for `planet convert` ([#61](https://github.com/stac-utils/stactools/pull/61))
