@@ -368,3 +368,27 @@ def test_remove_duplicate_points() -> None:
         densify_reproject_simplify(redundant_shape, CRS.from_epsg(4326))
         == deduplicated_shape
     )
+
+
+def test_multiband_footprint() -> None:
+    path = test_data.get_path(
+        "data-files/raster_footprint/"
+        "AST_L1T_00310012006175412_20150516104359-SWIR-cropped.tif"
+    )
+    footprint = data_footprint(path, no_data=0, bands=[], simplify_tolerance=0.005)
+    assert footprint
+    expected = shape(
+        {
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    [-105.7853028, 40.4749528],
+                    [-105.6372387, 40.455872],
+                    [-105.6366831, 40.3969793],
+                    [-105.808413, 40.3959062],
+                    [-105.7853028, 40.4749528],
+                ]
+            ],
+        }
+    )
+    assert shape(footprint) == expected
