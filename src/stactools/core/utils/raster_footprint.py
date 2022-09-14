@@ -2,8 +2,8 @@ import logging
 from itertools import groupby
 from typing import Any, Dict, Iterator, List, Optional, Tuple
 
-import numpy
 import numpy as np
+import numpy.typing as npt
 import rasterio
 import rasterio.features
 from pystac import Item
@@ -27,6 +27,7 @@ def update_geometry_from_asset_footprint(
     densification_factor: Optional[int] = None,
     simplify_tolerance: Optional[float] = None,
     no_data: Optional[int] = None,
+    bands: List[int] = [1],
 ) -> bool:
     """
     Accepts an Item and an optional list of asset names within that item, and updates
@@ -62,6 +63,10 @@ def update_geometry_from_asset_footprint(
         simplify_tolerance (Optional[float]): All points in the simplified object will be within
             the tolerance distance of the original geometry, in degrees.
         no_data(Optional[int]): explicitly set the no data value if not in image metadata
+        bands (List[int]): The bands to use to compute the footprint. Defaults
+            to [1]. If an empty list is provided, the bands will be ORd together;
+            e.g. for a pixel to be outside of the footprint, all bands must have
+            nodata in that pixel.
 
     Returns:
         bool: True if the extent was successfully updated, False if not
@@ -74,6 +79,7 @@ def update_geometry_from_asset_footprint(
             densification_factor=densification_factor,
             simplify_tolerance=simplify_tolerance,
             no_data=no_data,
+            bands=bands,
         ),
         None,
     )
@@ -93,6 +99,7 @@ def data_footprints_for_data_assets(
     densification_factor: Optional[int] = None,
     simplify_tolerance: Optional[float] = None,
     no_data: Optional[int] = None,
+    bands: List[int] = [1],
 ) -> Iterator[Tuple[str, Dict[str, Any]]]:
     """
     Accepts an Item and an optional list of asset names within that item, and
@@ -119,6 +126,10 @@ def data_footprints_for_data_assets(
         simplify_tolerance (Optional[float]): All points in the simplified object will be within
             the tolerance distance of the original geometry, in degrees.
         no_data(Optional[int]): explicitly set the no data value if not in image metadata
+        bands (List[int]): The bands to use to compute the footprint. Defaults
+            to [1]. If an empty list is provided, the bands will be ORd together;
+            e.g. for a pixel to be outside of the footprint, all bands must have
+            nodata in that pixel.
     Returns:
         Iterator[Tuple[str, Dict[str, Any]]]: Iterator of the data extent as a geojson dict
             for each asset.
@@ -137,6 +148,7 @@ def data_footprints_for_data_assets(
                     densification_factor=densification_factor,
                     simplify_tolerance=simplify_tolerance,
                     no_data=no_data,
+                    bands=bands,
                 )
                 if extent:
                     yield name, extent
@@ -179,6 +191,7 @@ def data_footprint(
     densification_factor: Optional[int] = None,
     simplify_tolerance: Optional[float] = None,
     no_data: Optional[int] = None,
+    bands: List[int] = [1],
 ) -> Optional[Dict[str, Any]]:
     """
     Produces a data footprint from the href of a raster file.
@@ -196,8 +209,12 @@ def data_footprint(
             between each point, etc.
         simplify_tolerance (Optional[float]): All points in the simplified object will be within
             the tolerance distance of the original geometry, in degrees.
-        no_data(Optional[int]): explicitly set the no data value if not in image metadata. If
+        no_data (Optional[int]): explicitly set the no data value if not in image metadata. If
             set to None, this will return the footprint including no data values.
+        bands (List[int]): The bands to use to compute the footprint. Defaults
+            to [1]. If an empty list is provided, the bands will be ORd together;
+            e.g. for a pixel to be outside of the footprint, all bands must have
+            nodata in that pixel.
 
     Returns:
         List[Tuple[float, float]]: a list of the densified points
@@ -208,23 +225,32 @@ def data_footprint(
     if no_data is None:
         no_data = src.nodata
 
-    arr = src.read(1, out_shape=src.shape)
-    data_val = 1 if no_data != 1 else 0
+    if not src.indexes:
+        raise ValueError(
+            "Raster footprint cannot be computed for an asset with no bands."
+        )
+    if not bands:
+        bands = src.indexes
 
-    if no_data is not None:
-        if numpy.isnan(no_data):
-            arr[~numpy.isnan(arr)] = data_val
+    data: npt.NDArray[np.uint8] = np.full(src.shape, 0, dtype=np.uint8)
+    for index in bands:
+        band_data = src.read(index, out_shape=src.shape)
+
+        if no_data is not None:
+            if np.isnan(no_data):
+                data[~np.isnan(band_data)] = 1
+            else:
+                data[np.where(band_data != no_data)] = 1
         else:
-            arr[numpy.where(arr != no_data)] = data_val
-    else:
-        arr.fill(data_val)
+            data.fill(1)
+            break
 
     data_polygons = [
         shape(polygon_dict)
         for polygon_dict, region_value in rasterio.features.shapes(
-            arr, transform=src.transform
+            data, transform=src.transform
         )
-        if region_value == data_val
+        if region_value == 1
     ]
 
     if not data_polygons:
