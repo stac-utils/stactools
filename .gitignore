@@ -139,3 +139,6 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# External metadata files for rasters (e.g. when opening with QGIS)
+tests/data-files/**/*.aux.xml
