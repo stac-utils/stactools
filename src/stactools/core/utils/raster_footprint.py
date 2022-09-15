@@ -232,18 +232,16 @@ def data_footprint(
     if not bands:
         bands = src.indexes
 
-    data: npt.NDArray[np.uint8] = np.full(src.shape, 0, dtype=np.uint8)
-    for index in bands:
-        band_data = src.read(index, out_shape=src.shape)
-
-        if no_data is not None:
+    if no_data is not None:
+        data: npt.NDArray[np.uint8] = np.full(src.shape, 0, dtype=np.uint8)
+        for index in bands:
+            band_data = src.read(index, out_shape=src.shape)
             if np.isnan(no_data):
                 data[~np.isnan(band_data)] = 1
             else:
                 data[np.where(band_data != no_data)] = 1
-        else:
-            data.fill(1)
-            break
+    else:
+        data = np.full(src.shape, 1, dtype=np.uint8)
 
     data_polygons = [
         shape(polygon_dict)
