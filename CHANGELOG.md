@@ -9,15 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Multi-band support for raster footprint generation ([#355](https://github.com/stac-utils/stactools/pull/355))
-
 ### Changed
 
 ### Fixed
 
-- `stac create-item` JSON output ([#355](https://github.com/stac-utils/stactools/pull/355))
-
 ### Removed
+
+## [0.4.2] - 2022-09-15
+
+### Added
+
+- Multi-band support for raster footprint generation ([#355](https://github.com/stac-utils/stactools/pull/355))
+
+### Fixed
+
+- `stac create-item` JSON output ([#355](https://github.com/stac-utils/stactools/pull/355))
 
 ## [0.4.1] - 2022-08-08
 
@@ -305,7 +311,8 @@ See [#9](https://github.com/stac-utils/stactools/pull/9)
 - `stac.cli.command.layout` for modfiygin the layout of STACs
 - `stac.browse` for launching a local instance of stac-browser using docker.
 
-[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.4.1..main>
+[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.4.2..main>
+[0.4.2]: <https://github.com/stac-utils/stactools/compare/v0.4.1..v0.4.2>
 [0.4.1]: <https://github.com/stac-utils/stactools/compare/v0.4.0..v0.4.1>
 [0.4.0]: <https://github.com/stac-utils/stactools/compare/v0.3.1..v0.4.0>
 [0.3.1]: <https://github.com/stac-utils/stactools/compare/v0.3.0..v0.3.1>

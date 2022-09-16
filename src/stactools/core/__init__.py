@@ -24,4 +24,4 @@ __all__ = [
     "move_all_assets",
     "use_fsspec",
 ]
-__version__ = "0.4.1"
+__version__ = "0.4.2"
