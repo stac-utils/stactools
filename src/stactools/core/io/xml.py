@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import Callable, List, Optional, cast
+from typing import Any, Callable, List, Optional, cast
 
 from lxml import etree
 from lxml.etree import _Element as lxmlElement
@@ -159,7 +159,10 @@ class XmlElement:
 
     @classmethod
     def from_file(
-        cls, href: str, read_href_modifier: Optional[ReadHrefModifier] = None
+        cls,
+        href: str,
+        read_href_modifier: Optional[ReadHrefModifier] = None,
+        **kwargs: Any,
     ) -> "XmlElement":
         """Reads an XmlElement from an href.
 
@@ -175,5 +178,5 @@ class XmlElement:
         Returns:
             XmlElement: The read XmlElement.
         """
-        text = read_text(href, read_href_modifier)
+        text = read_text(href, read_href_modifier, **kwargs)
         return cls(etree.fromstring(bytes(text, encoding="utf-8")))
