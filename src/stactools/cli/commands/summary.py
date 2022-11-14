@@ -1,11 +1,11 @@
-from typing import Any
+from typing import Any, Dict
 
 import click
 import pystac
 from pystac import Catalog, Collection
 
 
-def format_summary(summary: dict[str, Any], indent: int = 4) -> str:
+def format_summary(summary: Dict[str, Any], indent: int = 4) -> str:
     out = ""
     for var in summary:
         if type(summary[var]) == dict:
