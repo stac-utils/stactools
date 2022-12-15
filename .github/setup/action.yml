@@ -33,6 +33,7 @@ runs:
       uses: conda-incubator/setup-miniconda@v2
       with:
         auto-update-conda: true
+        channels: conda-forge
         python-version: ${{ inputs.python-version }}
     - name: Update Conda's environemnt
       run: conda env update -f environment.yml -n test
