@@ -1,8 +1,9 @@
-from typing import Any, Dict
+import json
+from typing import Any, Dict, Optional
 
 import click
-import pystac
-from pystac import Catalog, Collection
+from pystac import Collection
+from pystac.summaries import Summarizer
 
 
 def format_summary(summary: Dict[str, Any], indent: int = 4) -> str:
@@ -15,43 +16,46 @@ def format_summary(summary: Dict[str, Any], indent: int = 4) -> str:
     return out
 
 
-def print_summaries(collection_path: str, force_resummary: bool = False) -> None:
-    col = pystac.read_file(collection_path)
-    if isinstance(col, Collection):
-        orig_summaries = col.summaries.to_dict()
-        if force_resummary or len(orig_summaries) == 0:
-            new_summaries = pystac.summaries.Summarizer().summarize(col).to_dict()
-            if len(orig_summaries) == 0:
-                print(
-                    "Collection's summaries were empty. Printing recalculated summaries:"
-                )
-            print(format_summary(new_summaries))
-        else:
-            print(format_summary(orig_summaries))
-    elif isinstance(col, Catalog):
-        print("Input is a catalog, not a collection.")
-        print(
-            "Run 'stac describe -h {}' to discover collections in this catalog".format(
-                collection_path
-            )
-        )
-        return
-    else:
-        print("{} is not a collection".format(collection_path))
-        return
-
-
 def create_summary_command(cli: click.Group) -> click.Command:
     @cli.command("summary", short_help="Summarize a STAC collection's contents.")
+    @click.argument("href")
     @click.option(
         "-f",
-        "--force_resummary",
+        "--fields",
+        help=(
+            "the path to the json file with field descriptions. "
+            "If no file is passed, a default one will be used."
+        ),
+    )
+    @click.option(
+        "-u",
+        "--update",
         is_flag=True,
         default=False,
-        help="Ignore existing summaries in the collection and print recalculated summaries",
+        help=(
+            "Instead of printing the summary information, "
+            "update the collection itself, then print it to stdout."
+        ),
     )
-    @click.argument("collection_path")
-    def summary_command(collection_path: str, force_resummary: bool) -> None:
-        print_summaries(collection_path, force_resummary)
+    @click.option(
+        "-i",
+        "--inplace",
+        is_flag=True,
+        default=False,
+        help="If updating, update the collection in-place, instead of printing it to stdout.",
+    )
+    def summary_command(
+        href: str, fields: Optional[str], update: bool, inplace: bool
+    ) -> None:
+        collection = Collection.from_file(href)
+        summaries = Summarizer(fields).summarize(collection)
+        if update:
+            collection.summaries = summaries
+            if inplace:
+                collection.save_object(include_self_link=False, dest_href=href)
+            else:
+                print(json.dumps(collection.to_dict(include_self_link=False), indent=2))
+        else:
+            print(format_summary(summaries.to_dict()))
 
     return summary_command
