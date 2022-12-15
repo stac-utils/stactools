@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Include kwargs in io `read_text` for use with internal `fsspec.open` call. ([372](https://github.com/stac-utils/stactools/pull/372))
+- Include kwargs in io `read_text` for use with internal `fsspec.open` call. ([#372](https://github.com/stac-utils/stactools/pull/372))
+- Python 3.11 support ([#376](https://github.com/stac-utils/stactools/pull/376))
 
 ### Changed
 
