@@ -5,7 +5,7 @@ importlib-metadata
 ipython
 jupyter
 lxml-stubs
-mypy
+mypy >= 0.981 # https://github.com/python/mypy/issues/13627
 nbsphinx
 packaging
 pre-commit
