@@ -7,17 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### [0.4.3] - 2022-12-16
+
 ### Added
 
 - Include kwargs in io `read_text` for use with internal `fsspec.open` call. ([#372](https://github.com/stac-utils/stactools/pull/372))
 - Python 3.11 support ([#376](https://github.com/stac-utils/stactools/pull/376))
 - `stac summary` command ([#323](https://github.com/stac-utils/stactools/pull/323))
-
-### Changed
-
-### Fixed
-
-### Removed
 
 ## [0.4.2] - 2022-09-15
 
@@ -315,7 +311,8 @@ See [#9](https://github.com/stac-utils/stactools/pull/9)
 - `stac.cli.command.layout` for modfiygin the layout of STACs
 - `stac.browse` for launching a local instance of stac-browser using docker.
 
-[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.4.2..main>
+[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.4.3..main>
+[0.4.3]: <https://github.com/stac-utils/stactools/compare/v0.4.2..v0.4.3>
 [0.4.2]: <https://github.com/stac-utils/stactools/compare/v0.4.1..v0.4.2>
 [0.4.1]: <https://github.com/stac-utils/stactools/compare/v0.4.0..v0.4.1>
 [0.4.0]: <https://github.com/stac-utils/stactools/compare/v0.3.1..v0.4.0>
