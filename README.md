@@ -58,15 +58,6 @@ To install the single optional dependency:
 pip install stactools[s3]
 ```
 
-### Python 3.10
-
-If you are working in Python 3.10, you'll need to install a pre-release version of rasterio 1.3:
-
-```sh
-pip install --pre rasterio
-pip install stactools
-```
-
 ### Docker
 
 To download the Docker image from the registry:
