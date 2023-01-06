@@ -18,7 +18,7 @@ dependencies:
       - nbsphinx
       - pydata-sphinx-theme
       - pylint
-      - sphinx
+      - sphinx < 6
       - sphinx-autobuild
       - sphinx-click
       - sphinxcontrib-napoleon
