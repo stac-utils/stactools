@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `stactools.core.utils.round` for rounding Item geometry and Item and Collection bboxes to a specified precision ([#384](https://github.com/stac-utils/stactools/pull/384))
 
+### Changed
+
+- Freed `recursive_round` function from `round_coordinates` in `stactools.core.utils.round` ([#390](https://github.com/stac-utils/stactools/pull/390))
+
 ### [0.4.3] - 2022-12-16
 
 ### Added
