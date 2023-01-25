@@ -1,6 +1,8 @@
+from typing import Any, Iterable, Iterator
+
 from pystac import Collection, Item
 
-from stactools.core.utils.round import round_coordinates
+from stactools.core.utils.round import recursive_round, round_coordinates
 from tests import test_data
 
 
@@ -66,3 +68,34 @@ def test_collection_bbox() -> None:
     for coord in coords:
         for value in coord:
             assert str(value)[::-1].find(".") <= 5
+
+
+def test_recursive_round() -> None:
+    def flatten(nested: Iterable) -> Iterator[Any]:
+        for value in nested:
+            if isinstance(value, Iterable):
+                for nest in flatten(value):
+                    yield nest
+            else:
+                yield value
+
+    vanilla = [0.123456, 1.12345678]
+    rounded = recursive_round(vanilla, precision=4)
+    for coord in rounded:
+        assert str(coord)[::-1].find(".") == 4
+
+    nested_lists = [
+        [[0.123456, 2.1234567], [1.12345678, 2.12345]],
+        [[0.123456, 1.12345678]],
+    ]
+    rounded = recursive_round(nested_lists, precision=3)
+    for coord in flatten(rounded):
+        assert str(coord)[::-1].find(".") == 3
+
+    nested_tuples = [
+        ((0.123456, 2.1234567), (1.12345678, 2.12345)),
+        ((0.123456, 1.12345678)),
+    ]
+    rounded = recursive_round(nested_tuples, precision=5)
+    for coord in flatten(rounded):
+        assert str(coord)[::-1].find(".") == 5
