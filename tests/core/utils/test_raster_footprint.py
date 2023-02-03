@@ -5,7 +5,9 @@ from shapely.geometry.multipolygon import MultiPolygon
 from shapely.geometry.polygon import Polygon
 
 from stactools.core import use_fsspec
+from stactools.core.projection import SINUSOIDAL_TILE_METERS
 from stactools.core.utils.raster_footprint import (
+    SinusoidalRasterFootprint,
     data_footprint,
     densify_reproject_simplify,
     update_geometry_from_asset_footprint,
@@ -392,3 +394,55 @@ def test_multiband_footprint() -> None:
         }
     )
     assert shape(footprint) == expected
+
+
+def test_sinusoidal_projection_edge() -> None:
+    item = Item.from_file(
+        test_data.get_path(
+            "data-files/raster_footprint/MCD15A2H.A2022025.h01v11.061.json"
+        )
+    )
+    original_geometetry = item.geometry.copy()
+
+    tile_dimension = 2400
+    tile_pixel_size = SINUSOIDAL_TILE_METERS / tile_dimension / 100000
+    SinusoidalRasterFootprint(
+        horizontal_tile=1,
+        vertical_tile=11,
+        tile_dimension=tile_dimension,
+        asset_names=["Fpar_500m"],
+        precision=6,
+        simplify_tolerance=tile_pixel_size / 2,
+    ).update_geometry_from_asset_footprint(item)
+
+    assert shape(original_geometetry) != shape(item.geometry)
+
+    expected = shape(
+        {
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    [-179.995967, -20.0],
+                    [-170.269288, -20.00078],
+                    [-170.785883, -20.471614],
+                    [-171.317227, -20.942447],
+                    [-171.858629, -21.409113],
+                    [-172.409903, -21.871613],
+                    [-172.976033, -22.334113],
+                    [-173.55724, -22.796613],
+                    [-174.148308, -23.254946],
+                    [-174.749055, -23.709112],
+                    [-175.365018, -24.163279],
+                    [-175.984709, -24.609112],
+                    [-176.619528, -25.054945],
+                    [-177.275865, -25.504945],
+                    [-177.941817, -25.950778],
+                    [-178.610756, -26.388277],
+                    [-179.295237, -26.825777],
+                    [-179.99552, -27.263277],
+                    [-179.995967, -20.0],
+                ]
+            ],
+        }
+    )
+    assert shape(expected) == shape(item.geometry)

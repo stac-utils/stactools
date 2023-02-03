@@ -13,10 +13,241 @@ from shapely.geometry import mapping, shape
 from shapely.geometry.multipolygon import MultiPolygon
 from shapely.geometry.polygon import Polygon
 
+from stactools.core.projection import SINUSOIDAL_TILE_METERS, sinusoidal_grid_to_lonlat
+from stactools.core.utils.round import recursive_round
+
 logger = logging.getLogger(__name__)
 
 # Roughly 1 centimeter in geodetic coordinates
 DEFAULT_PRECISION = 7
+
+
+class ItemRequired(Exception):
+    """Item required to run the method."""
+
+
+def _densify_by_factor(
+    point_list: List[Tuple[float, float]], densification_factor: int
+) -> List[Tuple[float, float]]:
+    """
+        Densifies the number of points in a list of points by a factor. For example, a list of 5 points
+        and a densification_factor of 2 will result in 10 points (one new point between each original
+        adjacent points.
+
+        Derived from code found at
+        https://stackoverflow.com/questions/64995977/generating-equidistance-points-along-the-boundary-of-a-polygon-but-cw-ccw  # noqa
+
+    Args:
+        point_list (List[Tuple[float, float]]): The list of points.
+        densification_factor (int): The factor by which to densify the points. A larger densification factor
+            should be used when reprojection causes in greater curvature from the original geometry.
+
+    Returns:
+        List[Tuple[float, float]]: a list of the densified points
+    """
+    points: Any = np.asarray(point_list)
+    densified_number = len(points) * densification_factor
+    existing_indices = np.arange(0, densified_number, densification_factor)
+    interp_indices = np.arange(existing_indices[-1])
+    interp_x = np.interp(interp_indices, existing_indices, points[:, 0])  # noqa
+    interp_y = np.interp(interp_indices, existing_indices, points[:, 1])  # noqa
+    densified_points = [(x, y) for x, y in zip(interp_x, interp_y)]
+    return densified_points
+
+
+def _densify_by_distance(
+    point_list: List[Tuple[float, float]], densification_length: float
+) -> List[Tuple[float, float]]:
+    """Densifies the number of points in a list of points by inserting new points
+    at densification_length intervals between each set of points in the list. For
+    example, if two successive points in the list are separated by 10 units and
+    a densification_length of 2 is provided, 4 new points will be added
+    between the two original points (one new point every 2 units of distance).
+
+    Inspired from code found at
+    https://stackoverflow.com/questions/64995977/generating-equidistance-points-along-the-boundary-of-a-polygon-but-cw-ccw  # noqa
+
+    Args:
+        point_list (List[Tuple[float, float]]): The list of points to be
+            densified.
+        densification_length (float): The interval at which to insert additional
+            points.
+
+    Returns:
+        List[Tuple[float, float]]: The list of densified points
+    """
+    points: Any = np.asarray(point_list)
+
+    dxdy = points[1:, :] - points[:-1, :]
+    segment_lengths = np.sqrt(np.sum(np.square(dxdy), axis=1))
+    total_length = np.sum(segment_lengths)
+
+    cum_segment_lengths = np.cumsum(segment_lengths)
+    cum_segment_lengths = np.insert(cum_segment_lengths, 0, [0])
+    cum_interp_lengths = np.arange(0, total_length, densification_length)
+    cum_interp_lengths = np.append(cum_interp_lengths, [total_length])
+
+    interp_x = np.interp(cum_interp_lengths, cum_segment_lengths, points[:, 0])
+    interp_y = np.interp(cum_interp_lengths, cum_segment_lengths, points[:, 1])
+
+    return [(x, y) for x, y in zip(interp_x, interp_y)]
+
+
+class RasterFootprint:
+    """Methods for updating Item geometry with the convex hull of valid raster data."""
+
+    def __init__(
+        self,
+        *,
+        asset_names: List[str] = [],
+        precision: int = DEFAULT_PRECISION,
+        densification_factor: Optional[int] = None,
+        simplify_tolerance: Optional[float] = None,
+        no_data: Optional[int] = None,
+        bands: List[int] = [1],
+    ) -> None:
+        self.asset_names = asset_names
+        self.precision = precision
+        self.densification_factor = densification_factor
+        self.simplify_tolerance = simplify_tolerance
+        self.no_data = no_data
+        self.bands = bands
+
+    def update_geometry_from_asset_footprint(self, item: Item) -> bool:
+        asset_name_and_extent = next(
+            self.data_footprints_for_data_assets(item),
+            None,
+        )
+        if asset_name_and_extent is not None:
+            _, extent = asset_name_and_extent
+            item.geometry = extent
+            return True
+        else:
+            return False
+
+    def data_footprints_for_data_assets(
+        self, item: Item
+    ) -> Iterator[Tuple[str, Dict[str, Any]]]:
+        for name, asset in item.assets.items():
+            if not self.asset_names or name in self.asset_names:
+                href = asset.get_absolute_href()
+                if href is None:
+                    logger.error(
+                        f"Could not determine extent for asset '{name}', missing href"
+                    )
+                else:
+                    extent = self.data_footprint(href)
+                    if extent:
+                        yield name, extent
+                    else:
+                        logger.error(f"Could not determine extent for asset '{name}'")
+
+    def data_footprint(self, href: str) -> Optional[Dict[str, Any]]:
+        src = rasterio.open(href)
+
+        # create datamask
+        if self.no_data is None:
+            self.no_data = src.nodata
+
+        if not src.indexes:
+            raise ValueError(
+                "Raster footprint cannot be computed for an asset with no bands."
+            )
+        if not self.bands:
+            self.bands = src.indexes
+
+        if self.no_data is not None:
+            data: npt.NDArray[np.uint8] = np.full(src.shape, 0, dtype=np.uint8)
+            for index in self.bands:
+                band_data = src.read(index, out_shape=src.shape)
+                if np.isnan(self.no_data):
+                    data[~np.isnan(band_data)] = 1
+                else:
+                    data[np.where(band_data != self.no_data)] = 1
+        else:
+            data = np.full(src.shape, 1, dtype=np.uint8)
+
+        data_polygons = [
+            shape(polygon_dict)
+            for polygon_dict, region_value in rasterio.features.shapes(
+                data, transform=src.transform
+            )
+            if region_value == 1
+        ]
+
+        if not data_polygons:
+            return None
+        elif len(data_polygons) == 1:
+            polygon = data_polygons[0]
+        else:
+            polygon = MultiPolygon(data_polygons).convex_hull
+
+        polygon = self.densify_reproject(polygon, src.crs)
+        polygon = self.simplify(polygon)
+
+        return mapping(polygon)  # type: ignore
+
+    def densify_reproject(self, polygon: Polygon, crs: CRS) -> Polygon:
+        if self.densification_factor is not None:
+            polygon = Polygon(
+                _densify_by_factor(polygon.exterior.coords, self.densification_factor)
+            )
+
+        polygon = shape(
+            transform_geom(crs, "EPSG:4326", polygon, precision=self.precision)
+        )
+
+        return polygon
+
+    def simplify(self, polygon: Polygon) -> Polygon:
+        if self.simplify_tolerance is not None:
+            polygon = polygon.simplify(
+                tolerance=self.simplify_tolerance, preserve_topology=False
+            ).simplify(0)
+
+        # simplify does not remove duplicate sequential points, so do that
+        return Polygon([k for k, _ in groupby(polygon.exterior.coords)])
+
+
+class SinusoidalRasterFootprint(RasterFootprint):
+    """Overrides the default RasterFootprint reprojection methods to generate
+    Item geometries that play well at the edges of the sinusoidal projection
+    used in MODIS and VIIRS data.
+    """
+
+    def __init__(
+        self,
+        horizontal_tile: int,
+        vertical_tile: int,
+        tile_dimension: int,
+        *,
+        asset_names: List[str] = [],
+        precision: int = DEFAULT_PRECISION,
+        simplify_tolerance: Optional[float] = None,
+        no_data: Optional[int] = None,
+        bands: List[int] = [1],
+    ) -> None:
+        super().__init__(
+            asset_names=asset_names,
+            precision=precision,
+            simplify_tolerance=simplify_tolerance,
+            no_data=no_data,
+            bands=bands,
+        )
+        self.horizontal_tile = horizontal_tile
+        self.vertical_tile = vertical_tile
+        self.tile_dimension = tile_dimension
+
+    def densify_reproject(self, polygon: Polygon, crs: CRS) -> Polygon:
+        pixel_width = SINUSOIDAL_TILE_METERS / self.tile_dimension
+        densified_points = _densify_by_distance(polygon.exterior.coords, pixel_width)
+        lonlat_points = sinusoidal_grid_to_lonlat(densified_points)
+        lonlat_points = [
+            (lon, lat)
+            for lon, lat in lonlat_points
+            if lat >= -90 and lat <= 90 and lon >= -180 and lon <= 180
+        ]
+        return Polygon(recursive_round(lonlat_points, precision=self.precision))
 
 
 def update_geometry_from_asset_footprint(
@@ -71,24 +302,14 @@ def update_geometry_from_asset_footprint(
     Returns:
         bool: True if the extent was successfully updated, False if not
     """
-    asset_name_and_extent = next(
-        data_footprints_for_data_assets(
-            item,
-            asset_names=asset_names,
-            precision=precision,
-            densification_factor=densification_factor,
-            simplify_tolerance=simplify_tolerance,
-            no_data=no_data,
-            bands=bands,
-        ),
-        None,
-    )
-    if asset_name_and_extent is not None:
-        _, extent = asset_name_and_extent
-        item.geometry = extent
-        return True
-    else:
-        return False
+    return RasterFootprint(
+        asset_names=asset_names,
+        precision=precision,
+        densification_factor=densification_factor,
+        simplify_tolerance=simplify_tolerance,
+        no_data=no_data,
+        bands=bands,
+    ).update_geometry_from_asset_footprint(item)
 
 
 def data_footprints_for_data_assets(
@@ -134,54 +355,14 @@ def data_footprints_for_data_assets(
         Iterator[Tuple[str, Dict[str, Any]]]: Iterator of the data extent as a geojson dict
             for each asset.
     """
-    for name, asset in item.assets.items():
-        if not asset_names or name in asset_names:
-            href = asset.get_absolute_href()
-            if href is None:
-                logger.error(
-                    f"Could not determine extent for asset '{name}', missing href"
-                )
-            else:
-                extent = data_footprint(
-                    href,
-                    precision=precision,
-                    densification_factor=densification_factor,
-                    simplify_tolerance=simplify_tolerance,
-                    no_data=no_data,
-                    bands=bands,
-                )
-                if extent:
-                    yield name, extent
-                else:
-                    logger.error(f"Could not determine extent for asset '{name}'")
-
-
-def _densify(
-    point_list: List[Tuple[float, float]], densification_factor: int
-) -> List[Tuple[float, float]]:
-    """
-        Densifies the number of points in a list of points by a factor. For example, a list of 5 points
-        and a densification_factor of 2 will result in 10 points (one new point between each original
-        adjacent points.
-
-        Derived from code found at
-        https://stackoverflow.com/questions/64995977/generating-equidistance-points-along-the-boundary-of-a-polygon-but-cw-ccw  # noqa
-     Args:
-        point_list (List[Tuple[float, float]]): The list of points.
-        densification_factor (int): The factor by which to densify the points. A larger densification factor
-            should be used when reprojection causes in greater curvature from the original geometry.
-
-    Returns:
-        List[Tuple[float, float]]: a list of the densified points
-    """
-    points: Any = np.asarray(point_list)
-    densified_number = len(points) * densification_factor
-    existing_indices = np.arange(0, densified_number, densification_factor)
-    interp_indices = np.arange(existing_indices[-1])
-    interp_x = np.interp(interp_indices, existing_indices, points[:, 0])  # noqa
-    interp_y = np.interp(interp_indices, existing_indices, points[:, 1])  # noqa
-    densified_points = [(x, y) for x, y in zip(interp_x, interp_y)]
-    return densified_points
+    return RasterFootprint(
+        asset_names=asset_names,
+        precision=precision,
+        densification_factor=densification_factor,
+        simplify_tolerance=simplify_tolerance,
+        no_data=no_data,
+        bands=bands,
+    ).data_footprints_for_data_assets(item)
 
 
 def data_footprint(
@@ -219,54 +400,13 @@ def data_footprint(
     Returns:
         List[Tuple[float, float]]: a list of the densified points
     """
-    src = rasterio.open(href)
-
-    # create datamask
-    if no_data is None:
-        no_data = src.nodata
-
-    if not src.indexes:
-        raise ValueError(
-            "Raster footprint cannot be computed for an asset with no bands."
-        )
-    if not bands:
-        bands = src.indexes
-
-    if no_data is not None:
-        data: npt.NDArray[np.uint8] = np.full(src.shape, 0, dtype=np.uint8)
-        for index in bands:
-            band_data = src.read(index, out_shape=src.shape)
-            if np.isnan(no_data):
-                data[~np.isnan(band_data)] = 1
-            else:
-                data[np.where(band_data != no_data)] = 1
-    else:
-        data = np.full(src.shape, 1, dtype=np.uint8)
-
-    data_polygons = [
-        shape(polygon_dict)
-        for polygon_dict, region_value in rasterio.features.shapes(
-            data, transform=src.transform
-        )
-        if region_value == 1
-    ]
-
-    if not data_polygons:
-        return None
-    elif len(data_polygons) == 1:
-        polygon = data_polygons[0]
-    else:
-        polygon = MultiPolygon(data_polygons).convex_hull
-
-    polygon = densify_reproject_simplify(
-        polygon,
-        src.crs,
-        densification_factor=densification_factor,
+    return RasterFootprint(
         precision=precision,
+        densification_factor=densification_factor,
         simplify_tolerance=simplify_tolerance,
-    )
-
-    return mapping(polygon)  # type: ignore
+        no_data=no_data,
+        bands=bands,
+    ).data_footprint(href)
 
 
 def densify_reproject_simplify(
@@ -299,17 +439,11 @@ def densify_reproject_simplify(
     Returns:
         Polygon: the reprojected Polygon
     """
-    if densification_factor is not None:
-        polygon = Polygon(_densify(polygon.exterior.coords, densification_factor))
-
-    polygon = shape(transform_geom(crs, "EPSG:4326", polygon, precision=precision))
-
-    if simplify_tolerance is not None:
-        polygon = polygon.simplify(
-            tolerance=simplify_tolerance, preserve_topology=False
-        ).simplify(0)
-
-    # simplify does not remove duplicate sequential points, so do that
-    polygon = Polygon([k for k, _ in groupby(polygon.exterior.coords)])
-
+    raster_footprint = RasterFootprint(
+        precision=precision,
+        densification_factor=densification_factor,
+        simplify_tolerance=simplify_tolerance,
+    )
+    polygon = raster_footprint.densify_reproject(polygon, crs)
+    polygon = raster_footprint.simplify(polygon)
     return polygon
