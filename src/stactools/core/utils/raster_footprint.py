@@ -22,10 +22,6 @@ logger = logging.getLogger(__name__)
 DEFAULT_PRECISION = 7
 
 
-class ItemRequired(Exception):
-    """Item required to run the method."""
-
-
 def _densify_by_factor(
     point_list: List[Tuple[float, float]], densification_factor: int
 ) -> List[Tuple[float, float]]:
@@ -105,6 +101,7 @@ class RasterFootprint:
         simplify_tolerance: Optional[float] = None,
         no_data: Optional[int] = None,
         bands: List[int] = [1],
+        crs: Optional[CRS] = None,
     ) -> None:
         self.asset_names = asset_names
         self.precision = precision
@@ -112,6 +109,7 @@ class RasterFootprint:
         self.simplify_tolerance = simplify_tolerance
         self.no_data = no_data
         self.bands = bands
+        self.crs = crs
 
     def update_geometry_from_asset_footprint(self, item: Item) -> bool:
         asset_name_and_extent = next(
@@ -143,34 +141,38 @@ class RasterFootprint:
                         logger.error(f"Could not determine extent for asset '{name}'")
 
     def data_footprint(self, href: str) -> Optional[Dict[str, Any]]:
-        src = rasterio.open(href)
+        with rasterio.open(href) as src:
+            self.transform = src.transform
+            self.shape = src.shape
+            if self.crs is None:
+                self.crs = src.crs
 
-        # create datamask
-        if self.no_data is None:
-            self.no_data = src.nodata
+            # create datamask
+            if self.no_data is None:
+                self.no_data = src.nodata
 
-        if not src.indexes:
-            raise ValueError(
-                "Raster footprint cannot be computed for an asset with no bands."
-            )
-        if not self.bands:
-            self.bands = src.indexes
+            if not src.indexes:
+                raise ValueError(
+                    "Raster footprint cannot be computed for an asset with no bands."
+                )
+            if not self.bands:
+                self.bands = src.indexes
 
-        if self.no_data is not None:
-            data: npt.NDArray[np.uint8] = np.full(src.shape, 0, dtype=np.uint8)
-            for index in self.bands:
-                band_data = src.read(index, out_shape=src.shape)
-                if np.isnan(self.no_data):
-                    data[~np.isnan(band_data)] = 1
-                else:
-                    data[np.where(band_data != self.no_data)] = 1
-        else:
-            data = np.full(src.shape, 1, dtype=np.uint8)
+            if self.no_data is not None:
+                self.data: npt.NDArray[np.uint8] = np.full(src.shape, 0, dtype=np.uint8)
+                for index in self.bands:
+                    band_data = src.read(index, out_shape=src.shape)
+                    if np.isnan(self.no_data):
+                        self.data[~np.isnan(band_data)] = 1
+                    else:
+                        self.data[np.where(band_data != self.no_data)] = 1
+            else:
+                self.data = np.full(src.shape, 1, dtype=np.uint8)
 
         data_polygons = [
             shape(polygon_dict)
             for polygon_dict, region_value in rasterio.features.shapes(
-                data, transform=src.transform
+                self.data, transform=self.transform
             )
             if region_value == 1
         ]
@@ -182,19 +184,19 @@ class RasterFootprint:
         else:
             polygon = MultiPolygon(data_polygons).convex_hull
 
-        polygon = self.densify_reproject(polygon, src.crs)
+        polygon = self.densify_reproject(polygon)
         polygon = self.simplify(polygon)
 
         return mapping(polygon)  # type: ignore
 
-    def densify_reproject(self, polygon: Polygon, crs: CRS) -> Polygon:
+    def densify_reproject(self, polygon: Polygon) -> Polygon:
         if self.densification_factor is not None:
             polygon = Polygon(
                 _densify_by_factor(polygon.exterior.coords, self.densification_factor)
             )
 
         polygon = shape(
-            transform_geom(crs, "EPSG:4326", polygon, precision=self.precision)
+            transform_geom(self.crs, "EPSG:4326", polygon, precision=self.precision)
         )
 
         return polygon
@@ -217,9 +219,6 @@ class SinusoidalRasterFootprint(RasterFootprint):
 
     def __init__(
         self,
-        horizontal_tile: int,
-        vertical_tile: int,
-        tile_dimension: int,
         *,
         asset_names: List[str] = [],
         precision: int = DEFAULT_PRECISION,
@@ -234,12 +233,10 @@ class SinusoidalRasterFootprint(RasterFootprint):
             no_data=no_data,
             bands=bands,
         )
-        self.horizontal_tile = horizontal_tile
-        self.vertical_tile = vertical_tile
-        self.tile_dimension = tile_dimension
 
-    def densify_reproject(self, polygon: Polygon, crs: CRS) -> Polygon:
-        pixel_width = SINUSOIDAL_TILE_METERS / self.tile_dimension
+    def densify_reproject(self, polygon: Polygon) -> Polygon:
+        assert self.shape[-2] == self.shape[-1]  # height == width
+        pixel_width = SINUSOIDAL_TILE_METERS / self.shape[-1]
         densified_points = _densify_by_distance(polygon.exterior.coords, pixel_width)
         lonlat_points = sinusoidal_grid_to_lonlat(densified_points)
         lonlat_points = [
@@ -443,7 +440,8 @@ def densify_reproject_simplify(
         precision=precision,
         densification_factor=densification_factor,
         simplify_tolerance=simplify_tolerance,
+        crs=crs,
     )
-    polygon = raster_footprint.densify_reproject(polygon, crs)
+    polygon = raster_footprint.densify_reproject(polygon)
     polygon = raster_footprint.simplify(polygon)
     return polygon

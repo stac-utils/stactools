@@ -6,12 +6,15 @@ import pyproj
 import rasterio.crs
 import rasterio.transform
 
-# Sinusoidal projection parameters found in Appendix B of
-# https://modis-fire.umd.edu/files/MODIS_C6_BA_User_Guide_1.2.pdf
-SINUSOIDAL_SPHERE_RADIUS = 6371007.181
-SINUSOIDAL_TILE_METERS = 1111950
-SINUSOIDAL_X_MIN = -20015109
-SINUSOIDAL_Y_MAX = 10007555
+# Sinusoidal projection parameters derived from Appendix 2, Section 13.1 in:
+# https://modis-fire.umd.edu/files/MODIS_Burned_Area_Collection51_User_Guide_3.1.0.pdf
+# All parameters specified to 12 significant digits so we can round to 11
+# significant digits after using them in computations. This assures millimeter
+# precision at the projection extremeties.
+SINUSOIDAL_SPHERE_RADIUS = 6371007.18100
+SINUSOIDAL_TILE_METERS = 1111950.51977
+SINUSOIDAL_X_MIN = -20015109.3558
+SINUSOIDAL_Y_MAX = 10007554.6779
 
 
 def epsg_from_utm_zone_number(utm_zone_number: int, south: bool) -> int:
@@ -90,6 +93,11 @@ def transform_from_bbox(bbox: List[float], shape: List[int]) -> List[float]:
     )[:6]
 
 
+def _sigfigs(x: float, n: int) -> float:
+    # https://discuss.python.org/t/rounding-to-significant-figures-feature-request-for-math-library/16395/82  # noqa
+    return float(f"{x:.{n}g}")
+
+
 def sinusoidal_pixel_to_grid(
     pixel_coords: List[Tuple[float, float]],
     horizontal_tile: int,
@@ -98,6 +106,9 @@ def sinusoidal_pixel_to_grid(
 ) -> List[Tuple[float, float]]:
     """Transform MODIS and VIIRS sinusoidal projection pixel coordinates to
     grid coordinates.
+
+    Assumes the pixel origin (0, 0) is at the upper left corner of the upper
+    left pixel.
 
     Args:
         pixel_coords (List[Tuple[float]]): List of pixel coordinate tuples in
@@ -124,7 +135,7 @@ def sinusoidal_pixel_to_grid(
             - row * pixel_width
             - vertical_tile * SINUSOIDAL_TILE_METERS
         )
-        grid_coords.append((x, y))
+        grid_coords.append((_sigfigs(x, 11), _sigfigs(y, 11)))
     return grid_coords
 
 
@@ -148,5 +159,5 @@ def sinusoidal_grid_to_lonlat(
         longitude = math.degrees(
             x / (SINUSOIDAL_SPHERE_RADIUS * math.cos(y / SINUSOIDAL_SPHERE_RADIUS))
         )
-        lonlat.append((longitude, latitude))
+        lonlat.append((_sigfigs(longitude, 11), _sigfigs(latitude, 11)))
     return lonlat
