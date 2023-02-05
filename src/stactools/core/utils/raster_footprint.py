@@ -184,22 +184,17 @@ class RasterFootprint:
         else:
             polygon = MultiPolygon(data_polygons).convex_hull
 
-        polygon = self.densify_reproject(polygon)
+        polygon = self.densify(polygon)
+        polygon = self.reproject(polygon)
         polygon = self.simplify(polygon)
 
         return mapping(polygon)  # type: ignore
 
-    def densify_reproject(self, polygon: Polygon) -> Polygon:
-        if self.densification_factor is not None:
-            polygon = Polygon(
-                _densify_by_factor(polygon.exterior.coords, self.densification_factor)
-            )
+    def densify(self, polygon: Polygon) -> Polygon:
+        raise NotImplementedError
 
-        polygon = shape(
-            transform_geom(self.crs, "EPSG:4326", polygon, precision=self.precision)
-        )
-
-        return polygon
+    def reproject(self, polygon: Polygon) -> Polygon:
+        raise NotImplementedError
 
     def simplify(self, polygon: Polygon) -> Polygon:
         if self.simplify_tolerance is not None:
@@ -211,10 +206,48 @@ class RasterFootprint:
         return Polygon([k for k, _ in groupby(polygon.exterior.coords)])
 
 
+class DefaultRasterFootprint(RasterFootprint):
+    """Uses a factor for densification and proj for reprojection."""
+
+    def __init__(
+        self,
+        *,
+        asset_names: List[str] = [],
+        precision: int = DEFAULT_PRECISION,
+        densification_factor: Optional[int] = None,
+        simplify_tolerance: Optional[float] = None,
+        no_data: Optional[int] = None,
+        bands: List[int] = [1],
+        crs: Optional[CRS] = None,
+    ) -> None:
+        super().__init__(
+            asset_names=asset_names,
+            precision=precision,
+            simplify_tolerance=simplify_tolerance,
+            densification_factor=densification_factor,
+            no_data=no_data,
+            bands=bands,
+            crs=crs,
+        )
+
+    def densify(self, polygon: Polygon) -> Polygon:
+        if self.densification_factor is not None:
+            polygon = Polygon(
+                _densify_by_factor(polygon.exterior.coords, self.densification_factor)
+            )
+        return polygon
+
+    def reproject(self, polygon: Polygon) -> Polygon:
+        polygon = shape(
+            transform_geom(self.crs, "EPSG:4326", polygon, precision=self.precision)
+        )
+        return polygon
+
+
 class SinusoidalRasterFootprint(RasterFootprint):
-    """Overrides the default RasterFootprint reprojection methods to generate
-    Item geometries that play well at the edges of the sinusoidal projection
-    used in MODIS and VIIRS data.
+    """Uses pixel ground distance for densification and custom reprojection
+    equations to produces Item geometries that play well at the edges of the
+    sinusoidal projection used in MODIS and VIIRS data.
     """
 
     def __init__(
@@ -234,17 +267,21 @@ class SinusoidalRasterFootprint(RasterFootprint):
             bands=bands,
         )
 
-    def densify_reproject(self, polygon: Polygon) -> Polygon:
+    def densify(self, polygon: Polygon) -> Polygon:
         assert self.shape[-2] == self.shape[-1]  # height == width
         pixel_width = SINUSOIDAL_TILE_METERS / self.shape[-1]
-        densified_points = _densify_by_distance(polygon.exterior.coords, pixel_width)
-        lonlat_points = sinusoidal_grid_to_lonlat(densified_points)
+        polygon = Polygon(_densify_by_distance(polygon.exterior.coords, pixel_width))
+        return polygon
+
+    def reproject(self, polygon: Polygon) -> Polygon:
+        lonlat_points = sinusoidal_grid_to_lonlat(polygon.exterior.coords)
         lonlat_points = [
             (lon, lat)
             for lon, lat in lonlat_points
             if lat >= -90 and lat <= 90 and lon >= -180 and lon <= 180
         ]
-        return Polygon(recursive_round(lonlat_points, precision=self.precision))
+        polygon = Polygon(recursive_round(lonlat_points, precision=self.precision))
+        return polygon
 
 
 def update_geometry_from_asset_footprint(
@@ -299,7 +336,7 @@ def update_geometry_from_asset_footprint(
     Returns:
         bool: True if the extent was successfully updated, False if not
     """
-    return RasterFootprint(
+    return DefaultRasterFootprint(
         asset_names=asset_names,
         precision=precision,
         densification_factor=densification_factor,
@@ -352,7 +389,7 @@ def data_footprints_for_data_assets(
         Iterator[Tuple[str, Dict[str, Any]]]: Iterator of the data extent as a geojson dict
             for each asset.
     """
-    return RasterFootprint(
+    return DefaultRasterFootprint(
         asset_names=asset_names,
         precision=precision,
         densification_factor=densification_factor,
@@ -397,7 +434,7 @@ def data_footprint(
     Returns:
         List[Tuple[float, float]]: a list of the densified points
     """
-    return RasterFootprint(
+    return DefaultRasterFootprint(
         precision=precision,
         densification_factor=densification_factor,
         simplify_tolerance=simplify_tolerance,
@@ -436,12 +473,13 @@ def densify_reproject_simplify(
     Returns:
         Polygon: the reprojected Polygon
     """
-    raster_footprint = RasterFootprint(
+    raster_footprint = DefaultRasterFootprint(
         precision=precision,
         densification_factor=densification_factor,
         simplify_tolerance=simplify_tolerance,
         crs=crs,
     )
-    polygon = raster_footprint.densify_reproject(polygon)
+    polygon = raster_footprint.densify(polygon)
+    polygon = raster_footprint.reproject(polygon)
     polygon = raster_footprint.simplify(polygon)
     return polygon
