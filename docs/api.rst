@@ -38,6 +38,11 @@ Converting assets
 .. automodule:: stactools.core.utils.convert
     :members:
 
+Rounding coordinates
+~~~~~~~~~~~~~~~~~~~~
+.. automodule:: stactools.core.utils.round
+    :members:
+
 Running subprocesses
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -86,7 +91,7 @@ Reprojection
 .. automodule:: stactools.core.projection
     :members:
 
-Raster Footprint Generation
+Raster footprint generation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. automodule:: stactools.core.utils.raster_footprint

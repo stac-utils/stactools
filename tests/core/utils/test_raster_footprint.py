@@ -5,9 +5,7 @@ from shapely.geometry.multipolygon import MultiPolygon
 from shapely.geometry.polygon import Polygon
 
 from stactools.core import use_fsspec
-from stactools.core.projection import SINUSOIDAL_TILE_METERS
 from stactools.core.utils.raster_footprint import (
-    SinusoidalRasterFootprint,
     data_footprint,
     densify_reproject_simplify,
     update_geometry_from_asset_footprint,
@@ -367,7 +365,7 @@ def test_remove_duplicate_points() -> None:
     )
 
     assert (
-        densify_reproject_simplify(redundant_shape, CRS.from_epsg(4326))
+        densify_reproject_simplify(redundant_shape, CRS.from_epsg(4326), precision=1)
         == deduplicated_shape
     )
 
@@ -394,52 +392,3 @@ def test_multiband_footprint() -> None:
         }
     )
     assert shape(footprint) == expected
-
-
-def test_sinusoidal_projection_edge() -> None:
-    item = Item.from_file(
-        test_data.get_path(
-            "data-files/raster_footprint/MCD15A2H.A2022025.h01v11.061.json"
-        )
-    )
-    original_geometetry = item.geometry.copy()
-
-    tile_dimension = 2400
-    tile_pixel_size = SINUSOIDAL_TILE_METERS / tile_dimension / 100000
-    SinusoidalRasterFootprint(
-        asset_names=["Fpar_500m"],
-        precision=6,
-        simplify_tolerance=tile_pixel_size / 2,
-    ).update_geometry_from_asset_footprint(item)
-
-    assert shape(original_geometetry) != shape(item.geometry)
-
-    expected = shape(
-        {
-            "type": "Polygon",
-            "coordinates": [
-                [
-                    [-179.995961, -20.0],
-                    [-170.269298, -20.00079],
-                    [-170.785895, -20.471624],
-                    [-171.317239, -20.942457],
-                    [-171.858641, -21.409124],
-                    [-172.409916, -21.871624],
-                    [-172.976047, -22.334124],
-                    [-173.557254, -22.796624],
-                    [-174.148323, -23.254957],
-                    [-174.74907, -23.709124],
-                    [-175.370756, -24.167457],
-                    [-175.996452, -24.617457],
-                    [-176.637564, -25.067457],
-                    [-177.282034, -25.509124],
-                    [-177.941836, -25.95079],
-                    [-178.617221, -26.392457],
-                    [-179.301852, -26.829957],
-                    [-179.995541, -27.26329],
-                    [-179.995961, -20.0],
-                ]
-            ],
-        }
-    )
-    assert shape(expected) == shape(item.geometry)

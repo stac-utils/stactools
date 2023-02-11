@@ -1,3 +1,5 @@
+"""Coordinate rounding utilities."""
+
 from typing import Any, List, TypeVar
 
 from pystac import Collection, Item
@@ -48,8 +50,8 @@ def recursive_round(coordinates: List[Any], precision: int) -> List[Any]:
         precision (int): Number of decimal places to use for rounding.
 
     Returns:
-        List[Any]: a list (possibly nested) of numbers rounded to the given
-            precision.
+        List[Any]: A list (possibly nested) of numbers rounded to the given
+        ``precision``.
     """
     for idx, value in enumerate(coordinates):
         if isinstance(value, (int, float)):
