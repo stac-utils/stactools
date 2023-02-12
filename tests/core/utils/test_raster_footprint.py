@@ -365,7 +365,7 @@ def test_remove_duplicate_points() -> None:
     )
 
     assert (
-        densify_reproject_simplify(redundant_shape, CRS.from_epsg(4326), precision=1)
+        densify_reproject_simplify(redundant_shape, CRS.from_epsg(4326))
         == deduplicated_shape
     )
 
