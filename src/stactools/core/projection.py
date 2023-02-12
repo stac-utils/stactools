@@ -1,20 +1,9 @@
-import math
 from copy import deepcopy
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 import pyproj
 import rasterio.crs
 import rasterio.transform
-
-# Sinusoidal projection parameters derived from Appendix 2, Section 13.1 in:
-# https://modis-fire.umd.edu/files/MODIS_Burned_Area_Collection51_User_Guide_3.1.0.pdf
-# All parameters specified to 12 significant digits so we can round to 11
-# significant digits after using them in computations. This assures millimeter
-# precision at the projection extremeties.
-SINUSOIDAL_SPHERE_RADIUS = 6371007.18100
-SINUSOIDAL_TILE_METERS = 1111950.51977
-SINUSOIDAL_X_MIN = -20015109.3558
-SINUSOIDAL_Y_MAX = 10007554.6779
 
 
 def epsg_from_utm_zone_number(utm_zone_number: int, south: bool) -> int:
@@ -91,73 +80,3 @@ def transform_from_bbox(bbox: List[float], shape: List[int]) -> List[float]:
             bbox[0], bbox[1], bbox[2], bbox[3], shape[1], shape[0]
         )
     )[:6]
-
-
-def _sigfigs(x: float, n: int) -> float:
-    # https://discuss.python.org/t/rounding-to-significant-figures-feature-request-for-math-library/16395/82  # noqa
-    return float(f"{x:.{n}g}")
-
-
-def sinusoidal_pixel_to_grid(
-    pixel_coords: List[Tuple[float, float]],
-    horizontal_tile: int,
-    vertical_tile: int,
-    tile_dimension: int,
-) -> List[Tuple[float, float]]:
-    """Transform MODIS and VIIRS sinusoidal projection pixel coordinates to
-    grid coordinates.
-
-    Assumes the pixel origin (0, 0) is at the upper left corner of the upper
-    left pixel.
-
-    Args:
-        pixel_coords (List[Tuple[float]]): List of pixel coordinate tuples in
-            (column, row) order.
-        horizontal_tile (int): Horizontal sinusoidal tile grid number.
-        vertical_tile (int): Vertical sinusoidal tile grid number.
-        tile_dimension (int): Tile pixel dimension. For example, MODIS 09A1
-            product tiles are 2400x2400 pixels, so tile_dimension is 2400.
-
-    Returns:
-        List[Tuple[float]]: List of transformed sinusoidal projection grid
-            coordinate tuples in (x, y) order.
-    """
-    pixel_width = SINUSOIDAL_TILE_METERS / tile_dimension
-    grid_coords = []
-    for column, row in pixel_coords:
-        x = (
-            column * pixel_width
-            + horizontal_tile * SINUSOIDAL_TILE_METERS
-            + SINUSOIDAL_X_MIN
-        )
-        y = (
-            SINUSOIDAL_Y_MAX
-            - row * pixel_width
-            - vertical_tile * SINUSOIDAL_TILE_METERS
-        )
-        grid_coords.append((_sigfigs(x, 11), _sigfigs(y, 11)))
-    return grid_coords
-
-
-def sinusoidal_grid_to_lonlat(
-    grid_coords: List[Tuple[float, float]]
-) -> List[Tuple[float, float]]:
-    """Transform MODIS and VIIRS sinusoidal projection grid coordinates to
-    spherical longitude and latitude.
-
-    Args:
-        grid_coords (List[Tuple[float]]): List of sinusoidal projection grid
-            coordinate tuples in (x, y) order.
-
-    Returns:
-        List[Tuple[float]]: List of transformed spherical longitude and latitude
-            coordinate tuples in (longitude, latitude) order.
-    """
-    lonlat = []
-    for x, y in grid_coords:
-        latitude = math.degrees(y / SINUSOIDAL_SPHERE_RADIUS)
-        longitude = math.degrees(
-            x / (SINUSOIDAL_SPHERE_RADIUS * math.cos(y / SINUSOIDAL_SPHERE_RADIUS))
-        )
-        lonlat.append((_sigfigs(longitude, 11), _sigfigs(latitude, 11)))
-    return lonlat

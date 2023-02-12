@@ -12,7 +12,7 @@ S = TypeVar("S", Item, Collection)
 
 def round_coordinates(stac_object: S, precision: int = DEFAULT_PRECISION) -> S:
     """Rounds Item geometry and bbox coordinates or Collection spatial extent
-    bbox coordinates to specified precision.
+    bbox coordinates to specified ``precision``.
 
     Args:
         stac_object (S): A pystac Item or Collection.
