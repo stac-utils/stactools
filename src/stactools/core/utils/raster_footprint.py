@@ -448,7 +448,7 @@ class RasterFootprint:
         for index in bands:
             band_data.append(reader.read(index))
 
-        return RasterFootprint(
+        return cls(
             data_array=np.asarray(band_data),
             crs=reader.crs,
             transform=reader.transform,
