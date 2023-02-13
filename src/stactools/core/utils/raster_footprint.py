@@ -91,6 +91,31 @@ def densify_by_distance(
     return [(x, y) for x, y in zip(interp_x, interp_y)]
 
 
+def reproject_polygon(
+    polygon: Polygon, crs: CRS, precision: Optional[int] = DEFAULT_PRECISION
+) -> Polygon:
+    """Projects a polygon to EPSG 4326 and rounds the projected vertex
+    coordinates to ``precision``.
+
+    Duplicate points caused by rounding are removed.
+
+    Args:
+        polygon (Polygon): The polygon to reproject.
+        crs (CRS): The CRS of the input polygon.
+        precision (int): The number of decimal places to include in the final
+            polygon vertex coordinates.
+
+    Returns:
+        Polygon: Polygon in EPSG 4326.
+    """
+    polygon = shape(transform_geom(crs, "EPSG:4326", polygon, precision=precision))
+    # Rounding to precision can produce duplicate coordinates, so we remove
+    # them. Once once shapely>=2.0.0 is required, this can be replaced with
+    # shapely.constructive.remove_repeated_points
+    polygon = Polygon([k for k, _ in groupby(polygon.exterior.coords)])
+    return polygon
+
+
 class RasterFootprint:
     """An object for creating a convex hull polygon around all areas within an
     raster that have data values (i.e., they do not have the nodata value).
@@ -266,8 +291,7 @@ class RasterFootprint:
 
     def densify_polygon(self, polygon: Polygon) -> Polygon:
         """Adds vertices to the footprint polygon in the native CRS using either
-        the ``densification_factor`` or ``densification_distance`` specified in
-        the class constructor.
+        ``self.densification_factor`` or ``self.densification_distance``.
 
         Args:
             polygon (Polygon): Footprint polygon in the native CRS.
@@ -290,7 +314,7 @@ class RasterFootprint:
 
     def reproject_polygon(self, polygon: Polygon) -> Polygon:
         """Projects a polygon to EPSG 4326 and rounds the projected vertex
-        coordinates to the ``precision`` specified in the class constructor.
+        coordinates to ``self.precision``.
 
         Duplicate points caused by rounding are removed.
 
@@ -300,14 +324,7 @@ class RasterFootprint:
         Returns:
             Polygon: Footprint polygon in EPSG 4326.
         """
-        polygon = shape(
-            transform_geom(self.crs, "EPSG:4326", polygon, precision=self.precision)
-        )
-        # Rounding to precision can produce duplicate coordinates, so we remove
-        # them. Once once shapely>=2.0.0 is required, this can be replaced with
-        # shapely.constructive.remove_repeated_points
-        polygon = Polygon([k for k, _ in groupby(polygon.exterior.coords)])
-        return polygon
+        return reproject_polygon(polygon, self.crs, self.precision)
 
     def simplify_polygon(self, polygon: Polygon) -> Polygon:
         """Reduces the number of polygon vertices such that the simplified
@@ -813,8 +830,8 @@ def densify_reproject_simplify(
     simplification.
 
     Args:
-        polygon (Polygon): The input Polygon.
-        crs (CRS): The CRS of the input Polygon.
+        polygon (Polygon): The input polygon.
+        crs (CRS): The CRS of the input polygon.
         densification_factor (Optional[int]): The factor by which to
             increase point density within the polygon before projection to
             EPSG 4326. A factor of 2 would double the density of points (placing
@@ -823,7 +840,7 @@ def densify_reproject_simplify(
             densities produce higher fidelity footprints in areas of high
             projection distortion.
         precision (int): The number of decimal places to include in the final
-            Polygon vertex coordinates.
+            polygon vertex coordinates.
         simplify_tolerance (Optional[float]): Distance, in degrees, within which
             all locations on the simplified polygon will be to the original
             polygon.
@@ -835,13 +852,9 @@ def densify_reproject_simplify(
         polygon = Polygon(
             densify_by_factor(polygon.exterior.coords, factor=densification_factor)
         )
-
-    polygon = shape(transform_geom(crs, "EPSG:4326", polygon, precision=precision))
-    polygon = Polygon([k for k, _ in groupby(polygon.exterior.coords)])
-
+    polygon = reproject_polygon(polygon, crs, precision)
     if simplify_tolerance is not None:
         polygon = polygon.simplify(
             tolerance=simplify_tolerance, preserve_topology=False
         )
-
     return polygon
