@@ -2,7 +2,7 @@
 
 import logging
 from itertools import groupby
-from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterator, List, Optional, Tuple, Type, TypeVar, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -20,6 +20,8 @@ logger = logging.getLogger(__name__)
 
 # Roughly 1 centimeter in geodetic coordinates
 DEFAULT_PRECISION = 7
+
+T = TypeVar("T", bound="RasterFootprint")
 
 
 def densify_by_factor(
@@ -326,7 +328,7 @@ class RasterFootprint:
 
     @classmethod
     def from_href(
-        cls,
+        cls: Type[T],
         href: str,
         *,
         no_data: Optional[Union[int, float]] = None,
@@ -335,7 +337,7 @@ class RasterFootprint:
         densification_factor: Optional[int] = None,
         densification_distance: Optional[float] = None,
         simplify_tolerance: Optional[float] = None,
-    ) -> "RasterFootprint":
+    ) -> T:
         """Produces a :py:class:`RasterFootprint` instance from an image href.
 
         Args:
@@ -384,7 +386,7 @@ class RasterFootprint:
 
     @classmethod
     def from_rasterio_dataset_reader(
-        cls,
+        cls: Type[T],
         reader: DatasetReader,
         *,
         no_data: Optional[Union[int, float]] = None,
@@ -393,7 +395,7 @@ class RasterFootprint:
         densification_factor: Optional[int] = None,
         densification_distance: Optional[float] = None,
         simplify_tolerance: Optional[float] = None,
-    ) -> "RasterFootprint":
+    ) -> T:
         """Produces a :py:class:`RasterFootprint` instance from a
         :py:class:`rasterio.io.DatasetReader`  object, i.e., an opened dataset
         object returned by a :py:func:`rasterio.open` call.
