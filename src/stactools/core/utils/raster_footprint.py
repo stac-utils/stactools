@@ -304,7 +304,7 @@ class RasterFootprint:
             transform_geom(self.crs, "EPSG:4326", polygon, precision=self.precision)
         )
         # Rounding to precision can produce duplicate coordinates, so we remove
-        # them. Once once shapely>=2.0.0 is supported, this can be replaced with
+        # them. Once once shapely>=2.0.0 is required, this can be replaced with
         # shapely.constructive.remove_repeated_points
         polygon = Polygon([k for k, _ in groupby(polygon.exterior.coords)])
         return polygon
@@ -312,7 +312,7 @@ class RasterFootprint:
     def simplify_polygon(self, polygon: Polygon) -> Polygon:
         """Reduces the number of polygon vertices such that the simplified
         polygon shape is no further away than the original polygon vertices than
-        the ``simplify_tolerance`` distance specified in the class constructor.
+        ``self.simplify_tolerance``.
 
         Args:
             polygon (Polygon): Polygon to be simplified.
@@ -339,6 +339,8 @@ class RasterFootprint:
         simplify_tolerance: Optional[float] = None,
     ) -> T:
         """Produces a :py:class:`RasterFootprint` instance from an image href.
+
+        The href can point to any file that is openable by rasterio.
 
         Args:
             href (str): The href of the image to process.
