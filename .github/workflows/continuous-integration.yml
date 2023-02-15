@@ -92,7 +92,7 @@ jobs:
       - name: Update
         run: scripts/update
       - name: Install pre-release versions of rasterio and pystac
-        run: pip install -U --pre pystac rasterio
+        run: pip install -U --pre pystac rasterio --no-binary rasterio
       - name: Run tests
         run: scripts/test
   codecov:
