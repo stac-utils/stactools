@@ -49,8 +49,8 @@ def densify_by_factor(
     densified_number = len(points) * factor
     existing_indices = np.arange(0, densified_number, factor)
     interp_indices = np.arange(existing_indices[-1])
-    interp_x = np.interp(interp_indices, existing_indices, points[:, 0])  # noqa
-    interp_y = np.interp(interp_indices, existing_indices, points[:, 1])  # noqa
+    interp_x = np.interp(interp_indices, existing_indices, points[:, 0])
+    interp_y = np.interp(interp_indices, existing_indices, points[:, 1])
     densified_points = [(x, y) for x, y in zip(interp_x, interp_y)]
     return densified_points
 
@@ -120,7 +120,7 @@ class RasterFootprint:
     """An object for creating a convex hull polygon around all areas within an
     raster that have data values (i.e., they do not have the nodata value).
     This convex hull is termed the "footprint" of the raster data and is
-    returned by the :py:meth:`footprint` method as a polygon in a GeoJSON
+    returned by the :meth:`footprint` method as a polygon in a GeoJSON
     dictionary for use as the geometry attribute of a STAC Item.
 
     Two important operations during this calculation are the densification of
@@ -139,7 +139,7 @@ class RasterFootprint:
     a maximum distance to the original geometry.
 
     Args:
-        data_array (npt.NDArray[Any]): The raster data used for the
+        data_array (numpy.NDArray[Any]): The raster data used for the
             footprint computation.
         crs (CRS): Coordinate reference system of the raster data.
         transform (Affine): Matrix defining the transformation from pixel to CRS
@@ -244,7 +244,7 @@ class RasterFootprint:
         values are set to 0, data pixels are set to 1.
 
         Returns:
-            npt.NDArray[np.uint8]: An 2D array containing 0s and 1s for
+            numpy.NDArray[numpy.uint8]: An 2D array containing 0s and 1s for
             nodata/data pixels.
 
         """
@@ -265,7 +265,7 @@ class RasterFootprint:
         """Produces the data footprint in the native CRS.
 
         Args:
-            mask (npt.NDArray[np.uint8]): A 2D array containing 0s and 1s for
+            mask (numpy.NDArray[numpy.uint8]): A 2D array containing 0s and 1s for
                 nodata/data pixels.
 
         Returns:
@@ -355,7 +355,7 @@ class RasterFootprint:
         densification_distance: Optional[float] = None,
         simplify_tolerance: Optional[float] = None,
     ) -> T:
-        """Produces a :py:class:`RasterFootprint` instance from an image href.
+        """Produces a :class:`RasterFootprint` instance from an image href.
 
         The href can point to any file that is openable by rasterio.
 
@@ -390,7 +390,7 @@ class RasterFootprint:
                 original polygon.
 
         Returns:
-            RasterFootprint: A :py:class:`RasterFootprint` instance.
+            RasterFootprint: A :class:`RasterFootprint` instance.
         """
         with rasterio.open(href) as source:
             return cls.from_rasterio_dataset_reader(
@@ -415,9 +415,9 @@ class RasterFootprint:
         densification_distance: Optional[float] = None,
         simplify_tolerance: Optional[float] = None,
     ) -> T:
-        """Produces a :py:class:`RasterFootprint` instance from a
-        :py:class:`rasterio.io.DatasetReader`  object, i.e., an opened dataset
-        object returned by a :py:func:`rasterio.open` call.
+        """Produces a :class:`RasterFootprint` instance from a
+        :class:`rasterio.io.DatasetReader`  object, i.e., an opened dataset
+        object returned by a :func:`rasterio.open` call.
 
         Args:
             reader (DatasetReader): A rasterio dataset reader object for the
@@ -451,7 +451,7 @@ class RasterFootprint:
                 original polygon.
 
         Returns:
-            RasterFootprint: A :py:class:`RasterFootprint` instance.
+            RasterFootprint: A :class:`RasterFootprint` instance.
         """
         if not reader.indexes:
             raise ValueError(
@@ -499,7 +499,7 @@ class RasterFootprint:
         updates the geometry of that Item in-place with the data footprint derived
         from the first of the assets that exists in the Item.
 
-        See :py:class:`RasterFootprint` for details on the data footprint
+        See :class:`RasterFootprint` for details on the data footprint
         calculation.
 
         Args:
@@ -573,7 +573,7 @@ class RasterFootprint:
         dictionaries representing GeoJSON Polygons of the data footprints of the
         assets.
 
-        See :py:class:`RasterFootprint` for details on the data footprint
+        See :class:`RasterFootprint` for details on the data footprint
         calculation.
 
         Args:
@@ -649,12 +649,17 @@ def update_geometry_from_asset_footprint(
     bands: List[int] = [1],
     skip_errors: bool = True,
 ) -> bool:
-    """
+    """DEPRECATED.
+
+    .. deprecated:: 0.4.4
+        Use :meth:`RasterFootprint.update_geometry_from_asset_footprint`
+        instead.
+
     Accepts an Item and an optional list of asset names within that Item, and
     updates the geometry of that Item in-place with the data footprint derived
     from the first of the assets that exists in the Item.
 
-    See :py:class:`RasterFootprint` for details on the data footprint
+    See :class:`RasterFootprint` for details on the data footprint
     calculation.
 
     Args:
@@ -710,13 +715,18 @@ def data_footprints_for_data_assets(
     bands: List[int] = [1],
     skip_errors: bool = True,
 ) -> Iterator[Tuple[str, Dict[str, Any]]]:
-    """
+    """DEPRECATED.
+
+    .. deprecated:: 0.4.4
+        Use :meth:`RasterFootprint.data_footprints_for_data_assets`
+        instead.
+
     Accepts an Item and an optional list of asset names within that Item, and
     produces an iterator over the same asset names (if they exist) and
     dictionaries representing GeoJSON Polygons of the data footprints of the
     assets.
 
-    See :py:class:`RasterFootprint` for details on the data footprint
+    See :class:`RasterFootprint` for details on the data footprint
     calculation.
 
     Args:
@@ -772,10 +782,15 @@ def data_footprint(
     no_data: Optional[Union[int, float]] = None,
     bands: List[int] = [1],
 ) -> Optional[Dict[str, Any]]:
-    """
+    """DEPRECATED.
+
+    .. deprecated:: 0.4.4
+        Call :meth:`~RasterFootprint.footprint` on a :class:`RasterFootprint`
+        instance created with :meth:`RasterFootprint.from_href` instead.
+
     Produces a data footprint from the href of a raster file.
 
-    See :py:class:`RasterFootprint` for details on the data footprint
+    See :class:`RasterFootprint` for details on the data footprint
     calculation.
 
     Args:
@@ -826,7 +841,7 @@ def densify_reproject_simplify(
     Densifies the input polygon, reprojects it to EPSG 4326, and simplifies the
     resulting polygon.
 
-    See :py:class:`RasterFootprint` for details on densification and
+    See :class:`RasterFootprint` for details on densification and
     simplification.
 
     Args:
