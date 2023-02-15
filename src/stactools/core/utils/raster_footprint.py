@@ -1,6 +1,7 @@
 """Generate convex hulls of valid raster data for use in STAC Item geometries."""
 
 import logging
+import warnings
 from itertools import groupby
 from typing import Any, Dict, Iterator, List, Optional, Tuple, Type, TypeVar, Union
 
@@ -171,9 +172,8 @@ class RasterFootprint:
 
     crs: CRS
     """Coordinate reference system of the raster data."""
-
     data_array: npt.NDArray[Any]
-    """3D array of raster data."""
+    """2D or 3D array of raster data."""
 
     densification_distance: Optional[float]
     """Optional distance for densifying polygon vertices before reprojection to EPSG 4326."""
@@ -223,7 +223,7 @@ class RasterFootprint:
 
     def footprint(self) -> Optional[Dict[str, Any]]:
         """Produces the footprint surrounding data (not nodata) pixels in
-        the source image. If the footprint was unable to be computed, None
+        the source image. If the footprint is unable to be computed, None
         is returned.
 
         Returns:
@@ -244,10 +244,11 @@ class RasterFootprint:
         values are set to 0, data pixels are set to 1.
 
         Returns:
-            numpy.NDArray[numpy.uint8]: An 2D array containing 0s and 1s for
+            numpy.NDArray[numpy.uint8]: A 2D array containing 0s and 1s for
             nodata/data pixels.
 
         """
+        assert self.data_array.ndim == 3
         shape = self.data_array.shape
         if self.no_data is not None:
             mask: npt.NDArray[np.uint8] = np.full(shape, 0, dtype=np.uint8)
@@ -299,6 +300,7 @@ class RasterFootprint:
         Returns:
             Polygon: Densified footprint polygon in the native CRS.
         """
+        assert not (self.densification_factor and self.densification_distance)
         if self.densification_factor is not None:
             return Polygon(
                 densify_by_factor(polygon.exterior.coords, self.densification_factor)
@@ -510,12 +512,20 @@ class RasterFootprint:
             precision (int): The number of decimal places to include in the final
                 footprint coordinates.
             densification_factor (Optional[int]): The factor by which to
-                increase point density within the polygon before projection to
-                EPSG 4326. A factor of 2 would double the density of points (placing
-                one new point between each existing pair of points), a factor of
-                3 would place two points between each point, etc. Higher
-                densities produce higher fidelity footprints in areas of high
-                projection distortion.
+                increase point density within the footprint polygon before
+                projection to EPSG 4326. A factor of 2 would double the density
+                of points (placing one new point between each existing pair of
+                points), a factor of 3 would place two points between each point,
+                etc. Higher densities produce higher fidelity footprints in
+                areas of high projection distortion. Mutually exclusive with
+                ``densification_distance``.
+            densification_distance (Optional[float]): The distance by which to
+                increase point density within the footprint polygon before
+                projection to EPSG 4326. If the distance is set to 2 and the
+                segment length between two polygon vertices is 10, 4 new
+                vertices would be created along the segment. Higher densities
+                produce higher fidelity footprints in areas of high projection
+                distortion.  Mutually exclusive with ``densification_factor``.
             simplify_tolerance (Optional[float]): Distance, in degrees, within which
                 all locations on the simplified polygon will be to the original
                 polygon.
@@ -584,12 +594,20 @@ class RasterFootprint:
             precision (int): The number of decimal places to include in the final
                 footprint coordinates.
             densification_factor (Optional[int]): The factor by which to
-                increase point density within the polygon before projection to
-                EPSG 4326. A factor of 2 would double the density of points (placing
-                one new point between each existing pair of points), a factor of
-                3 would place two points between each point, etc. Higher
-                densities produce higher fidelity footprints in areas of high
-                projection distortion.
+                increase point density within the footprint polygon before
+                projection to EPSG 4326. A factor of 2 would double the density
+                of points (placing one new point between each existing pair of
+                points), a factor of 3 would place two points between each point,
+                etc. Higher densities produce higher fidelity footprints in
+                areas of high projection distortion. Mutually exclusive with
+                ``densification_distance``.
+            densification_distance (Optional[float]): The distance by which to
+                increase point density within the footprint polygon before
+                projection to EPSG 4326. If the distance is set to 2 and the
+                segment length between two polygon vertices is 10, 4 new
+                vertices would be created along the segment. Higher densities
+                produce higher fidelity footprints in areas of high projection
+                distortion.  Mutually exclusive with ``densification_factor``.
             simplify_tolerance (Optional[float]): Distance, in degrees, within which
                 all locations on the simplified polygon will be to the original
                 polygon.
@@ -692,6 +710,11 @@ def update_geometry_from_asset_footprint(
     Returns:
         bool: True if the Item geometry was successfully updated, False if not.
     """
+    warnings.warn(
+        "update_geometry_from_asset_footprint() is deprecated, use "
+        "RasterFootprint.update_geometry_from_asset_footprint() instead",
+        DeprecationWarning,
+    )
     return RasterFootprint.update_geometry_from_asset_footprint(
         item,
         asset_names=asset_names,
@@ -761,6 +784,11 @@ def data_footprints_for_data_assets(
         dictionary representing a GeoJSON Polygon of the data footprint for
         each asset.
     """
+    warnings.warn(
+        "data_footprints_for_data_assets() is deprecated, use "
+        "RasterFootprint.data_footprints_for_data_assets() instead",
+        DeprecationWarning,
+    )
     return RasterFootprint.data_footprints_for_data_assets(
         item,
         asset_names=asset_names,
@@ -819,6 +847,12 @@ def data_footprint(
         Optional[Dict[str, Any]]: A dictionary representing a GeoJSON Polygon of
         the data footprint of the raster data retrieved from the given ``href``.
     """
+    warnings.warn(
+        "data_footprint() is deprecated, use RasterFootprint.data_footprint() "
+        "on a RasterFootprint instance created with "
+        "RasterFootprint.from_href() instead",
+        DeprecationWarning,
+    )
     return RasterFootprint.from_href(
         href=href,
         no_data=no_data,
