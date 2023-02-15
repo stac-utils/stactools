@@ -172,6 +172,7 @@ class RasterFootprint:
 
     crs: CRS
     """Coordinate reference system of the raster data."""
+
     data_array: npt.NDArray[Any]
     """2D or 3D array of raster data."""
 
