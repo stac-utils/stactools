@@ -140,13 +140,10 @@ class RasterFootprint:
 
     Args:
         data_array (numpy.NDArray[Any]): The raster data used for the
-            footprint computation.
+            footprint calculation.
         crs (CRS): Coordinate reference system of the raster data.
         transform (Affine): Matrix defining the transformation from pixel to CRS
             coordinates.
-        no_data (Optional[Union[int, float]]): Explicitly sets the nodata
-            value if not in source image metadata. If set to None, this will
-            return a footprint including nodata values.
         precision (int): The number of decimal places to include in the
             final footprint coordinates.
         densification_factor (Optional[int]): The factor by which to
@@ -167,6 +164,9 @@ class RasterFootprint:
         simplify_tolerance (Optional[float]): Distance, in degrees, within which
             all locations on the simplified polygon will be to the original
             polygon.
+        no_data (Optional[Union[int, float]]): The nodata value in
+            ``data_array``. If set to None, this will return a footprint
+            including nodata values.
     """
 
     crs: CRS
@@ -199,16 +199,15 @@ class RasterFootprint:
         crs: CRS,
         transform: Affine,
         *,
-        no_data: Optional[Union[int, float]] = None,
         precision: int = DEFAULT_PRECISION,
         densification_factor: Optional[int] = None,
         densification_distance: Optional[float] = None,
         simplify_tolerance: Optional[float] = None,
+        no_data: Optional[Union[int, float]] = None,
     ) -> None:
         if data_array.ndim == 2:
             data_array = data_array[np.newaxis, :]
         self.data_array = data_array
-        self.no_data = no_data
         self.crs = crs
         self.transform = transform
         self.precision = precision
@@ -220,6 +219,7 @@ class RasterFootprint:
         self.densification_factor = densification_factor
         self.densification_distance = densification_distance
         self.simplify_tolerance = simplify_tolerance
+        self.no_data = no_data
 
     def footprint(self) -> Optional[Dict[str, Any]]:
         """Produces the footprint surrounding data (not nodata) pixels in
@@ -348,12 +348,12 @@ class RasterFootprint:
         cls: Type[T],
         href: str,
         *,
-        no_data: Optional[Union[int, float]] = None,
-        bands: List[int] = [1],
         precision: int = DEFAULT_PRECISION,
         densification_factor: Optional[int] = None,
         densification_distance: Optional[float] = None,
         simplify_tolerance: Optional[float] = None,
+        no_data: Optional[Union[int, float]] = None,
+        bands: List[int] = [1],
     ) -> T:
         """Produces a :class:`RasterFootprint` instance from an image href.
 
@@ -361,13 +361,6 @@ class RasterFootprint:
 
         Args:
             href (str): The href of the image to process.
-            no_data (Optional[Union[int, float]]): Explicitly sets the nodata
-                value if not in source image metadata. If set to None, this will
-                return a footprint including nodata values.
-            bands (List[int]): The bands to use to compute the footprint.
-                Defaults to [1]. If an empty list is provided, the bands will be
-                ORd together; e.g., for a pixel to be outside of the footprint,
-                all bands must have nodata in that pixel.
             precision (int): The number of decimal places to include in the
                 final footprint coordinates.
             densification_factor (Optional[int]): The factor by which to
@@ -388,6 +381,13 @@ class RasterFootprint:
             simplify_tolerance (Optional[float]): Distance, in degrees, within
                 which all locations on the simplified polygon will be to the
                 original polygon.
+            no_data (Optional[Union[int, float]]): Explicitly sets the nodata
+                value if not in source image metadata. If set to None, this will
+                return a footprint including nodata values.
+            bands (List[int]): The bands to use to compute the footprint.
+                Defaults to [1]. If an empty list is provided, the bands will be
+                ORd together; e.g., for a pixel to be outside of the footprint,
+                all bands must have nodata in that pixel.
 
         Returns:
             RasterFootprint: A :class:`RasterFootprint` instance.
@@ -408,12 +408,12 @@ class RasterFootprint:
         cls: Type[T],
         reader: DatasetReader,
         *,
-        no_data: Optional[Union[int, float]] = None,
-        bands: List[int] = [1],
         precision: int = DEFAULT_PRECISION,
         densification_factor: Optional[int] = None,
         densification_distance: Optional[float] = None,
         simplify_tolerance: Optional[float] = None,
+        no_data: Optional[Union[int, float]] = None,
+        bands: List[int] = [1],
     ) -> T:
         """Produces a :class:`RasterFootprint` instance from a
         :class:`rasterio.io.DatasetReader`  object, i.e., an opened dataset
@@ -422,13 +422,6 @@ class RasterFootprint:
         Args:
             reader (DatasetReader): A rasterio dataset reader object for the
                 image to process.
-            no_data (Optional[Union[int, float]]): Explicitly sets the nodata
-                value if not in source image metadata. If set to None, this will
-                return a footprint including nodata values.
-            bands (List[int]): The bands to use to compute the footprint.
-                Defaults to [1]. If an empty list is provided, the bands will be
-                ORd together; e.g., for a pixel to be outside of the footprint,
-                all bands must have nodata in that pixel.
             precision (int): The number of decimal places to include in the
                 final footprint coordinates.
             densification_factor (Optional[int]): The factor by which to
@@ -449,6 +442,13 @@ class RasterFootprint:
             simplify_tolerance (Optional[float]): Distance, in degrees, within
                 which all locations on the simplified polygon will be to the
                 original polygon.
+            no_data (Optional[Union[int, float]]): Explicitly sets the nodata
+                value if not in source image metadata. If set to None, this will
+                return a footprint including nodata values.
+            bands (List[int]): The bands to use to compute the footprint.
+                Defaults to [1]. If an empty list is provided, the bands will be
+                ORd together; e.g., for a pixel to be outside of the footprint,
+                all bands must have nodata in that pixel.
 
         Returns:
             RasterFootprint: A :class:`RasterFootprint` instance.
@@ -527,7 +527,7 @@ class RasterFootprint:
                 together; e.g., for a pixel to be outside of the footprint, all
                 bands must have nodata in that pixel.
             skip_errors (bool): If False, raise an error for a missing href or
-                footprint computation failure.
+                footprint calculation failure.
 
         Returns:
             bool: True if the Item geometry was successfully updated, False if not.
@@ -601,7 +601,7 @@ class RasterFootprint:
                 together; e.g., for a pixel to be outside of the footprint, all
                 bands must have nodata in that pixel.
             skip_errors (bool): If False, raise an error for a missing href or
-                footprint computation failure.
+                footprint calculation failure.
 
         Returns:
             Iterator[Tuple[str, Dict[str, Any]]]: Iterator of the asset name and
@@ -687,7 +687,7 @@ def update_geometry_from_asset_footprint(
             together; e.g., for a pixel to be outside of the footprint, all
             bands must have nodata in that pixel.
         skip_errors (bool): If False, raise an error for a missing href or
-            footprint computation failure.
+            footprint calculation failure.
 
     Returns:
         bool: True if the Item geometry was successfully updated, False if not.
@@ -754,7 +754,7 @@ def data_footprints_for_data_assets(
             together; e.g., for a pixel to be outside of the footprint, all
             bands must have nodata in that pixel.
         skip_errors (bool): If False, raise an error for a missing href or
-            footprint computation failure.
+            footprint calculation failure.
 
     Returns:
         Iterator[Tuple[str, Dict[str, Any]]]: Iterator of the asset name and
