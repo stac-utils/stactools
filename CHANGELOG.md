@@ -10,10 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `stactools.core.utils.round` for rounding Item geometry and Item and Collection bboxes to a specified precision ([#384](https://github.com/stac-utils/stactools/pull/384))
+- `stactools.core.utils.raster_footprint.densify_by_distance` for densifying polygons at distance intervals ([#396](https://github.com/stac-utils/stactools/pull/396))
+- `stactools.core.utils.raster_footprint.reproject_polgyon` for reprojecting a polygon and removing duplicate vertices caused by rounding ([#396](https://github.com/stac-utils/stactools/pull/396))
+- `stactools.core.utils.raster_footprint.RasterFootprint` class for customizing raster data footrpint creation behaviour via subclassing ([#396](https://github.com/stac-utils/stactools/pull/396))
 
 ### Changed
 
 - Freed `recursive_round` function from `round_coordinates` in `stactools.core.utils.round` ([#390](https://github.com/stac-utils/stactools/pull/390))
+- Exposed the private `_densify` function as `densify_by_factor` in `stactools.core.utils.raster_footprint` ([#396](https://github.com/stac-utils/stactools/pull/396))
+
+### Deprecated
+
+- `update_geometry_from_asset_footprint`, `data_footprints_for_data_assets`, and `data_footprint` functions will be removed from `stactools.core.utils.raster_footprint` in v0.6.0 ([#396](https://github.com/stac-utils/stactools/pull/396))
 
 ### [0.4.3] - 2022-12-16
 
@@ -320,22 +328,3 @@ See [#9](https://github.com/stac-utils/stactools/pull/9)
 - `stac.browse` for launching a local instance of stac-browser using docker.
 
 [Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.4.3..main>
-[0.4.3]: <https://github.com/stac-utils/stactools/compare/v0.4.2..v0.4.3>
-[0.4.2]: <https://github.com/stac-utils/stactools/compare/v0.4.1..v0.4.2>
-[0.4.1]: <https://github.com/stac-utils/stactools/compare/v0.4.0..v0.4.1>
-[0.4.0]: <https://github.com/stac-utils/stactools/compare/v0.3.1..v0.4.0>
-[0.3.1]: <https://github.com/stac-utils/stactools/compare/v0.3.0..v0.3.1>
-[0.3.0]: <https://github.com/stac-utils/stactools/compare/v0.2.6..v0.3.0>
-[0.2.6]: <https://github.com/stac-utils/stactools/compare/v0.2.5..v0.2.6>
-[0.2.5]: <https://github.com/stac-utils/stactools/compare/v0.2.4..v0.2.5>
-[0.2.4]: <https://github.com/stac-utils/stactools/compare/v0.2.3..v0.2.4>
-[0.2.3]: <https://github.com/stac-utils/stactools/compare/v0.2.2..v0.2.3>
-[0.2.2]: <https://github.com/stac-utils/stactools/compare/v0.2.1..v0.2.2>
-[0.2.1]: <https://github.com/stac-utils/stactools/compare/v0.1.6..v0.2.1>
-[0.1.6]: <https://github.com/stac-utils/stactools/compare/v0.1.5..v0.1.6>
-[0.1.5]: <https://github.com/stac-utils/stactools/compare/v0.1.4..v0.1.5>
-[0.1.4]: <https://github.com/stac-utils/stactools/compare/v0.1.3..v0.1.4>
-[0.1.3]: <https://github.com/stac-utils/stactools/compare/v0.1.2..v0.1.3>
-[0.1.2]: <https://github.com/stac-utils/stactools/compare/v0.1.1..v0.1.2>
-[0.1.1]: <https://github.com/stac-utils/stactools/compare/v0.1.0..v0.1.1>
-[0.1.0]: <https://github.com/stac-utils/stactools/releases/tag/v0.1.0>
