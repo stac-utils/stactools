@@ -92,11 +92,6 @@ Raster footprint generation
 .. automodule:: stactools.core.utils.raster_footprint
     :members:
 
-Rounding
-~~~~~~~~
-.. automodule:: stactools.core.utils.round
-    :members:
-
 Testing
 -------
 

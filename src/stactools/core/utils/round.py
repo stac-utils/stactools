@@ -1,5 +1,3 @@
-"""Coordinate rounding utilities."""
-
 from typing import Any, List, TypeVar
 
 from pystac import Collection, Item
@@ -12,7 +10,7 @@ S = TypeVar("S", Item, Collection)
 
 def round_coordinates(stac_object: S, precision: int = DEFAULT_PRECISION) -> S:
     """Rounds Item geometry and bbox coordinates or Collection spatial extent
-    bbox coordinates to specified ``precision``.
+    bbox coordinates to specified precision.
 
     Args:
         stac_object (S): A pystac Item or Collection.
@@ -50,8 +48,8 @@ def recursive_round(coordinates: List[Any], precision: int) -> List[Any]:
         precision (int): Number of decimal places to use for rounding.
 
     Returns:
-        List[Any]: A list (possibly nested) of numbers rounded to the given
-        ``precision``.
+        List[Any]: a list (possibly nested) of numbers rounded to the given
+            precision.
     """
     for idx, value in enumerate(coordinates):
         if isinstance(value, (int, float)):
