@@ -10,12 +10,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `stactools.core.utils.round` for rounding Item geometry and Item and Collection bboxes to a specified precision ([#384](https://github.com/stac-utils/stactools/pull/384))
+- `stactools.core.utils.raster_footprint.densify_by_distance` for densifying polygons at distance intervals ([#396](https://github.com/stac-utils/stactools/pull/396))
+- `stactools.core.utils.raster_footprint.reproject_polgyon` for reprojecting a polygon and removing duplicate vertices caused by rounding ([#396](https://github.com/stac-utils/stactools/pull/396))
+- `stactools.core.utils.raster_footprint.RasterFootprint` class for customizing raster data footrpint creation behaviour via subclassing ([#396](https://github.com/stac-utils/stactools/pull/396))
 
 ### Changed
 
 - Freed `recursive_round` function from `round_coordinates` in `stactools.core.utils.round` ([#390](https://github.com/stac-utils/stactools/pull/390))
+- Exposed the private `_densify` function as `densify_by_factor` in `stactools.core.utils.raster_footprint` ([#396](https://github.com/stac-utils/stactools/pull/396))
 
-### [0.4.3] - 2022-12-16
+### Deprecated
+
+- `update_geometry_from_asset_footprint`, `data_footprints_for_data_assets`, and `data_footprint` functions will be removed from `stactools.core.utils.raster_footprint` in v0.6.0 ([#396](https://github.com/stac-utils/stactools/pull/396))
+
+## [0.4.3] - 2022-12-16
 
 ### Added
 

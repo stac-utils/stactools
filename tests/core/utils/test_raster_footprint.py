@@ -7,6 +7,8 @@ from shapely.geometry.polygon import Polygon
 from stactools.core import use_fsspec
 from stactools.core.utils.raster_footprint import (
     data_footprint,
+    densify_by_distance,
+    densify_by_factor,
     densify_reproject_simplify,
     update_geometry_from_asset_footprint,
 )
@@ -392,3 +394,12 @@ def test_multiband_footprint() -> None:
         }
     )
     assert shape(footprint) == expected
+
+
+def test_densify() -> None:
+    polygon = Polygon([[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]])
+    assert len(polygon.exterior.coords) == 5
+    densified_polygon = Polygon(densify_by_factor(polygon.exterior.coords, 2))
+    assert len(densified_polygon.exterior.coords) == 9
+    densified_polygon = Polygon(densify_by_distance(polygon.exterior.coords, 2))
+    assert len(densified_polygon.exterior.coords) == 21

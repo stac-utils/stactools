@@ -86,7 +86,7 @@ Reprojection
 .. automodule:: stactools.core.projection
     :members:
 
-Raster Footprint Generation
+Raster footprint generation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. automodule:: stactools.core.utils.raster_footprint
