@@ -11,7 +11,7 @@ bounding box of the entire image, both
 data and no data. By footprint, we mean a vector that balances many competing
 factors, and generally represents a shape
 covering the data in an image. Figuring out the right parameter values to the
-methods in the ``raster_footprint``
+methods in the :mod:`~stactools.core.utils.raster_footprint`
 module will usually require some experimental validation, to find exactly the
 right values for your data, CRS, and
 use cases.
@@ -74,9 +74,9 @@ result in false positives where a search geometry intersects the
 geometry of an Item, but the only pixels within the
 geometry are no data, but in practice this is rarely a problem.
 
-When using the raster_footprint functions, the ``no_data`` parameter
-value can be used to pass in the value
-used for no data if it not defined in the image metadata.
+When using the :mod:`~stactools.core.utils.raster_footprint` functions, the
+``no_data`` parameter value can be used to pass in the value
+used for no data if it is not defined in the image metadata.
 
 Reprojected Geometry Accurately Represents the Footprint
 --------------------------------------------------------
@@ -90,7 +90,7 @@ to EPSG:4326, it will still result in a 5 point
 polygon, as the points have simply been reprojected into the new CRS.
 This new polygon may not accurately represent
 original polygon if there is significant curved distortion between
-the CRSes. An example of this is most apparent in
+the CRSs. An example of this is most apparent in
 reprojecting the sinusoidal geometry of MODIS to EPSG:4326. Simply
 reprojecting the 5 point polygon would result in
 a parallelogram, whereas a more accurate representation is two
@@ -98,7 +98,7 @@ parallel straight sides and two curved sides.
 
 .. image:: _static/modis.png
 
-The increase the accuracy of the reprojected shape, we can first
+To increase the accuracy of the reprojected shape, we can first
 densify the polygon. Here we add additional, redundant
 points between existing points in the polygon, so that the
 reprojected shape will have points that more closely match
@@ -108,9 +108,9 @@ each "side" of the polygon has 11 points representing it instead
 of 2, and we get a "curved" side that more closely
 matches the raster reprojection.
 
-When using the raster_footprint functions, the
-``densification_factor`` parameter can be used to densify the
-geometry before reprojection. This will require some
+When using the methods in the :mod:`~stactools.core.utils.raster_footprint`
+module, the ``densification_factor`` or ``densification_distance`` parameter
+can be used to densify the geometry before reprojection. This will require some
 experimentation to find the appropriate value for the CRS of your data.
 
 Simplifying the Geometry
@@ -122,17 +122,14 @@ it is a 2400x2400 pixel image and two sides are curves after reprojection.
 However, a polygon this dense both makes
 the Item body very large and increases the computation required to perform
 an intersects calculation during search,
-with little benefit. These polygons can be simplified by defining a minimum
-distance, in degrees, for which two points
-may be collapsed into one. This is also useful when the polygon in the native
+with little benefit. These polygons can be simplified by defining a maximum
+distance, in degrees, within which the simplified polygon must be to original
+polygon points. This is also useful when the polygon in the native
 CRS has a large number of points, so
 that the end result is a polygon of a more manageable size.
 
-When using the raster_footprint functions, the ``simplify_tolerance`` parameter
-defines the a minimum distance,
-in degrees, for which points should be combined. This will require some
-experimentation to find the appropriate
-value for the CRS of your data.
-
-
-
+When using the methods in the :mod:`~stactools.core.utils.raster_footprint`
+module, the ``simplify_tolerance`` parameter defines the distance within which
+the simplified polygon must be to the original polygon points. This will
+require some experimentation to find the appropriate value for the CRS of your
+data.
