@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `update_geometry_from_asset_footprint`, `data_footprints_for_data_assets`, and `data_footprint` functions will be removed from `stactools.core.utils.raster_footprint` in v0.6.0 ([#396](https://github.com/stac-utils/stactools/pull/396))
 
-### [0.4.3] - 2022-12-16
+## [0.4.3] - 2022-12-16
 
 ### Added
 
@@ -328,3 +328,22 @@ See [#9](https://github.com/stac-utils/stactools/pull/9)
 - `stac.browse` for launching a local instance of stac-browser using docker.
 
 [Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.4.3..main>
+[0.4.3]: <https://github.com/stac-utils/stactools/compare/v0.4.2..v0.4.3>
+[0.4.2]: <https://github.com/stac-utils/stactools/compare/v0.4.1..v0.4.2>
+[0.4.1]: <https://github.com/stac-utils/stactools/compare/v0.4.0..v0.4.1>
+[0.4.0]: <https://github.com/stac-utils/stactools/compare/v0.3.1..v0.4.0>
+[0.3.1]: <https://github.com/stac-utils/stactools/compare/v0.3.0..v0.3.1>
+[0.3.0]: <https://github.com/stac-utils/stactools/compare/v0.2.6..v0.3.0>
+[0.2.6]: <https://github.com/stac-utils/stactools/compare/v0.2.5..v0.2.6>
+[0.2.5]: <https://github.com/stac-utils/stactools/compare/v0.2.4..v0.2.5>
+[0.2.4]: <https://github.com/stac-utils/stactools/compare/v0.2.3..v0.2.4>
+[0.2.3]: <https://github.com/stac-utils/stactools/compare/v0.2.2..v0.2.3>
+[0.2.2]: <https://github.com/stac-utils/stactools/compare/v0.2.1..v0.2.2>
+[0.2.1]: <https://github.com/stac-utils/stactools/compare/v0.1.6..v0.2.1>
+[0.1.6]: <https://github.com/stac-utils/stactools/compare/v0.1.5..v0.1.6>
+[0.1.5]: <https://github.com/stac-utils/stactools/compare/v0.1.4..v0.1.5>
+[0.1.4]: <https://github.com/stac-utils/stactools/compare/v0.1.3..v0.1.4>
+[0.1.3]: <https://github.com/stac-utils/stactools/compare/v0.1.2..v0.1.3>
+[0.1.2]: <https://github.com/stac-utils/stactools/compare/v0.1.1..v0.1.2>
+[0.1.1]: <https://github.com/stac-utils/stactools/compare/v0.1.0..v0.1.1>
+[0.1.0]: <https://github.com/stac-utils/stactools/releases/tag/v0.1.0>
