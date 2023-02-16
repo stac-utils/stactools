@@ -32,9 +32,6 @@ To release a new version of **stactools** or a [stactools-package](https://githu
    Include a "Release summary" section which includes the contents of your section of the CHANGELOG.
 9. Once approved, merge the branch.
 10. Create an **annotated** tag at the new **main** HEAD named `vX.X.X`, e.g. `v0.3.0`.
-    - The contents of the tag should be the CHANGELOG contents for your version release.
-      Be sure to remove any leading `###`, they'll be considered comments in the tag contents.
-      See previous annotated tags for examples of formatting.
 11. Push your tag.
     This will fire off a special [release Github action](.github/workflows/release.yml) that will push your package to PyPI.
 12. Create a new release for your tag in the [Github releases](https://github.com/stac-utils/stactools/releases).
