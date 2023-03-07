@@ -229,6 +229,11 @@ You can also run the previous commands in the docker container using:
 docker/console
 ```
 
+### Code owners and repository maintainer(s)
+
+This repository uses a [code owners file](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners) to automatically request reviews for new pull requests.
+The current primary maintainer(s) of this repository are listed under the `*` rule in the [CODEOWNERS](./CODEOWNERS) file.
+
 ### Adding a new package
 
 To create a new `stactools` package, use the [`stactools` package template](https://github.com/stactools-packages/template).
