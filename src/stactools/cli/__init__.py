@@ -20,6 +20,7 @@ def register_plugin(registry: "Registry") -> None:
         merge,
         migrate,
         summary,
+        update_extent,
         update_geometry,
         validate,
         version,
@@ -39,6 +40,7 @@ def register_plugin(registry: "Registry") -> None:
     registry.register_subcommand(summary.create_summary_command)
     registry.register_subcommand(validate.create_validate_command)
     registry.register_subcommand(version.create_version_command)
+    registry.register_subcommand(update_extent.create_update_extent_command)
     registry.register_subcommand(update_geometry.create_update_geometry_command)
 
     # TODO
