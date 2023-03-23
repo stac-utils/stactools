@@ -1,6 +1,5 @@
 black
 codespell
-flake8
 importlib-metadata
 ipython
 jupyter
@@ -13,6 +12,7 @@ pydata-sphinx-theme
 pylint
 pytest
 pytest-cov
+ruff
 sphinx < 6
 sphinx-autobuild
 sphinx-click

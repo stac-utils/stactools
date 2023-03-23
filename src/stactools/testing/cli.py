@@ -1,5 +1,4 @@
-""" CLI for test data maintenance and generation.
-"""
+"""CLI for test data maintenance and generation."""
 import logging
 import os
 import shutil

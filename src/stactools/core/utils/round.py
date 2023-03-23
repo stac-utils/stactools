@@ -37,8 +37,8 @@ def round_coordinates(stac_object: S, precision: int = DEFAULT_PRECISION) -> S:
 
 
 def recursive_round(coordinates: List[Any], precision: int) -> List[Any]:
-    """Rounds a list of numbers. The list can contain additional nested lists or
-    tuples of numbers.
+    """Rounds a list of numbers. The list can contain additional nested lists
+    or tuples of numbers.
 
     Any tuples encountered will be converted to lists.
 

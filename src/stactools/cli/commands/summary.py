@@ -42,7 +42,10 @@ def create_summary_command(cli: click.Group) -> click.Command:
         "--inplace",
         is_flag=True,
         default=False,
-        help="If updating, update the collection in-place, instead of printing it to stdout.",
+        help=(
+            "If updating, update the collection in-place, "
+            "instead of printing it to stdout."
+        ),
     )
     def summary_command(
         href: str, fields: Optional[str], update: bool, inplace: bool

@@ -162,7 +162,8 @@ def move_assets(
         abs_asset_href = asset.get_absolute_href()
         if abs_asset_href is None:
             raise ValueError(
-                f"Asset {asset.title} HREF is not available for item {item.id}. This operation "
+                f"Asset {asset.title} HREF is not available for item {item.id}. "
+                "This operation "
                 "requires that the Asset HREFs are available."
             )
 

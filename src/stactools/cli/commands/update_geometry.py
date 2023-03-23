@@ -20,7 +20,8 @@ def create_update_geometry_command(cli: Group) -> Command:
         help=(
             "The names of the assets to try for footprint extraction. "
             "The first successful footprint will be used. "
-            "If no assets are provided, all assets will be tried until one is successful."
+            "If no assets are provided, all assets will be tried until one is "
+            "successful."
         ),
     )
     @click.option(
@@ -41,7 +42,10 @@ def create_update_geometry_command(cli: Group) -> Command:
         "-i",
         "--densification-distance",
         type=float,
-        help="The distance interval at which to increase point density within the polygon",
+        help=(
+            "The distance interval at which to increase point density within the "
+            "polygon"
+        ),
     )
     @click.option(
         "-s",

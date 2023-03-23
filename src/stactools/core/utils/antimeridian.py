@@ -14,12 +14,12 @@ class Strategy(Enum):
     """Strategy for handling antimeridian-crossing polygons."""
 
     SPLIT = auto()
-    """Split the polygon into multiple polygons so none cross the antimeridian."""
+    """Split the polygon into multiple polygons so none cross the
+    antimeridian."""
 
     NORMALIZE = auto()
-    """Keep the polygon as one polygon, but extend its values to be greater than
-    180 or less than -180.
-    """
+    """Keep the polygon as one polygon, but extend its values to be greater
+    than 180 or less than -180."""
 
 
 def fix_item(item: Item, strategy: Strategy) -> Item:
@@ -41,7 +41,8 @@ def fix_item(item: Item, strategy: Strategy) -> Item:
         multi_polygon = True
     else:
         raise ValueError(
-            f"Can only fix antimeridian issues for Polygons or MultiPolygons, geometry={geometry}"
+            "Can only fix antimeridian issues for Polygons or MultiPolygons, "
+            f"geometry={geometry}"
         )
     if strategy == Strategy.NORMALIZE:
         if multi_polygon:
@@ -73,7 +74,8 @@ def fix_item(item: Item, strategy: Strategy) -> Item:
 
 
 def split(polygon: Polygon) -> Optional[MultiPolygon]:
-    """Splits a single WGS84 polygon into a multipolygon across the antimeridian.
+    """Splits a single WGS84 polygon into a multipolygon across the
+    antimeridian.
 
     If the polygon does not cross the antimeridian, returns None. Only handles
     exterior rings (can't handle interior).
@@ -118,7 +120,8 @@ def split(polygon: Polygon) -> Optional[MultiPolygon]:
 
 
 def split_multipolygon(multi_polygon: MultiPolygon) -> Optional[MultiPolygon]:
-    """Splits multiple WGS84 polygons into a multipolygon across the antimeridian.
+    """Splits multiple WGS84 polygons into a multipolygon across the
+    antimeridian.
 
     If none of the contained polygons cross the antimeridian, returns None. Only
     handles exterior rings (can't handle interior).
@@ -130,7 +133,8 @@ def split_multipolygon(multi_polygon: MultiPolygon) -> Optional[MultiPolygon]:
         Fix this
 
     Args:
-        multi_polygon (:py:class:`shapely.geometry.MultiPolygon`): The input multi polygon.
+        multi_polygon (:py:class:`shapely.geometry.MultiPolygon`): The input
+            multi polygon.
 
     Returns:
         Optional[:py:class:`shapely.geometry.MultiPolygon`]:
@@ -148,7 +152,8 @@ def split_multipolygon(multi_polygon: MultiPolygon) -> Optional[MultiPolygon]:
 
 
 def normalize(polygon: Polygon) -> Optional[Polygon]:
-    """'Normalizes' a WGS84 lat/lon polygon, or returns None if no changes were made.
+    """'Normalizes' a WGS84 lat/lon polygon, or returns None if no changes were
+    made.
 
     This converts the polygon's x coordinates to all be the same sign, even if
     the polygon crosses the antimeridian. E.g.:
@@ -194,7 +199,8 @@ def normalize(polygon: Polygon) -> Optional[Polygon]:
 
 
 def normalize_multipolygon(multi_polygon: MultiPolygon) -> Optional[MultiPolygon]:
-    """'Normalizes' a WGS84 lat/lon multi polygon, or returns None if no changes were made.
+    """'Normalizes' a WGS84 lat/lon multi polygon, or returns None if no
+    changes were made.
 
     For each polygon in the multi-polygon, this converts the x coordinates to
     all be the same sign, even if the polygon crosses the antimeridian. Although
@@ -209,10 +215,12 @@ def normalize_multipolygon(multi_polygon: MultiPolygon) -> Optional[MultiPolygon
         Fix this
 
     Args:
-        multi_polygon (:py:class:`shapely.geometry.MultiPolygon`): The input multi-polygon.
+        multi_polygon (:py:class:`shapely.geometry.MultiPolygon`): The input
+            multi-polygon.
 
     Returns:
-        Optional[:py:class:`shapely.geometry.MultiPolygon`]: The normalized multi-polygon.
+        Optional[:py:class:`shapely.geometry.MultiPolygon`]: The normalized
+        multi-polygon.
     """
     polygons = list()
     changes_made = False

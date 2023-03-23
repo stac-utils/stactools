@@ -10,7 +10,7 @@ dependencies:
       - black
       - codespell
       - coverage
-      - flake8
+      - ruff
       - ipython
       - jupyter
       - lxml-stubs
