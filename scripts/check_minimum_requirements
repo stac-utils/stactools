@@ -24,7 +24,7 @@ for package_requirement in package_requirements:
     if package_requirement.marker is not None:
         continue
     min_requirement = min_requirements[package_requirement.name]
-    for (package_specifier, min_specifier) in zip(
+    for package_specifier, min_specifier in zip(
         package_requirement.specifier, min_requirement.specifier
     ):
         if (

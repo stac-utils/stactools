@@ -73,8 +73,7 @@ def deprecate(from_: str, to: str, version: str) -> None:
 @contextmanager
 def ignore_not_georeferenced() -> Generator[None, None, None]:
     """Suppress rasterio's warning when opening a dataset that contains no
-    georeferencing information.
-    """
+    georeferencing information."""
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=NotGeoreferencedWarning)
         yield

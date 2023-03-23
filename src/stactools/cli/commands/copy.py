@@ -86,10 +86,10 @@ def create_copy_command(cli: click.Group) -> click.Command:
         copy_assets: bool,
         publish_location: Optional[str],
     ) -> None:
-        """Copy a STAC Catalog or Collection at SRC to the directory
-        at DST.
+        """Copy a STAC Catalog or Collection at SRC to the directory at DST.
 
-        Note: Copying a catalog will upgrade it to the latest version of STAC."""
+        Note: Copying a catalog will upgrade it to the latest version of STAC.
+        """
         source_catalog = pystac.read_file(make_absolute_href(src))
         if not isinstance(source_catalog, pystac.Catalog):
             raise click.BadArgumentUsage(f"{src} is not a STAC Catalog")

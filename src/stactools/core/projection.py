@@ -27,8 +27,8 @@ def reproject_geom(
     geom: Dict[str, Any],
     precision: Optional[int] = None,
 ) -> Dict[str, Any]:
-    """Reprojects a geometry represented as GeoJSON from the src_crs to the dest
-    crs.
+    """Reprojects a geometry represented as GeoJSON from the src_crs to the
+    dest crs.
 
     Args:
         src_crs (pyproj.crs.CRS, rasterio.crs.CRS, or str): Projection of input data.

@@ -76,7 +76,8 @@ class TestData:
         from an external source.
 
         Args:
-            rel_path (str): The key to the external data, as configured in class instantiation.
+            rel_path (str): The key to the external data, as configured in class
+                instantiation.
 
         Returns:
             str: The absolute path to the external data file.

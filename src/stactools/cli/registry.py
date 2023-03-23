@@ -21,8 +21,10 @@ class Registry:
 
     def load_plugins(self) -> None:
         """Discover all plugins and register their resources.
+
         Import each Python module within the stactools namespace package
-        and call the register_plugin function at its root (if it exists).
+        and call the register_plugin function at its root (if it
+        exists).
         """
         import importlib
         import pkgutil

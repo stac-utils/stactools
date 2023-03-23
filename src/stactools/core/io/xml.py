@@ -35,7 +35,8 @@ class XmlElement:
     def find_or_throw(
         self, xpath: str, get_exception: Callable[[str], Exception]
     ) -> "XmlElement":
-        """Find a child ``XmlElement`` by xpath, or throw an exception if not found.
+        """Find a child ``XmlElement`` by xpath, or throw an exception if not
+        found.
 
         Args:
             xpath (str): The xpath to use for search.
@@ -145,7 +146,7 @@ class XmlElement:
 
     @lru_cache(maxsize=100)
     def get_attr(self, attr: str) -> Optional[str]:
-        """Returns the value of a given attribute of this element
+        """Returns the value of a given attribute of this element.
 
         Args:
             attr (str): The name of the attribute.
@@ -171,7 +172,7 @@ class XmlElement:
 
         Args:
             href (str): The href to read.
-            read_href_modifier (Optional[:py:class:`stactools.core.io.ReadHrefModifier`]):
+            read_href_modifier (Optional[:class:`stactools.core.io.ReadHrefModifier`]):
                 An optional callable that will be used to modify the href.
                 Defaults to None.
 

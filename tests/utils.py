@@ -7,7 +7,8 @@ def create_temp_copy(src_path: str, tmp_dir: str, target_name: str) -> str:
 
     Args:
         src_path (str): path of the file to be copied.
-        tmp_dir (TemporaryDirectory): path of the temporary directory where the file will be copied.
+        tmp_dir (TemporaryDirectory): path of the temporary directory where the
+            file will be copied.
         target_name (str): name of the file in the target location.
 
     Returns:

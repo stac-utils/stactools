@@ -1,4 +1,5 @@
-"""Generate convex hulls of valid raster data for use in STAC Item geometries."""
+"""Generate convex hulls of valid raster data for use in STAC Item
+geometries."""
 
 import logging
 import warnings
@@ -28,13 +29,12 @@ T = TypeVar("T", bound="RasterFootprint")
 def densify_by_factor(
     point_list: List[Tuple[float, float]], factor: int
 ) -> List[Tuple[float, float]]:
-    """
-    Densifies the number of points in a list of points by a ``factor``. For
+    """Densifies the number of points in a list of points by a ``factor``. For
     example, a list of 5 points and a factor of 2 will result in 10 points (one
     new point between each original adjacent points).
 
     Derived from code found at
-    https://stackoverflow.com/questions/64995977/generating-equidistance-points-along-the-boundary-of-a-polygon-but-cw-ccw  # noqa
+    https://stackoverflow.com/questions/64995977/generating-equidistance-points-along-the-boundary-of-a-polygon-but-cw-ccw
 
     Args:
         point_list (List[Tuple[float, float]]): The list of points to be
@@ -45,7 +45,7 @@ def densify_by_factor(
 
     Returns:
         List[Tuple[float, float]]: A list of the densified points.
-    """
+    """  # noqa: E501
     points: Any = np.asarray(point_list)
     densified_number = len(points) * factor
     existing_indices = np.arange(0, densified_number, factor)
@@ -59,15 +59,14 @@ def densify_by_factor(
 def densify_by_distance(
     point_list: List[Tuple[float, float]], distance: float
 ) -> List[Tuple[float, float]]:
-    """
-    Densifies the number of points in a list of points by inserting new
+    """Densifies the number of points in a list of points by inserting new
     points at intervals between each set of successive points. For example, if
     two successive points in the list are separated by 10 units and a
     ``distance`` of 2 is provided, 4 new points will be added between the two
     original points (one new point every 2 units of ``distance``).
 
     Derived from code found at
-    https://stackoverflow.com/questions/64995977/generating-equidistance-points-along-the-boundary-of-a-polygon-but-cw-ccw # noqa
+    https://stackoverflow.com/questions/64995977/generating-equidistance-points-along-the-boundary-of-a-polygon-but-cw-ccw
 
     Args:
         point_list (List[Tuple[float, float]]): The list of points to be
@@ -162,8 +161,8 @@ class RasterFootprint:
             created along the segment. Higher densities produce higher
             fidelity footprints in areas of high projection distortion.
             Mutually exclusive with ``densification_factor``.
-        simplify_tolerance (Optional[float]): Distance, in degrees, within which
-            all locations on the simplified polygon will be to the original
+        simplify_tolerance (Optional[float]): Distance, in degrees, within
+            which all locations on the simplified polygon will be to the original
             polygon.
         no_data (Optional[Union[int, float]]): The nodata value in
             ``data_array``. If set to None, this will return a footprint
@@ -177,10 +176,12 @@ class RasterFootprint:
     """2D or 3D array of raster data."""
 
     densification_distance: Optional[float]
-    """Optional distance for densifying polygon vertices before reprojection to EPSG 4326."""
+    """Optional distance for densifying polygon vertices before reprojection to
+    EPSG 4326."""
 
     densification_factor: Optional[int]
-    """Optional factor for densifying polygon vertices before reprojection to EPSG 4326."""
+    """Optional factor for densifying polygon vertices before reprojection to
+    EPSG 4326."""
 
     no_data: Optional[Union[int, float]]
     """Optional value defining pixels to exclude from the footprint."""
@@ -189,7 +190,8 @@ class RasterFootprint:
     """Number of decimal places in the final footprint coordinates."""
 
     simplify_tolerance: Optional[float]
-    """Optional maximum allowable error when simplifying the reprojected polygon."""
+    """Optional maximum allowable error when simplifying the reprojected
+    polygon."""
 
     transform: Affine
     """Transformation matrix from pixel to CRS coordinates."""
@@ -223,9 +225,9 @@ class RasterFootprint:
         self.no_data = no_data
 
     def footprint(self) -> Optional[Dict[str, Any]]:
-        """Produces the footprint surrounding data (not nodata) pixels in
-        the source image. If the footprint is unable to be computed, None
-        is returned.
+        """Produces the footprint surrounding data (not nodata) pixels in the
+        source image. If the footprint is unable to be computed, None is
+        returned.
 
         Returns:
             Optional[Dict[str, Any]]: A GeoJSON dictionary containing the
@@ -247,7 +249,6 @@ class RasterFootprint:
         Returns:
             numpy.NDArray[numpy.uint8]: A 2D array containing 0s and 1s for
             nodata/data pixels.
-
         """
         assert self.data_array.ndim == 3
         shape = self.data_array.shape
@@ -292,8 +293,9 @@ class RasterFootprint:
         return polygon
 
     def densify_polygon(self, polygon: Polygon) -> Polygon:
-        """Adds vertices to the footprint polygon in the native CRS using either
-        ``self.densification_factor`` or ``self.densification_distance``.
+        """Adds vertices to the footprint polygon in the native CRS using
+        either ``self.densification_factor`` or
+        ``self.densification_distance``.
 
         Args:
             polygon (Polygon): Footprint polygon in the native CRS.
@@ -331,8 +333,8 @@ class RasterFootprint:
 
     def simplify_polygon(self, polygon: Polygon) -> Polygon:
         """Reduces the number of polygon vertices such that the simplified
-        polygon shape is no further away than the original polygon vertices than
-        ``self.simplify_tolerance``.
+        polygon shape is no further away than the original polygon vertices
+        than ``self.simplify_tolerance``.
 
         Args:
             polygon (Polygon): Polygon to be simplified.
@@ -497,10 +499,9 @@ class RasterFootprint:
         bands: List[int] = [1],
         skip_errors: bool = True,
     ) -> bool:
-        """
-        Accepts an Item and an optional list of asset names within that Item, and
-        updates the geometry of that Item in-place with the data footprint derived
-        from the first of the assets that exists in the Item.
+        """Accepts an Item and an optional list of asset names within that
+        Item, and updates the geometry of that Item in-place with the data
+        footprint derived from the first of the assets that exists in the Item.
 
         See :class:`RasterFootprint` for details on the data footprint
         calculation.
@@ -578,11 +579,10 @@ class RasterFootprint:
         bands: List[int] = [1],
         skip_errors: bool = True,
     ) -> Iterator[Tuple[str, Dict[str, Any]]]:
-        """
-        Accepts an Item and an optional list of asset names within that Item, and
-        produces an iterator over the same asset names (if they exist) and
-        dictionaries representing GeoJSON Polygons of the data footprints of the
-        assets.
+        """Accepts an Item and an optional list of asset names within that
+        Item, and produces an iterator over the same asset names (if they
+        exist) and dictionaries representing GeoJSON Polygons of the data
+        footprints of the assets.
 
         See :class:`RasterFootprint` for details on the data footprint
         calculation.
@@ -872,9 +872,8 @@ def densify_reproject_simplify(
     precision: int = DEFAULT_PRECISION,
     simplify_tolerance: Optional[float] = None,
 ) -> Polygon:
-    """
-    Densifies the input polygon, reprojects it to EPSG 4326, and simplifies the
-    resulting polygon.
+    """Densifies the input polygon, reprojects it to EPSG 4326, and simplifies
+    the resulting polygon.
 
     See :class:`RasterFootprint` for details on densification and
     simplification.

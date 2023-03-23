@@ -43,7 +43,7 @@ def add_raster_to_item(item: Item) -> Item:
 def _read_bands(href: str) -> List[RasterBand]:
     bands = []
     with rasterio.open(href) as dataset:
-        for (i, index) in enumerate(dataset.indexes):
+        for i, index in enumerate(dataset.indexes):
             data = dataset.read(index, masked=True)
             band = RasterBand.create()
             band.nodata = dataset.nodatavals[i]
