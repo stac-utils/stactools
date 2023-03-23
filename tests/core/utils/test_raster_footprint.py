@@ -220,7 +220,6 @@ def test_landsat8() -> None:
 
 
 def test_nan_as_nodata() -> None:
-
     polygon = data_footprint(
         test_data.get_path("data-files/raster_footprint/LC08_LST_crop.tif"),  # noqa
         simplify_tolerance=0.01,

@@ -12,7 +12,8 @@ from stactools.core import utils
 ReadHrefModifier = Callable[[str], str]
 """Type alias for a function parameter that allows users to manipulate HREFs.
 
-Used for reading, e.g. appending an Azure SAS Token or translating to a signed URL.
+Used for reading, e.g. appending an Azure SAS Token or translating to a
+signed URL.
 """
 
 
@@ -46,21 +47,25 @@ def read_text(
 
 
 class FsspecStacIO(StacIO):
-    """A subclass of :py:class:`pystac.DefaultStacIO` that uses `fsspec
-    <https://filesystem-spec.readthedocs.io/en/latest/>`_ for reads and writes.
-    """
+    """A subclass of :py:class:`pystac.DefaultStacIO` that uses
+    `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_
+    for reads and writes."""
 
     def read_text(self, source: HREF, *args: Any, **kwargs: Any) -> str:
-        """A concrete implementation of :meth:`StacIO.read_text
-        <pystac.StacIO.read_text>`. Converts the ``source`` argument to a string (if it
-        is not already) and delegates to :meth:`FsspecStacIO.read_text_from_href` for
-        opening and reading the file."""
+        """A concrete implementation of
+        :meth:`StacIO.read_text <pystac.StacIO.read_text>`.
+
+        Converts the ``source`` argument to
+        a string (if it is not already) and delegates to
+        :meth:`FsspecStacIO.read_text_from_href` for opening and reading
+        the file.
+        """
         href = str(os.fspath(source))
         return self.read_text_from_href(href, **kwargs)
 
     def read_text_from_href(self, href: str, **kwargs: Any) -> str:
-        """Reads a file as a utf-8 string using `fsspec
-        <https://filesystem-spec.readthedocs.io/en/latest/>`_
+        """Reads a file as a utf-8 string using
+        `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_.
 
         Args:
             href (str): The href to read.
@@ -79,10 +84,13 @@ class FsspecStacIO(StacIO):
                 raise ValueError(f"Unable to decode data loaded from HREF: {href}")
 
     def write_text(self, dest: HREF, txt: str, *args: Any, **kwargs: Any) -> None:
-        """A concrete implementation of :meth:`StacIO.write_text
-        <pystac.StacIO.write_text>`. Converts the ``dest`` argument to a string (if it
-        is not already) and delegates to :meth:`FsspecStacIO.write_text_from_href` for
-        opening and reading the file."""
+        """A concrete implementation of :meth:`StacIO.write_text <pystac.StacIO.write_text>`.
+
+        Converts the ``dest`` argument to a
+        string (if it is not already) and delegates to
+        :meth:`FsspecStacIO.write_text_from_href` for opening and
+        reading the file.
+        """  # noqa: E501
         href = str(os.fspath(dest))
         return self.write_text_to_href(href, txt, **kwargs)
 
@@ -107,5 +115,6 @@ class FsspecStacIO(StacIO):
 
 
 def use_fsspec() -> None:
-    """Sets the default :py:class:`pystac.StacIO` to :py:class:`FsspecStacIO`."""
+    """Sets the default :py:class:`pystac.StacIO` to
+    :py:class:`FsspecStacIO`."""
     StacIO.set_default(FsspecStacIO)

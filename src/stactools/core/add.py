@@ -46,5 +46,6 @@ def add_item(
             do_move_assets(item_copy, copy=False)
     else:
         raise ValueError(
-            f"Cannot add Item {source_item.id} because {target_catalog} does not have a self href."
+            f"Cannot add Item {source_item.id} because {target_catalog} does "
+            "not have a self href."
         )

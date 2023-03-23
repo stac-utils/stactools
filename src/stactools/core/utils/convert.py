@@ -78,11 +78,13 @@ def cogify(
 def cogify_subdatasets(
     infile: str, outdir: str, subdataset_names: Optional[List[str]] = None
 ) -> Tuple[List[str], List[str]]:
-    """Creates Cloud-Optimized GeoTIFFs for all subdatasets in a multi-dataset raster file.
+    """Creates Cloud-Optimized GeoTIFFs for all subdatasets in a multi-dataset
+    raster file.
 
-    The created files will be named the same as the source file, with a ``_SUBDATASET`` suffix.
-    E.g. if the source file is named ``foo.hdf`` and the subdataset is named ``bar``, the output
-    COG will be named ``foo_bar.tif``. Only 2D (and not 3D) subdatasets are supported.
+    The created files will be named the same as the source file, with a
+    ``_SUBDATASET`` suffix.  E.g. if the source file is named ``foo.hdf`` and
+    the subdataset is named ``bar``, the output COG will be named
+    ``foo_bar.tif``. Only 2D (and not 3D) subdatasets are supported.
 
     Args:
          infile (str): The input file containing subdatasets.
