@@ -39,11 +39,11 @@ class CogifyTest(unittest.TestCase):
             with utils.ignore_not_georeferenced():
                 paths, names = cogify_subdatasets(infile, directory)
             self.assertEqual(
-                names,
-                [
-                    "__MonthlyRainTotal_GeoGrid_Data_Fields_RrLandRain",
-                    "__MonthlyRainTotal_GeoGrid_Data_Fields_TbOceanRain",
-                ],
+                set(names),
+                {
+                    "MonthlyRainTotal_GeoGrid_Data_Fields_RrLandRain",
+                    "MonthlyRainTotal_GeoGrid_Data_Fields_TbOceanRain",
+                },
             )
             for path in paths:
                 self.assertTrue(os.path.exists(path))
