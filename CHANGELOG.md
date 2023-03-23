@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Format of subdataset names when creating cogs ([#407](https://github.com/stac-utils/stactools/pull/407))
+
 ## [0.4.4] - 2023-02-16
 
 ### Added

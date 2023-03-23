@@ -108,8 +108,11 @@ def cogify_subdatasets(
                 subdataset_name = parts[-1]
                 if subdataset_names and subdataset_name not in subdataset_names:
                     continue
-                sanitized_subdataset_name = subdataset_name.replace(" ", "_").replace(
-                    "/", "_"
+                sanitized_subdataset_name = (
+                    subdataset_name.strip()
+                    .strip("/")
+                    .replace(" ", "_")
+                    .replace("/", "_")
                 )
                 names.append(sanitized_subdataset_name)
                 file_name = f"{base_file_name}_{sanitized_subdataset_name}.tif"
