@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.5] - 2023-03-24
+
 ### Added
 
 - Add `update-extent` subcommand to the CLI ([#405](https://github.com/stac-utils/stactools/pull/405))
@@ -338,7 +340,8 @@ See [#9](https://github.com/stac-utils/stactools/pull/9)
 - `stac.cli.command.layout` for modfiygin the layout of STACs
 - `stac.browse` for launching a local instance of stac-browser using docker.
 
-[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.4.4..main>
+[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.4.5..main>
+[0.4.5]: <https://github.com/stac-utils/stactools/compare/v0.4.4..v0.4.5>
 [0.4.4]: <https://github.com/stac-utils/stactools/compare/v0.4.3..v0.4.4>
 [0.4.3]: <https://github.com/stac-utils/stactools/compare/v0.4.2..v0.4.3>
 [0.4.2]: <https://github.com/stac-utils/stactools/compare/v0.4.1..v0.4.2>
