@@ -337,7 +337,7 @@ See [#9](https://github.com/stac-utils/stactools/pull/9)
 
 - `stac planet` commands for converting Planet orders to STACs.
 - `stac.cli.command.copy` commands for copying and moving STACs and assets.
-- `stac.cli.command.layout` for modfiygin the layout of STACs
+- `stac.cli.command.layout` for modifying the layout of STACs
 - `stac.browse` for launching a local instance of stac-browser using docker.
 
 [Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.4.5..main>
