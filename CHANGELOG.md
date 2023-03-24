@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `update-extent` subcommand to the CLI ([#405](https://github.com/stac-utils/stactools/pull/405))
+
 ### Changed
 
 - Format of subdataset names when creating cogs ([#407](https://github.com/stac-utils/stactools/pull/407))
