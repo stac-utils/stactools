@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `densify_by_distance` now includes the points in the original coordinate list in the returned densified coordinate list ([#412](https://github.com/stac-utils/stactools/pull/412))
 - `densify_by_factor` now includes the final coordinate in the original coordinate list in the returned densifed coordinate list ([#412](https://github.com/stac-utils/stactools/pull/412))
+- The `footprint` method on the `RasterFootprint` class now always returns counter-clockwise polygons in line with the GeoJSON specification ([#412](https://github.com/stac-utils/stactools/pull/412))
 
 ## [0.4.5] - 2023-03-24
 
