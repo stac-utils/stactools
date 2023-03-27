@@ -84,10 +84,11 @@ def densify_by_distance(
     total_length = np.sum(segment_lengths)
     cum_segment_lengths = np.cumsum(segment_lengths)
     cum_segment_lengths = np.insert(cum_segment_lengths, 0, [0])
-    cum_interp_lengths = np.arange(0, total_length, distance)
-    cum_interp_lengths = np.append(cum_interp_lengths, [total_length])
-    interp_x = np.interp(cum_interp_lengths, cum_segment_lengths, points[:, 0])
-    interp_y = np.interp(cum_interp_lengths, cum_segment_lengths, points[:, 1])
+    cum_interp_lengths = np.arange(distance, total_length, distance)
+    interp_lengths = np.append(cum_interp_lengths, cum_segment_lengths)
+    interp_lengths = np.unique(interp_lengths)
+    interp_x = np.interp(interp_lengths, cum_segment_lengths, points[:, 0])
+    interp_y = np.interp(interp_lengths, cum_segment_lengths, points[:, 1])
     return [(x, y) for x, y in zip(interp_x, interp_y)]
 
 

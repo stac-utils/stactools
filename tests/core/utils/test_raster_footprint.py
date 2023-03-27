@@ -402,3 +402,12 @@ def test_densify() -> None:
     assert len(densified_polygon.exterior.coords) == 9
     densified_polygon = Polygon(densify_by_distance(polygon.exterior.coords, 2))
     assert len(densified_polygon.exterior.coords) == 21
+
+
+def test_densify_by_distance() -> None:
+    coords = [(0.0, 0.0), (10.0, 0.0), (10.0, 10.0), (0.0, 10.0), (0.0, 0.0)]
+    assert len(coords) == 5
+    densified_coords = densify_by_distance(coords, 3.33)
+    for coord in coords:
+        assert coord in densified_coords
+    assert len(densified_coords) == 17
