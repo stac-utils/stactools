@@ -49,11 +49,10 @@ def densify_by_factor(
     points: Any = np.asarray(point_list)
     densified_number = len(points) * factor
     existing_indices = np.arange(0, densified_number, factor)
-    interp_indices = np.arange(existing_indices[-1])
+    interp_indices = np.arange(existing_indices[-1] + 1)
     interp_x = np.interp(interp_indices, existing_indices, points[:, 0])
     interp_y = np.interp(interp_indices, existing_indices, points[:, 1])
-    densified_points = [(x, y) for x, y in zip(interp_x, interp_y)]
-    return densified_points
+    return [(x, y) for x, y in zip(interp_x, interp_y)]
 
 
 def densify_by_distance(

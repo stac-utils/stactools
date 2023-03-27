@@ -395,15 +395,6 @@ def test_multiband_footprint() -> None:
     assert shape(footprint) == expected
 
 
-def test_densify() -> None:
-    polygon = Polygon([[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]])
-    assert len(polygon.exterior.coords) == 5
-    densified_polygon = Polygon(densify_by_factor(polygon.exterior.coords, 2))
-    assert len(densified_polygon.exterior.coords) == 9
-    densified_polygon = Polygon(densify_by_distance(polygon.exterior.coords, 2))
-    assert len(densified_polygon.exterior.coords) == 21
-
-
 def test_densify_by_distance() -> None:
     coords = [(0.0, 0.0), (10.0, 0.0), (10.0, 10.0), (0.0, 10.0), (0.0, 0.0)]
     assert len(coords) == 5
@@ -411,3 +402,12 @@ def test_densify_by_distance() -> None:
     for coord in coords:
         assert coord in densified_coords
     assert len(densified_coords) == 17
+
+
+def test_densify_by_factor() -> None:
+    coords = [(0.0, 0.0), (10.0, 0.0), (10.0, 10.0), (0.0, 10.0), (0.0, 0.0)]
+    assert len(coords) == 5
+    densified_coords = densify_by_factor(coords, 2)
+    for coord in coords:
+        assert coord in densified_coords
+    assert len(densified_coords) == 9
