@@ -16,7 +16,7 @@ from rasterio.crs import CRS
 from rasterio.warp import transform_geom
 from shapely.geometry import mapping, shape
 from shapely.geometry.multipolygon import MultiPolygon
-from shapely.geometry.polygon import Polygon
+from shapely.geometry.polygon import Polygon, orient
 
 logger = logging.getLogger(__name__)
 
@@ -292,7 +292,7 @@ class RasterFootprint:
         else:
             polygon = MultiPolygon(data_polygons).convex_hull
 
-        return polygon
+        return orient(polygon)
 
     def densify_polygon(self, polygon: Polygon) -> Polygon:
         """Adds vertices to the footprint polygon in the native CRS using
@@ -345,8 +345,10 @@ class RasterFootprint:
             Polygon: Reduced vertex polygon.
         """
         if self.simplify_tolerance is not None:
-            return polygon.simplify(
-                tolerance=self.simplify_tolerance, preserve_topology=False
+            return orient(
+                polygon.simplify(
+                    tolerance=self.simplify_tolerance, preserve_topology=False
+                )
             )
         return polygon
 
