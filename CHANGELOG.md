@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `densify_by_factor` now includes the final coordinate in the original coordinate list in the returned densifed coordinate list ([#412](https://github.com/stac-utils/stactools/pull/412))
 - The `footprint` method on the `RasterFootprint` class now always returns counter-clockwise polygons in line with the GeoJSON specification ([#412](https://github.com/stac-utils/stactools/pull/412))
 
+### Changed
+
+- `update_geometry_from_asset_footprint` in the raster_footprint module now updates the Item bbox based on the updated geometry extents ([#414](https://github.com/stac-utils/stactools/pull/414))
+
 ## [0.4.5] - 2023-03-24
 
 ### Added
