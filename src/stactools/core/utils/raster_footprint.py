@@ -16,7 +16,7 @@ from rasterio.crs import CRS
 from rasterio.warp import transform_geom
 from shapely.geometry import mapping, shape
 from shapely.geometry.multipolygon import MultiPolygon
-from shapely.geometry.polygon import Polygon
+from shapely.geometry.polygon import Polygon, orient
 
 logger = logging.getLogger(__name__)
 
@@ -49,11 +49,10 @@ def densify_by_factor(
     points: Any = np.asarray(point_list)
     densified_number = len(points) * factor
     existing_indices = np.arange(0, densified_number, factor)
-    interp_indices = np.arange(existing_indices[-1])
+    interp_indices = np.arange(existing_indices[-1] + 1)
     interp_x = np.interp(interp_indices, existing_indices, points[:, 0])
     interp_y = np.interp(interp_indices, existing_indices, points[:, 1])
-    densified_points = [(x, y) for x, y in zip(interp_x, interp_y)]
-    return densified_points
+    return [(x, y) for x, y in zip(interp_x, interp_y)]
 
 
 def densify_by_distance(
@@ -81,14 +80,17 @@ def densify_by_distance(
     points: Any = np.asarray(point_list)
     dxdy = points[1:, :] - points[:-1, :]
     segment_lengths = np.sqrt(np.sum(np.square(dxdy), axis=1))
-    total_length = np.sum(segment_lengths)
-    cum_segment_lengths = np.cumsum(segment_lengths)
-    cum_segment_lengths = np.insert(cum_segment_lengths, 0, [0])
-    cum_interp_lengths = np.arange(0, total_length, distance)
-    cum_interp_lengths = np.append(cum_interp_lengths, [total_length])
-    interp_x = np.interp(cum_interp_lengths, cum_segment_lengths, points[:, 0])
-    interp_y = np.interp(cum_interp_lengths, cum_segment_lengths, points[:, 1])
-    return [(x, y) for x, y in zip(interp_x, interp_y)]
+    steps = segment_lengths / distance
+    coordinate_steps = dxdy / steps.reshape(-1, 1)
+    densified_points = np.empty((len(point_list) - 1,), dtype="O")
+    for index in range(len(point_list) - 1):
+        step = np.arange(steps[index])
+        densified_points[index] = (
+            np.array((step, step)).T * coordinate_steps[index] + points[index]
+        )
+    final_point = points[-1].reshape(1, -1)
+    densified_array = np.concatenate((*densified_points, final_point), axis=0)
+    return [(float(row[0]), float(row[1])) for row in densified_array]
 
 
 def reproject_polygon(
@@ -290,7 +292,7 @@ class RasterFootprint:
         else:
             polygon = MultiPolygon(data_polygons).convex_hull
 
-        return polygon
+        return orient(polygon)
 
     def densify_polygon(self, polygon: Polygon) -> Polygon:
         """Adds vertices to the footprint polygon in the native CRS using
@@ -343,8 +345,10 @@ class RasterFootprint:
             Polygon: Reduced vertex polygon.
         """
         if self.simplify_tolerance is not None:
-            return polygon.simplify(
-                tolerance=self.simplify_tolerance, preserve_topology=False
+            return orient(
+                polygon.simplify(
+                    tolerance=self.simplify_tolerance, preserve_topology=False
+                )
             )
         return polygon
 
