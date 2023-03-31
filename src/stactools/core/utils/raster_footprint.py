@@ -506,6 +506,8 @@ class RasterFootprint:
         """Accepts an Item and an optional list of asset names within that
         Item, and updates the geometry of that Item in-place with the data
         footprint derived from the first of the assets that exists in the Item.
+        The Item bbox is also updated in-place to bound the new footprint
+        extents.
 
         See :class:`RasterFootprint` for details on the data footprint
         calculation.
@@ -565,6 +567,7 @@ class RasterFootprint:
         if asset_name_and_extent is not None:
             _, extent = asset_name_and_extent
             item.geometry = extent
+            item.bbox = list(shape(extent).bounds)
             return True
         else:
             return False
@@ -680,7 +683,8 @@ def update_geometry_from_asset_footprint(
 
     Accepts an Item and an optional list of asset names within that Item, and
     updates the geometry of that Item in-place with the data footprint derived
-    from the first of the assets that exists in the Item.
+    from the first of the assets that exists in the Item. The Item bbox is also
+    updated in-place to bound the new footprint extents.
 
     See :class:`RasterFootprint` for details on the data footprint
     calculation.
