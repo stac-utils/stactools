@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+
+"""Installs the minimum version of all stactools dependencies, with pip.
+
+Assumptions:
+- You've installed the development dependencies: `pip install -r requirements-dev.txt`
+- All of the dependencies in setup.cfg are specified with `>=`
+
+For more context on the approach and rationale behind testing against minimum
+requirements, see
+https://www.gadom.ski/2022/02/18/dependency-protection-with-python-and-github-actions.html.
+
+"""
+
+import subprocess
+from configparser import ConfigParser
+from pathlib import Path
+
+from packaging.requirements import Requirement
+
+root = Path(__file__).parents[1]
+setup_cfg = ConfigParser()
+setup_cfg.read(root / "setup.cfg")
+requirements = []
+for install_requires in filter(
+    bool,
+    (i.strip() for i in setup_cfg["options"]["install_requires"].splitlines()),
+):
+    requirement = Requirement(install_requires)
+    assert len(requirement.specifier) == 1
+    specifier = list(requirement.specifier)[0]
+    assert specifier.operator == ">="
+    install_requires = install_requires.replace(">=", "==")
+    requirements.append(install_requires)
+
+subprocess.run(["pip", "install", *requirements])
