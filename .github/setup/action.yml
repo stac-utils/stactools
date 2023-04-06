@@ -4,10 +4,6 @@ inputs:
   python-version:
     description: Python version to set up w/ conda
     required: True
-  pip-cache-hash:
-    description: The hash used for the pip cache
-    required: False
-    default: ${{ hashFiles('setup.cfg', 'requirements-dev.txt') }}
 runs:
   using: composite
   steps:
@@ -21,7 +17,7 @@ runs:
       uses: actions/cache@v2
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ inputs.pip-cache-hash }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('setup.cfg', 'requirements-dev.txt') }}
         restore-keys: ${{ runner.os }}-pip-
     - name: Set up pre-commit cache
       uses: actions/cache@v2
