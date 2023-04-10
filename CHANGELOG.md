@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.6] - 2023-04-10
+
 ### Added
 
 - `enclose_poles` to the antimeridian module ([#416](https://github.com/stac-utils/stactools/pull/416))
@@ -354,7 +356,8 @@ See [#9](https://github.com/stac-utils/stactools/pull/9)
 - `stac.cli.command.layout` for modifying the layout of STACs
 - `stac.browse` for launching a local instance of stac-browser using docker.
 
-[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.4.5..main>
+[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.4.6..main>
+[0.4.6]: <https://github.com/stac-utils/stactools/compare/v0.4.5..v0.4.6>
 [0.4.5]: <https://github.com/stac-utils/stactools/compare/v0.4.4..v0.4.5>
 [0.4.4]: <https://github.com/stac-utils/stactools/compare/v0.4.3..v0.4.4>
 [0.4.3]: <https://github.com/stac-utils/stactools/compare/v0.4.2..v0.4.3>
