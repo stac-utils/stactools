@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `enclose_poles` to the antimeridian module ([#416](https://github.com/stac-utils/stactools/pull/416))
+
 ### Fixed
 
 - `densify_by_distance` now includes the points in the original coordinate list in the returned densified coordinate list ([#412](https://github.com/stac-utils/stactools/pull/412))
