@@ -1,7 +1,11 @@
 """`Antimeridian <https://en.wikipedia.org/wiki/180th_meridian>`_ utilities."""
+
+from __future__ import annotations
+
 import math
+from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Optional
+from typing import List, Optional, Tuple
 
 import shapely.affinity
 import shapely.geometry
@@ -235,3 +239,113 @@ def normalize_multipolygon(multi_polygon: MultiPolygon) -> Optional[MultiPolygon
         return MultiPolygon(polygons)
     else:
         return None
+
+
+def enclose_poles(polygon: Polygon) -> Polygon:
+    """Updates an anti-meridian-crossing polygon to enclose the poles.
+
+    This works by detecting anti-meridian crossings and adding points to extend
+    the geometry up to the north (or down to the south) pole. This is useful for
+    (e.g.) polar-orbiting satellites who have swaths that go over the poles.
+
+    This function will raise a value error if the polygon has any interior rings.
+
+    Args:
+        polygon (:py:class:`shapely.geometry.Polygon`): An input polygon.
+
+    Returns:
+        :py:class:`shapely.geometry.Polygon`: The same polygon, modified to
+        enclose the poles.
+    """
+    if bool(polygon.interiors):
+        raise ValueError("cannot enclose poles if there is an interior ring")
+    coords = list(polygon.exterior.coords)
+    crossings = list()
+
+    # First pass is to detect all antimeridian crossings, without actually
+    # modifying the coordinates. This is to protect against the case when there
+    # are additional crossings in between the pole crossings.
+    for i, (start, end) in enumerate(zip(coords, coords[1:])):
+        longitude_delta = end[0] - start[0]
+        if abs(longitude_delta) > 180:
+            crossings.append(_Crossing.from_points(i, start, end))
+
+    # We only want the southernmost and northernmost crossings.
+    crossings = sorted(crossings, key=lambda c: c.latitude)
+    if len(crossings) > 2:
+        crossings = [crossings[0], crossings[-1]]
+
+    # If there are two crossings, we know the southernmost one is around the
+    # south pole and the northernmost is around the north pole, even if the
+    # crossing latitude is in the other hemisphere.
+    #
+    # If we only have one crossing, we just guess that it's crossing on the
+    # closer pole.
+    if len(crossings) == 2:
+        crossings[0].north_pole = False
+        crossings[1].north_pole = True
+
+    # We work from the back of the list so we can use the indices.
+    crossings = sorted(crossings, key=lambda c: c.index, reverse=True)
+    for crossing in crossings:
+        coords = (
+            coords[0 : crossing.index + 1]
+            + crossing.enclosure()
+            + coords[crossing.index + 1 :]
+        )
+
+    return Polygon(coords)
+
+
+@dataclass
+class _Crossing:
+    index: int
+    latitude: float
+    positive_to_negative: bool
+    north_pole: bool
+
+    @classmethod
+    def from_points(
+        cls, index: int, start: Tuple[float, float], end: Tuple[float, float]
+    ) -> _Crossing:
+        latitude_delta = end[1] - start[1]
+        if start[0] > 0:
+            split_latitude = round(
+                start[1]
+                + (180.0 - start[0]) * latitude_delta / (end[0] + 360.0 - start[0]),
+                7,
+            )
+            return cls(
+                index=index,
+                latitude=split_latitude,
+                positive_to_negative=True,
+                north_pole=split_latitude > 0,
+            )
+        else:
+            split_latitude = round(
+                start[1]
+                + (start[0] + 180.0) * latitude_delta / (start[0] + 360.0 - end[0]),
+                7,
+            )
+            return cls(
+                index=index,
+                latitude=split_latitude,
+                positive_to_negative=False,
+                north_pole=split_latitude > 0,
+            )
+
+    def enclosure(self) -> List[Tuple[float, float]]:
+        if self.positive_to_negative:
+            longitudes = (180.0, -180.0)
+        else:
+            longitudes = (-180.0, 180.0)
+        if self.north_pole:
+            pole_latitude = 90.0
+        else:
+            pole_latitude = -90.0
+        return [
+            (longitudes[0], self.latitude),
+            (longitudes[0], pole_latitude),
+            (longitudes[1], pole_latitude),
+            (longitudes[1], self.latitude),
+        ]
