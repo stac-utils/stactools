@@ -50,7 +50,7 @@ def reproject_geom(
                 coords[i] = fn(coord)
             else:
                 x, y = coord
-                reprojected_coords = list(transformer.transform(x, y))
+                reprojected_coords = list(transformer.transform(x, y, errcheck=True))
                 if precision is not None:
                     reprojected_coords = [
                         round(n, precision) for n in reprojected_coords
