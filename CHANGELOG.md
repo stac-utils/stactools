@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Transformation failures in `reproject_geom` now throw an error ([#420](https://github.com/stac-utils/stactools/pull/420))
+
 ## [0.4.6] - 2023-04-10
 
 ### Added
