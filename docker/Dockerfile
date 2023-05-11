@@ -14,10 +14,10 @@ FROM base as dep_builder
 RUN apt-get update \
     && apt-get install -y gcc build-essential \
     && rm -rf /var/lib/apt/lists/*
-COPY pyproject.toml setup.cfg ./
+COPY pyproject.toml ./
 COPY src/stactools/core/__init__.py src/stactools/core/
 # Install dependencies but remove the actual package
-RUN pip install --prefix=/install .[all] \
+RUN pip install --prefix=/install .[s3] \
     && rm -r /install/lib/*/site-packages/stactools*
 
 
@@ -28,16 +28,14 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=dep_builder /install /opt/conda
 RUN conda install -c conda-forge pandoc && conda clean -af
-COPY requirements-dev.txt ./
-RUN pip install -r requirements-dev.txt
 COPY . ./
 # pre-commit run --all-files fails w/o this line
 RUN git init
-RUN pip install -e .[all]
+RUN pip install -e .[dev,s3]
 
 
 FROM base AS main
 COPY --from=dep_builder /install /opt/conda
 COPY src ./src
-COPY pyproject.toml setup.cfg ./
-RUN pip install .[all]
+COPY pyproject.toml ./
+RUN pip install .[s3]

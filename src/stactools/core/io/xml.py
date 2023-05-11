@@ -3,7 +3,6 @@ from typing import Any, Callable, List, Optional, cast
 
 from lxml import etree
 from lxml.etree import _Element as lxmlElement
-
 from stactools.core.io import ReadHrefModifier, read_text
 
 
@@ -29,7 +28,7 @@ class XmlElement:
         Returns:
             Optional[XmlElement]: The found element, or None if not found.
         """
-        node = self.element.find(xpath, self.element.nsmap)  # type: ignore
+        node = self.element.find(xpath, self.element.nsmap)
         return None if node is None else XmlElement(node)
 
     def find_or_throw(
@@ -65,10 +64,7 @@ class XmlElement:
         Returns:
             list[XmlElement]: The found elements.
         """
-        return [
-            XmlElement(e)
-            for e in self.element.findall(xpath, self.element.nsmap)  # type: ignore
-        ]
+        return [XmlElement(e) for e in self.element.findall(xpath, self.element.nsmap)]
 
     @lru_cache(maxsize=100)
     def find_text(self, xpath: str) -> Optional[str]:

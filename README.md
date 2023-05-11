@@ -72,7 +72,7 @@ docker pull ghcr.io/stac-utils/stactools:latest
 stac --help
 ```
 
-### Docker
+### Running from docker
 
 ```sh
 docker run --rm ghcr.io/stac-utils/stactools:latest --help
@@ -80,7 +80,7 @@ docker run --rm ghcr.io/stac-utils/stactools:latest --help
 
 ## Documentation
 
-See the [documentation page](https://stactools.readthedocs.io/en/latest/) for the latest docs.
+See the [documentation page](https://stactools.readthedocs.io/) for the latest docs.
 
 ## Packages
 
@@ -118,15 +118,12 @@ Third-party packages can be installed in the same way, or, if they are not on Py
 
 ## Developing
 
-Basic development can be done with your system's default Python, though it it recommended to use a virtual environment.
-E.g.:
+Clone the repository and install it in editable mode with the `dev` optional dependencies:
 
 ```sh
 git clone https://github.com/stac-utils/stactools.git
 cd stactools
-python -m venv venv
-pip install -e .  # install stactools into the virtual environment in editable mode
-pip install -r requirements-dev.txt  # install development requirements
+pip install -e '.[dev]'
 ```
 
 Linting and formatting are handled with [pre-commit](https://pre-commit.com/).
@@ -205,13 +202,12 @@ conda activate stactools
 Finally, install `stactools` in editable mode and all development requirements:
 
 ```sh
-pip install -e .
-pip install -r requirements-dev.txt
+pip install -e '.[dev]'
 ```
 
-### Documentation
+### Developing the docs
 
-To build and serve the docs, the development requirements must be installed with `pip install -r requirements-dev.txt`.
+To build and serve the docs, the development requirements must be installed with `pip install -e '.[dev]'`.
 To build the docs, you can use `make html` from inside of the docs directory, and to build the docs and start a server that watches for changes, use `make livehtml`:
 
 ```sh

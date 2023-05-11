@@ -44,9 +44,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install with extra_requires
-        run: pip install '.[all]'
-      - name: Install development dependencies
-        run: pip install -r requirements-dev.txt
+        run: pip install .[s3,dev]
       - name: Test
         run: ./scripts/test
   minimum-versions:
@@ -63,12 +61,10 @@ jobs:
       - uses: ./.github/setup
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install development dependencies
-        run: pip install -r requirements-dev.txt
+      - name: Install the package
+        run: pip install .[dev]
       - name: Install the minimum requirements
         run: scripts/install-min-requirements
-      - name: Install the package
-        run: pip install .
       - name: Test
         run: scripts/test
   pre-release-versions:
