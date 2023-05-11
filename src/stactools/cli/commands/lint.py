@@ -2,7 +2,7 @@ import sys
 from typing import Optional
 
 import click
-from stac_check.lint import Linter  # type: ignore
+from stac_check.lint import Linter
 
 
 def create_lint_command(cli: click.Group) -> click.Command:

@@ -3,8 +3,8 @@
 """Installs the minimum version of all stactools dependencies, with pip.
 
 Assumptions:
-- You've installed the development dependencies: `pip install -r requirements-dev.txt`
-- All of the dependencies in setup.cfg are specified with `>=`
+- You've installed the development dependencies: `pip install '.[dev]'`
+- All of the dependencies in pyproject.toml are specified with `>=`
 
 For more context on the approach and rationale behind testing against minimum
 requirements, see
@@ -13,18 +13,25 @@ https://www.gadom.ski/2022/02/18/dependency-protection-with-python-and-github-ac
 """
 
 import subprocess
-from configparser import ConfigParser
+import sys
 from pathlib import Path
 
 from packaging.requirements import Requirement
 
+assert sys.version_info[0] == 3
+if sys.version_info[1] < 11:
+    import tomli as toml
+else:
+    import tomllib as toml
+
+
 root = Path(__file__).parents[1]
-setup_cfg = ConfigParser()
-setup_cfg.read(root / "setup.cfg")
+with open(root / "pyproject.toml", "rb") as f:
+    pyproject_toml = toml.load(f)
 requirements = []
 for install_requires in filter(
     bool,
-    (i.strip() for i in setup_cfg["options"]["install_requires"].splitlines()),
+    (i.strip() for i in pyproject_toml["project"]["dependencies"]),
 ):
     requirement = Requirement(install_requires)
     assert len(requirement.specifier) == 1
