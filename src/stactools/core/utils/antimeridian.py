@@ -1,17 +1,22 @@
-"""`Antimeridian <https://en.wikipedia.org/wiki/180th_meridian>`_ utilities."""
+"""`Antimeridian <https://en.wikipedia.org/wiki/180th_meridian>`_ utilities.
+
+Most of the functionality in this module is implemented in `antimeridian
+<https://pypi.org/projects/antimeridian>`_.
+"""
 
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+import warnings
 from enum import Enum, auto
-from typing import List, Optional, Tuple
+from typing import Optional
 
+import antimeridian
 import shapely.affinity
 import shapely.geometry
 import shapely.ops
 from pystac import Item
-from shapely.geometry import LineString, MultiPolygon, Polygon
+from shapely.geometry import MultiPolygon, Polygon
 
 
 class Strategy(Enum):
@@ -39,16 +44,16 @@ def fix_item(item: Item, strategy: Strategy) -> Item:
         Item: The input item, whether it was modified or not.
     """
     geometry = shapely.geometry.shape(item.geometry)
-    if isinstance(geometry, Polygon):
-        multi_polygon = False
-    elif isinstance(geometry, MultiPolygon):
-        multi_polygon = True
-    else:
-        raise ValueError(
-            "Can only fix antimeridian issues for Polygons or MultiPolygons, "
-            f"geometry={geometry}"
-        )
     if strategy == Strategy.NORMALIZE:
+        if isinstance(geometry, Polygon):
+            multi_polygon = False
+        elif isinstance(geometry, MultiPolygon):
+            multi_polygon = True
+        else:
+            raise ValueError(
+                "Can only fix antimeridian issues for Polygons or MultiPolygons, "
+                f"geometry={geometry}"
+            )
         if multi_polygon:
             normalized_geometry = normalize_multipolygon(geometry)
         else:
@@ -58,22 +63,11 @@ def fix_item(item: Item, strategy: Strategy) -> Item:
             item.geometry = shapely.geometry.mapping(normalized_geometry)
             item.bbox = bbox
     elif strategy == Strategy.SPLIT:
-        if multi_polygon:
-            split_geometry = split_multipolygon(geometry)
-        else:
-            split_geometry = split(geometry)
-        if split_geometry:
-            xmin = 180
-            xmax = -180
-            for geom in split_geometry.geoms:
-                if geom.bounds[0] > xmax:
-                    xmax = geom.bounds[0]
-                if geom.bounds[2] < xmin:
-                    xmin = geom.bounds[2]
-            bounds = split_geometry.bounds
-            # https://datatracker.ietf.org/doc/html/rfc7946#section-5.2
-            item.bbox = [xmax, bounds[1], xmin, bounds[3]]
-            item.geometry = shapely.geometry.mapping(split_geometry)
+        fixed = shapely.geometry.shape(antimeridian.fix_shape(geometry))
+        item.bbox = fixed.bounds
+        item.geometry = shapely.geometry.mapping(fixed)
+    else:
+        raise NotImplementedError(f"Unknown strategy: {strategy}")
     return item
 
 
@@ -81,14 +75,9 @@ def split(polygon: Polygon) -> Optional[MultiPolygon]:
     """Splits a single WGS84 polygon into a multipolygon across the
     antimeridian.
 
-    If the polygon does not cross the antimeridian, returns None. Only handles
-    exterior rings (can't handle interior).
-
-    Note:
-        Will not work on polygons that enclose the north or south poles.
-
-    Todo:
-        Fix this
+    .. deprecated:: v0.4.7
+       Use the `antimeridian <https://pypi.org/project/antimeridan>`_ package
+       instead.
 
     Args:
         polygon (:py:class:`shapely.geometry.Polygon`): The input polygon.
@@ -97,44 +86,28 @@ def split(polygon: Polygon) -> Optional[MultiPolygon]:
         Optional[:py:class:`shapely.geometry.MultiPolygon`]:
             The output polygons, or None if no split occurred.
     """
-    normalized = normalize(polygon)
-    if normalized is None:
-        return None
-    if normalized.bounds[0] < -180:
-        longitude = -180
-    elif normalized.bounds[2] > 180:
-        longitude = 180
+    warnings.warn(
+        (
+            "`stactools.core.utils.antimeridian.split` is deprecated. "
+            "To fix polygons that cross the antimeridian, use the antimeridian "
+            "package (https://pypi.org/project/antimeridian/)."
+        ),
+        DeprecationWarning,
+    )
+    fixed = antimeridian.fix_polygon(polygon)
+    if fixed.geom_type == "MultiPolygon":
+        return fixed
     else:
         return None
-    splitter = LineString(((longitude, -90), (longitude, 90)))
-    split = shapely.ops.split(normalized, splitter)
-    if len(split.geoms) < 2:
-        return None
-    geoms = list()
-    for geom in split.geoms:
-        geom = shapely.geometry.polygon.orient(geom)
-        bounds = geom.bounds
-        if bounds[0] < -180:
-            geoms.append(shapely.affinity.translate(geom, xoff=360))
-        elif bounds[2] > 180:
-            geoms.append(shapely.affinity.translate(geom, xoff=-360))
-        else:
-            geoms.append(geom)
-    return MultiPolygon(geoms)
 
 
 def split_multipolygon(multi_polygon: MultiPolygon) -> Optional[MultiPolygon]:
     """Splits multiple WGS84 polygons into a multipolygon across the
     antimeridian.
 
-    If none of the contained polygons cross the antimeridian, returns None. Only
-    handles exterior rings (can't handle interior).
-
-    Note:
-        Will not work on polygons that enclose the north or south poles.
-
-    Todo:
-        Fix this
+    .. deprecated:: v0.4.7
+       Use the `antimeridian <https://pypi.org/project/antimeridan>`_ package
+       instead.
 
     Args:
         multi_polygon (:py:class:`shapely.geometry.MultiPolygon`): The input
@@ -142,17 +115,19 @@ def split_multipolygon(multi_polygon: MultiPolygon) -> Optional[MultiPolygon]:
 
     Returns:
         Optional[:py:class:`shapely.geometry.MultiPolygon`]:
-            The output polygons, or None if no split occurred.
+            The output polygons. Will not return None, but the Optional return
+            type is kept to preserve backwards compatibility until this function
+            is removed.
     """
-    polygons = []
-    for polygon in multi_polygon.geoms:
-        split_polygon = split(polygon)
-        if split_polygon:
-            polygons.extend(split_polygon.geoms)
-    if polygons:
-        return MultiPolygon(polygons)
-    else:
-        return None
+    warnings.warn(
+        (
+            "`stactools.core.utils.antimeridian.split_multipolygon` is deprecated. "
+            "To fix polygons that cross the antimeridian, use the antimeridian "
+            "package (https://pypi.org/project/antimeridian/)."
+        ),
+        DeprecationWarning,
+    )
+    return antimeridian.fix_multi_polygon(multi_polygon)
 
 
 def normalize(polygon: Polygon) -> Optional[Polygon]:
@@ -177,12 +152,24 @@ def normalize(polygon: Polygon) -> Optional[Polygon]:
     Todo:
         Fix this
 
+    .. deprecated:: v0.4.7
+        "Normalization" does not conform to the GeoJSON specification, and its
+        use is discouraged.
+
     Args:
         polygon (:py:class:`shapely.geometry.Polygon`): The input polygon.
 
     Returns:
         Optional[:py:class:`shapely.geometry.Polygon`]: The normalized polygon.
     """
+    warnings.warn(
+        (
+            "`stactools.core.utils.antimeridian.normalize` is deprecated. "
+            "Normalization does not conform to the GeoJSON spec and its use is "
+            "discouraged."
+        ),
+        DeprecationWarning,
+    )
     coords = list(polygon.exterior.coords)
     has_changes = False
     for index, (start, end) in enumerate(zip(coords, coords[1:])):
@@ -218,6 +205,10 @@ def normalize_multipolygon(multi_polygon: MultiPolygon) -> Optional[MultiPolygon
     Todo:
         Fix this
 
+    .. deprecated:: v0.4.7
+        "Normalization" does not conform to the GeoJSON specification, and its
+        use is discouraged.
+
     Args:
         multi_polygon (:py:class:`shapely.geometry.MultiPolygon`): The input
             multi-polygon.
@@ -226,6 +217,14 @@ def normalize_multipolygon(multi_polygon: MultiPolygon) -> Optional[MultiPolygon
         Optional[:py:class:`shapely.geometry.MultiPolygon`]: The normalized
         multi-polygon.
     """
+    warnings.warn(
+        (
+            "`stactools.core.utils.antimeridian.normalize_multipolygon` is deprecated. "
+            "Normalization does not conform to the GeoJSON spec and its use is "
+            "discouraged."
+        ),
+        DeprecationWarning,
+    )
     polygons = list()
     changes_made = False
     for polygon in multi_polygon.geoms:
@@ -248,7 +247,9 @@ def enclose_poles(polygon: Polygon) -> Polygon:
     the geometry up to the north (or down to the south) pole. This is useful for
     (e.g.) polar-orbiting satellites who have swaths that go over the poles.
 
-    This function will raise a value error if the polygon has any interior rings.
+    .. deprecated:: v0.4.7
+       Use the `antimeridian <https://pypi.org/project/antimeridan>`_ package
+       instead.
 
     Args:
         polygon (:py:class:`shapely.geometry.Polygon`): An input polygon.
@@ -256,96 +257,21 @@ def enclose_poles(polygon: Polygon) -> Polygon:
     Returns:
         :py:class:`shapely.geometry.Polygon`: The same polygon, modified to
         enclose the poles.
+
+    Raises:
+        ValueError: Raised if the polygon was split. This is to keep the return
+        type the same until this function is removed.
     """
-    if bool(polygon.interiors):
-        raise ValueError("cannot enclose poles if there is an interior ring")
-    coords = list(polygon.exterior.coords)
-    crossings = list()
-
-    # First pass is to detect all antimeridian crossings, without actually
-    # modifying the coordinates. This is to protect against the case when there
-    # are additional crossings in between the pole crossings.
-    for i, (start, end) in enumerate(zip(coords, coords[1:])):
-        longitude_delta = end[0] - start[0]
-        if abs(longitude_delta) > 180:
-            crossings.append(_Crossing.from_points(i, start, end))
-
-    # We only want the southernmost and northernmost crossings.
-    crossings = sorted(crossings, key=lambda c: c.latitude)
-    if len(crossings) > 2:
-        crossings = [crossings[0], crossings[-1]]
-
-    # If there are two crossings, we know the southernmost one is around the
-    # south pole and the northernmost is around the north pole, even if the
-    # crossing latitude is in the other hemisphere.
-    #
-    # If we only have one crossing, we just guess that it's crossing on the
-    # closer pole.
-    if len(crossings) == 2:
-        crossings[0].north_pole = False
-        crossings[1].north_pole = True
-
-    # We work from the back of the list so we can use the indices.
-    crossings = sorted(crossings, key=lambda c: c.index, reverse=True)
-    for crossing in crossings:
-        coords = (
-            coords[0 : crossing.index + 1]
-            + crossing.enclosure()
-            + coords[crossing.index + 1 :]
-        )
-
-    return Polygon(coords)
-
-
-@dataclass
-class _Crossing:
-    index: int
-    latitude: float
-    positive_to_negative: bool
-    north_pole: bool
-
-    @classmethod
-    def from_points(
-        cls, index: int, start: Tuple[float, float], end: Tuple[float, float]
-    ) -> _Crossing:
-        latitude_delta = end[1] - start[1]
-        if start[0] > 0:
-            split_latitude = round(
-                start[1]
-                + (180.0 - start[0]) * latitude_delta / (end[0] + 360.0 - start[0]),
-                7,
-            )
-            return cls(
-                index=index,
-                latitude=split_latitude,
-                positive_to_negative=True,
-                north_pole=split_latitude > 0,
-            )
-        else:
-            split_latitude = round(
-                start[1]
-                + (start[0] + 180.0) * latitude_delta / (start[0] + 360.0 - end[0]),
-                7,
-            )
-            return cls(
-                index=index,
-                latitude=split_latitude,
-                positive_to_negative=False,
-                north_pole=split_latitude > 0,
-            )
-
-    def enclosure(self) -> List[Tuple[float, float]]:
-        if self.positive_to_negative:
-            longitudes = (180.0, -180.0)
-        else:
-            longitudes = (-180.0, 180.0)
-        if self.north_pole:
-            pole_latitude = 90.0
-        else:
-            pole_latitude = -90.0
-        return [
-            (longitudes[0], self.latitude),
-            (longitudes[0], pole_latitude),
-            (longitudes[1], pole_latitude),
-            (longitudes[1], self.latitude),
-        ]
+    warnings.warn(
+        (
+            "`stactools.core.utils.antimeridian.enclose_poles` is deprecated. "
+            "To fix polygons that enclose the poles, use the antimeridian "
+            "package (https://pypi.org/project/antimeridian/)."
+        ),
+        DeprecationWarning,
+    )
+    fixed = antimeridian.fix_polygon(polygon)
+    if fixed.geom_type == "Polygon":
+        return fixed
+    else:
+        raise ValueError("Input polygon was split and we cannot return a MultiPolygon")
