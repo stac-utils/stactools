@@ -6,9 +6,9 @@ import pystac
 import pystac.utils
 from click import Command, Group
 from pystac import Item
-
 from stactools.cli.commands.add_asset import create_add_asset_command
 from stactools.testing.cli_test import CliTestCase
+
 from tests import test_data
 from tests.utils import create_temp_copy
 

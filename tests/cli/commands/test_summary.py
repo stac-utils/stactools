@@ -1,9 +1,9 @@
 from typing import Callable, List
 
 from click import Command, Group
-
 from stactools.cli.commands.summary import create_summary_command
 from stactools.testing.cli_test import CliTestCase
+
 from tests import test_data
 
 

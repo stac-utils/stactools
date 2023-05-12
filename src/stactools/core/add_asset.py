@@ -2,7 +2,6 @@ import logging
 
 from pystac import Asset, Item
 from pystac.utils import is_absolute_href, make_relative_href
-
 from stactools.core.copy import move_asset_file_to_item
 
 logger = logging.getLogger(__name__)

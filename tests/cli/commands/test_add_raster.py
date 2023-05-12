@@ -2,7 +2,6 @@ from tempfile import TemporaryDirectory
 
 import pystac
 from pystac.utils import make_absolute_href
-
 from stactools.cli.commands.add_raster import create_add_raster_command
 from stactools.core import move_all_assets
 from stactools.testing import CliTestCase

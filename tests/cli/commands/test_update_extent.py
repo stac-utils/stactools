@@ -1,6 +1,6 @@
 from click.testing import CliRunner
-
 from stactools.cli.cli import cli
+
 from tests import test_data
 
 

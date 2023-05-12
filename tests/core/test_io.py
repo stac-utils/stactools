@@ -5,7 +5,6 @@ from tempfile import TemporaryDirectory
 from unittest.mock import create_autospec, patch
 
 import pystac
-
 import stactools.core.io
 from stactools.core import use_fsspec
 

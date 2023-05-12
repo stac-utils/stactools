@@ -1,6 +1,5 @@
 import click
 import pystac
-
 from stactools.core import layout_catalog
 
 

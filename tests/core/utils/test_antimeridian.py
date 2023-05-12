@@ -3,7 +3,6 @@ import datetime
 import shapely.geometry
 from pystac import Item
 from shapely.geometry import MultiPolygon, Polygon
-
 from stactools.core.utils import antimeridian
 
 

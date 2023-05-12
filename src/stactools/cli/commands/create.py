@@ -2,7 +2,6 @@ import json
 import sys
 
 import click
-
 from stactools.core import create
 
 
