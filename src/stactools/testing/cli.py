@@ -5,7 +5,6 @@ import shutil
 from tempfile import TemporaryDirectory
 
 import click
-
 from stactools.core.utils.subprocess import call
 
 logger = logging.getLogger(__name__)

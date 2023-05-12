@@ -1,7 +1,6 @@
 from tempfile import TemporaryDirectory
 
 import pystac
-
 from stactools.cli.commands.add import create_add_command
 from stactools.core import move_all_assets
 from stactools.testing import CliTestCase

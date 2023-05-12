@@ -3,7 +3,6 @@ from typing import List, Optional
 import click
 import pystac
 import pystac.utils
-
 from stactools.core import add_asset_to_item
 
 

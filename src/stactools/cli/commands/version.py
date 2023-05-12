@@ -2,7 +2,6 @@ import pystac
 from click import echo
 from click.core import Command, Group
 from pystac.version import get_stac_version
-
 from stactools.core import __version__
 
 

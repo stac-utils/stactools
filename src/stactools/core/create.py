@@ -4,10 +4,9 @@ from typing import Optional
 
 import rasterio
 import shapely.geometry
+import stactools.core.projection
 from pystac import Asset, Item
 from pystac.extensions.projection import ProjectionExtension
-
-import stactools.core.projection
 
 from .io import ReadHrefModifier
 

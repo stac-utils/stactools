@@ -3,8 +3,8 @@ from tempfile import TemporaryDirectory
 from unittest import TestCase
 
 from pystac import Asset, Item
-
 from stactools.core import add_asset_to_item
+
 from tests import test_data
 from tests.utils import create_temp_copy
 

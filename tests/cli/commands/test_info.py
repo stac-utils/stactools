@@ -1,7 +1,6 @@
 from typing import Callable, List
 
 from click import Command, Group
-
 from stactools.cli.commands.info import create_describe_command, create_info_command
 from stactools.testing.cli_test import CliTestCase
 

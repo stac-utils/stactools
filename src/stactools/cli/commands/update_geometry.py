@@ -3,7 +3,6 @@ from typing import List, Optional
 import click
 from click import Command, Group
 from pystac import Item
-
 from stactools.core.utils import raster_footprint
 
 
