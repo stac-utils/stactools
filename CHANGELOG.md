@@ -10,6 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Use `pyproject.toml` for project metadata ([#424](https://github.com/stac-utils/stactools/pull/424))
+- Use <https://pypi.org/project/antimeridian> for antimeridian and pole fixes ([#426](https://github.com/stac-utils/stactools/pull/426))
+
+### Deprecated
+
+- Many functions in `stactools.core.utils.antimeridian` ([#426](https://github.com/stac-utils/stactools/pull/426)).
+  Users should use the [antimeridian](https://pypi.org/project/antimeridian) package instead, or in the case "normalization", don't normalize at all since it doesn't conform to the GeoJSON spec.
+  These are the deprecated functions:
+  - `split`
+  - `split_multipolygon`
+  - `normalize`
+  - `normalize_multipolygon`
+  - `enclose_poles`
 
 ## [0.4.7] - 2023-05-08
 
