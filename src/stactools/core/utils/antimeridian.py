@@ -75,7 +75,7 @@ def split(polygon: Polygon) -> Optional[MultiPolygon]:
     """Splits a single WGS84 polygon into a multipolygon across the
     antimeridian.
 
-    .. deprecated:: v0.4.7
+    .. deprecated:: v0.5.0
        Use the `antimeridian <https://pypi.org/project/antimeridan>`_ package
        instead.
 
@@ -105,7 +105,7 @@ def split_multipolygon(multi_polygon: MultiPolygon) -> Optional[MultiPolygon]:
     """Splits multiple WGS84 polygons into a multipolygon across the
     antimeridian.
 
-    .. deprecated:: v0.4.7
+    .. deprecated:: v0.5.0
        Use the `antimeridian <https://pypi.org/project/antimeridan>`_ package
        instead.
 
@@ -152,7 +152,7 @@ def normalize(polygon: Polygon) -> Optional[Polygon]:
     Todo:
         Fix this
 
-    .. deprecated:: v0.4.7
+    .. deprecated:: v0.5.0
         "Normalization" does not conform to the GeoJSON specification, and its
         use is discouraged.
 
@@ -205,7 +205,7 @@ def normalize_multipolygon(multi_polygon: MultiPolygon) -> Optional[MultiPolygon
     Todo:
         Fix this
 
-    .. deprecated:: v0.4.7
+    .. deprecated:: v0.5.0
         "Normalization" does not conform to the GeoJSON specification, and its
         use is discouraged.
 
@@ -247,7 +247,7 @@ def enclose_poles(polygon: Polygon) -> Polygon:
     the geometry up to the north (or down to the south) pole. This is useful for
     (e.g.) polar-orbiting satellites who have swaths that go over the poles.
 
-    .. deprecated:: v0.4.7
+    .. deprecated:: v0.5.0
        Use the `antimeridian <https://pypi.org/project/antimeridan>`_ package
        instead.
 
