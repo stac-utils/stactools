@@ -68,7 +68,7 @@ def create_copy_command(cli: click.Group) -> click.Command:
         "--copy-assets",
         "-a",
         is_flag=True,
-        help=("Copy all item assets to " "be alongside the new item location."),
+        help="Copy all item assets to be alongside the new item location.",
     )
     @click.option(
         "-l",
@@ -78,12 +78,21 @@ def create_copy_command(cli: click.Group) -> click.Command:
             "instead of the destination folder."
         ),
     )
+    @click.option(
+        "--skip-resolve",
+        is_flag=True,
+        help=(
+            "Skip resolving HREF links. Use this flag to avoid writing external "
+            "child objects locally."
+        ),
+    )
     def copy_command(
         src: str,
         dst: str,
         catalog_type: pystac.CatalogType,
         copy_assets: bool,
         publish_location: Optional[str],
+        skip_resolve: bool,
     ) -> None:
         """Copy a STAC Catalog or Collection at SRC to the directory at DST.
 
@@ -92,6 +101,13 @@ def create_copy_command(cli: click.Group) -> click.Command:
         source_catalog = pystac.read_file(make_absolute_href(src))
         if not isinstance(source_catalog, pystac.Catalog):
             raise click.BadArgumentUsage(f"{src} is not a STAC Catalog")
-        copy_catalog(source_catalog, dst, catalog_type, copy_assets, publish_location)
+        copy_catalog(
+            source_catalog,
+            dst,
+            catalog_type,
+            copy_assets,
+            publish_location,
+            skip_resolve,
+        )
 
     return copy_command

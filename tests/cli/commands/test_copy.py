@@ -7,6 +7,8 @@ from pystac.utils import is_absolute_href, make_absolute_href
 from stactools.cli.commands.copy import create_copy_command, create_move_assets_command
 from stactools.testing import CliTestCase
 
+from tests import test_data
+
 from .test_cases import TestCases
 
 
@@ -108,3 +110,9 @@ class CopyTest(CliTestCase):
                     )
 
                     self.assertEqual(common_path, os.path.dirname(item_href))
+
+    def test_copy_using_skip_resolve(self) -> None:
+        path = test_data.get_path("data-files/catalogs/external-child/catalog.json")
+        with TemporaryDirectory() as tmp_dir:
+            self.run_command(["copy", path, tmp_dir, "--skip-resolve"])
+            self.assertEqual(os.listdir(tmp_dir), ["catalog.json"])
