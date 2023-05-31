@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use `pyproject.toml` for project metadata ([#424](https://github.com/stac-utils/stactools/pull/424))
 - Use <https://pypi.org/project/antimeridian> for antimeridian and pole fixes ([#426](https://github.com/stac-utils/stactools/pull/426))
 
+### Fixed
+
+- Bounding boxes after fixing geometries for antimeridian crossings ([#432](https://github.com/stac-utils/stactools/pull/432))
+
 ### Deprecated
 
 - Many functions in `stactools.core.utils.antimeridian` ([#426](https://github.com/stac-utils/stactools/pull/426)).

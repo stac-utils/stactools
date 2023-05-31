@@ -59,13 +59,13 @@ def fix_item(item: Item, strategy: Strategy) -> Item:
         else:
             normalized_geometry = normalize(geometry)
         if normalized_geometry:
-            bbox = normalized_geometry.bounds
+            bbox = list(normalized_geometry.bounds)
             item.geometry = shapely.geometry.mapping(normalized_geometry)
             item.bbox = bbox
     elif strategy == Strategy.SPLIT:
-        fixed = shapely.geometry.shape(antimeridian.fix_shape(geometry))
-        item.bbox = fixed.bounds
-        item.geometry = shapely.geometry.mapping(fixed)
+        fixed = antimeridian.fix_shape(geometry)
+        item.bbox = antimeridian.bbox(fixed)
+        item.geometry = fixed
     else:
         raise NotImplementedError(f"Unknown strategy: {strategy}")
     return item
