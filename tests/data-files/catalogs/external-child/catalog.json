@@ -1,26 +1,15 @@
 {
-  "type": "Catalog",
   "id": "test",
+  "type": "Catalog",
+  "stac_extensions": [],
   "stac_version": "1.0.0",
   "description": "test",
+  "title": "test",
   "links": [
-    {
-      "rel": "self",
-      "href": "/home/jsignell/stactools/catalog.json",
-      "type": "application/json"
-    },
-    {
-      "rel": "root",
-      "href": "/home/jsignell/stactools/catalog.json",
-      "type": "application/json",
-      "title": "test"
-    },
     {
       "rel": "child",
       "href": "https://raw.githubusercontent.com/radiantearth/stac-spec/v1.0.0/examples/collection.json",
-      "type": "application/json",
-      "title": "Simple Example Collection"
+      "type": "application/json"
     }
-  ],
-  "title": "test"
+  ]
 }
