@@ -79,11 +79,11 @@ def create_copy_command(cli: click.Group) -> click.Command:
         ),
     )
     @click.option(
-        "--skip-resolve",
-        is_flag=True,
+        "--resolve-links/--no-resolve-links",
+        default=True,
         help=(
-            "Skip resolving HREF links. Use this flag to avoid writing external "
-            "child objects locally."
+            "Whether to resolve HREF links. Defaults to --resolve-links. "
+            "Use --no-resolve-links to avoid writing external child objects locally."
         ),
     )
     def copy_command(
@@ -92,7 +92,7 @@ def create_copy_command(cli: click.Group) -> click.Command:
         catalog_type: pystac.CatalogType,
         copy_assets: bool,
         publish_location: Optional[str],
-        skip_resolve: bool,
+        resolve_links: bool,
     ) -> None:
         """Copy a STAC Catalog or Collection at SRC to the directory at DST.
 
@@ -107,7 +107,7 @@ def create_copy_command(cli: click.Group) -> click.Command:
             catalog_type,
             copy_assets,
             publish_location,
-            skip_resolve,
+            resolve_links,
         )
 
     return copy_command

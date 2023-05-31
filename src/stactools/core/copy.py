@@ -230,13 +230,13 @@ def copy_catalog(
     catalog_type: Optional[CatalogType] = None,
     copy_assets: bool = False,
     publish_location: Optional[str] = None,
-    skip_resolve: bool = False,
+    resolve_links: bool = True,
 ) -> None:
-    if skip_resolve:
+    if resolve_links:
+        catalog = source_catalog.full_copy()
+    else:
         catalog = source_catalog.clone()
         catalog.set_root(catalog)
-    else:
-        catalog = source_catalog.full_copy()
 
     dest_directory = make_absolute_href(dest_directory)
 
@@ -244,8 +244,8 @@ def copy_catalog(
         catalog = move_all_assets(catalog, copy=True, make_hrefs_relative=True)
 
     if publish_location is not None:
-        catalog.normalize_hrefs(publish_location, skip_unresolved=skip_resolve)
+        catalog.normalize_hrefs(publish_location, skip_unresolved=not resolve_links)
         catalog.save(catalog_type, dest_directory)
     else:
-        catalog.normalize_hrefs(dest_directory, skip_unresolved=skip_resolve)
+        catalog.normalize_hrefs(dest_directory, skip_unresolved=not resolve_links)
         catalog.save(catalog_type)
