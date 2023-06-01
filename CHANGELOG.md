@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `--no-resolve-links` to the copy command ([#430](https://github.com/stac-utils/stactools/pull/430))
+
 ### Changed
 
 - Use `pyproject.toml` for project metadata ([#424](https://github.com/stac-utils/stactools/pull/424))
