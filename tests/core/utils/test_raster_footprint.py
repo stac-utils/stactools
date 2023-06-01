@@ -1,3 +1,4 @@
+import pytest
 from pystac import Item
 from rasterio.crs import CRS
 from shapely.geometry import shape
@@ -24,12 +25,13 @@ def test_non_existent_asset() -> None:
         )
     )
 
-    assert not (
-        update_geometry_from_asset_footprint(
-            item,
-            asset_names=["B01_doesnt_exist"],
+    with pytest.warns(DeprecationWarning):
+        assert not (
+            update_geometry_from_asset_footprint(
+                item,
+                asset_names=["B01_doesnt_exist"],
+            )
         )
-    )
 
 
 def test_modis() -> None:
@@ -41,9 +43,10 @@ def test_modis() -> None:
         )
     )
 
-    update_geometry_from_asset_footprint(
-        item, asset_names=["B01"], densification_factor=10
-    )
+    with pytest.warns(DeprecationWarning):
+        update_geometry_from_asset_footprint(
+            item, asset_names=["B01"], densification_factor=10
+        )
 
     geometry = {
         "type": "Polygon",
@@ -136,9 +139,10 @@ def test_sentinel2_sliver() -> None:
         )
     )
 
-    update_geometry_from_asset_footprint(
-        item, asset_names=["R60m_B01"], simplify_tolerance=0.005, no_data=0
-    )
+    with pytest.warns(DeprecationWarning):
+        update_geometry_from_asset_footprint(
+            item, asset_names=["R60m_B01"], simplify_tolerance=0.005, no_data=0
+        )
 
     geometry = {
         "type": "Polygon",
@@ -167,10 +171,11 @@ def test_sentinel2_full() -> None:
         )
     )
 
-    update_geometry_from_asset_footprint(
-        item,
-        asset_names=["R60m_B01"],
-    )
+    with pytest.warns(DeprecationWarning):
+        update_geometry_from_asset_footprint(
+            item,
+            asset_names=["R60m_B01"],
+        )
 
     geometry = {
         "type": "Polygon",
@@ -198,9 +203,10 @@ def test_landsat8() -> None:
         )
     )
 
-    update_geometry_from_asset_footprint(
-        item, asset_names=["B2"], simplify_tolerance=0.005
-    )
+    with pytest.warns(DeprecationWarning):
+        update_geometry_from_asset_footprint(
+            item, asset_names=["B2"], simplify_tolerance=0.005
+        )
 
     geometry = {
         "type": "Polygon",
@@ -220,10 +226,11 @@ def test_landsat8() -> None:
 
 
 def test_nan_as_nodata() -> None:
-    polygon = data_footprint(
-        test_data.get_path("data-files/raster_footprint/LC08_LST_crop.tif"),  # noqa
-        simplify_tolerance=0.01,
-    )
+    with pytest.warns(DeprecationWarning):
+        polygon = data_footprint(
+            test_data.get_path("data-files/raster_footprint/LC08_LST_crop.tif"),  # noqa
+            simplify_tolerance=0.01,
+        )
     geometry = {
         "type": "Polygon",
         "coordinates": (
@@ -243,14 +250,15 @@ def test_nan_as_nodata() -> None:
 def test_data_footprint_precision() -> None:
     use_fsspec()
 
-    polygon = data_footprint(
-        test_data.get_path(
-            "data-files/raster_footprint/S2A_OPER_MSI_L2A_TL_ATOS_20220620T162319_A036527_T32TLS_N04.00_R60m_B01.jp2"  # noqa
-        ),
-        precision=1,
-        simplify_tolerance=0.01,
-        no_data=0,
-    )
+    with pytest.warns(DeprecationWarning):
+        polygon = data_footprint(
+            test_data.get_path(
+                "data-files/raster_footprint/S2A_OPER_MSI_L2A_TL_ATOS_20220620T162319_A036527_T32TLS_N04.00_R60m_B01.jp2"  # noqa
+            ),
+            precision=1,
+            simplify_tolerance=0.01,
+            no_data=0,
+        )
     geometry = {
         "type": "Polygon",
         "coordinates": (
@@ -375,7 +383,8 @@ def test_multiband_footprint() -> None:
         "data-files/raster_footprint/"
         "AST_L1T_00310012006175412_20150516104359-SWIR-cropped.tif"
     )
-    footprint = data_footprint(path, no_data=0, bands=[], simplify_tolerance=0.005)
+    with pytest.warns(DeprecationWarning):
+        footprint = data_footprint(path, no_data=0, bands=[], simplify_tolerance=0.005)
     assert footprint
 
     geometry = {

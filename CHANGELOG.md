@@ -14,7 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Use `pyproject.toml` for project metadata ([#424](https://github.com/stac-utils/stactools/pull/424))
-- Use <https://pypi.org/project/antimeridian> for antimeridian and pole fixes ([#426](https://github.com/stac-utils/stactools/pull/426))
+- Use <https://pypi.org/project/antimeridian> for antimeridian and pole fixes ([#426](https://github.com/stac-utils/stactools/pull/426)).
+  Note that this _may_ change the output geometries when fixing some antimeridian-crossing polygons, e.g. if the input polygons are wound clockwise (instead of counter-clockwise), the output geometry will be unexpectedly large (<https://github.com/gadomski/antimeridian/issues/33>).
+
+### Fixed
+
+- Bounding boxes after fixing geometries for antimeridian crossings ([#432](https://github.com/stac-utils/stactools/pull/432))
 
 ### Deprecated
 
