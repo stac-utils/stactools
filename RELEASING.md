@@ -29,7 +29,6 @@ To release a new version of **stactools** or a [stactools-package](https://githu
    4. Update the `[Unreleased]` link at the bottom of the page to start at your new release.
    5. Audit your new section of the CHANGELOG to ensure all relevant changes are captured.
 8. Open a pull request for your branch.
-   Include a "Release summary" section which includes the contents of your section of the CHANGELOG.
 9. Once approved, merge the branch.
 10. Create an **annotated** tag at the new **main** HEAD named `vX.X.X`, e.g. `v0.3.0`.
 11. Push your tag.
@@ -42,6 +41,6 @@ To release a new version of **stactools** or a [stactools-package](https://githu
 
 Yes, **stactools-packages** should follow their own release schedule, as their stability tied to **stactools** itself.
 
-### Is there a roadmap for stac-utils 1.0?
+### Is there a roadmap for stactools 1.0?
 
 Not at this time.
