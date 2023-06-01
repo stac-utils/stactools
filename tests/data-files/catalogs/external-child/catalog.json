@@ -1,0 +1,15 @@
+{
+  "id": "test",
+  "type": "Catalog",
+  "stac_extensions": [],
+  "stac_version": "1.0.0",
+  "description": "test",
+  "title": "test",
+  "links": [
+    {
+      "rel": "child",
+      "href": "https://raw.githubusercontent.com/radiantearth/stac-spec/v1.0.0/examples/collection.json",
+      "type": "application/json"
+    }
+  ]
+}
