@@ -182,9 +182,9 @@ class TestCases:
 
     @staticmethod
     def test_case_6():
-        """Based on a subset of CBERS, contains a root and 4 empty children"""
+        """Contains local assets with relative hrefs"""
         return Catalog.from_file(
-            test_data.get_path("data-files/catalogs/cbers-partial/catalog.json")
+            test_data.get_path("data-files/catalogs/test-case-6/catalog.json")
         )
 
     @staticmethod

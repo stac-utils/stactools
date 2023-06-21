@@ -148,3 +148,9 @@ class CopyTest(CliTestCase):
         with TemporaryDirectory() as tmp_dir:
             self.run_command(["copy", path, tmp_dir, "--no-resolve-links"])
             self.assertEqual(os.listdir(tmp_dir), ["catalog.json"])
+
+    def test_copy_collection_with_assets(self) -> None:
+        path = test_data.get_path("data-files/catalogs/collection-assets/catalog.json")
+        with TemporaryDirectory() as tmp_dir:
+            self.run_command(["copy", path, tmp_dir, "-a"])
+            assert os.path.exists(os.path.join(tmp_dir, "sentinel-2", "metadata.xml"))

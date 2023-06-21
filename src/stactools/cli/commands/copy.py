@@ -8,7 +8,11 @@ from stactools.core.copy import copy_catalog, move_all_assets
 
 def create_move_assets_command(cli: click.Group) -> click.Command:
     @cli.command(
-        "move-assets", short_help="Move or copy assets in a STAC to the Item locations."
+        "move-assets",
+        help=(
+            "Move or copy assets in a STAC catalog to the locations of the "
+            "items or collections that own them."
+        ),
     )
     @click.argument("catalog_path")
     @click.option("-c", "--copy", help="Copy assets instead of moving.", is_flag=True)
@@ -68,7 +72,7 @@ def create_copy_command(cli: click.Group) -> click.Command:
         "--copy-assets",
         "-a",
         is_flag=True,
-        help="Copy all item assets to be alongside the new item location.",
+        help="Copy all asset files to be alongside the new location.",
     )
     @click.option(
         "-l",
