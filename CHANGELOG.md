@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- Unused files under `tests/data-files` ([#438](https://github.com/stac-utils/stactools/pull/438))
+
 ## [0.4.8] - 2023-06-01
 
 ### Added
