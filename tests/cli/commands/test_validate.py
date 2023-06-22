@@ -13,7 +13,7 @@ class ValidatateTest(CliTestCase):
 
     def test_valid_item(self) -> None:
         path = test_data.get_path(
-            "data-files/catalogs/test-case-1/country-1/area-1-1/"
+            "data-files/basic/country-1/area-1-1/"
             "area-1-1-imagery/area-1-1-imagery.json"
         )
         result = self.run_command(f"validate {path} --no-validate-assets")
@@ -21,7 +21,7 @@ class ValidatateTest(CliTestCase):
 
     def test_invalid_item(self) -> None:
         path = test_data.get_path(
-            "data-files/catalogs/test-case-1/country-1/area-1-1/"
+            "data-files/basic/country-1/area-1-1/"
             "area-1-1-imagery/area-1-1-imagery-invalid.json"
         )
         result = self.run_command(f"validate {path}")
@@ -29,21 +29,21 @@ class ValidatateTest(CliTestCase):
 
     def test_collection_with_invalid_item(self) -> None:
         path = test_data.get_path(
-            "data-files/catalogs/test-case-1/country-1/area-1-1/collection-invalid.json"
+            "data-files/basic/country-1/area-1-1/collection-invalid.json"
         )
         result = self.run_command(f"validate {path}")
         self.assertEqual(1, result.exit_code)
 
     def test_collection_with_invalid_item_no_validate_all(self) -> None:
         path = test_data.get_path(
-            "data-files/catalogs/test-case-1/country-1/area-1-1/collection-invalid.json"
+            "data-files/basic/country-1/area-1-1/collection-invalid.json"
         )
         result = self.run_command(f"validate {path} --no-recursive")
         self.assertEqual(0, result.exit_code)
 
     def test_collection_invalid_asset(self) -> None:
         path = test_data.get_path(
-            "data-files/catalogs/test-case-1/country-1"
+            "data-files/basic/country-1"
             "/area-1-1/area-1-1-imagery/area-1-1-imagery.json"
         )
         result = self.run_command(f"validate {path}")

@@ -112,7 +112,7 @@ class CopyTest(CliTestCase):
                     self.assertEqual(common_path, os.path.dirname(item_href))
 
     def test_copy_using_no_resolve_links(self) -> None:
-        path = test_data.get_path("data-files/catalogs/external-child/catalog.json")
+        path = test_data.get_path("data-files/external-child/catalog.json")
         with TemporaryDirectory() as tmp_dir:
             self.run_command(["copy", path, tmp_dir, "--no-resolve-links"])
             self.assertEqual(os.listdir(tmp_dir), ["catalog.json"])

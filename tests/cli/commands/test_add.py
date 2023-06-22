@@ -2,20 +2,11 @@ from tempfile import TemporaryDirectory
 
 import pystac
 from stactools.cli.commands.add import create_add_command
-from stactools.core import move_all_assets
 from stactools.testing import CliTestCase
 
+from tests.utils import create_planet_disaster_clone
+
 from .test_cases import TestCases
-
-
-def create_temp_catalog_copy(tmp_dir):
-    col = TestCases.planet_disaster()
-    col.normalize_hrefs(tmp_dir)
-    col.save(catalog_type=pystac.CatalogType.SELF_CONTAINED)
-    move_all_assets(col, copy=True)
-    col.save()
-
-    return col
 
 
 class AddTest(CliTestCase):
@@ -23,12 +14,12 @@ class AddTest(CliTestCase):
         return [create_add_command]
 
     def test_add_item(self):
-        catalog = TestCases.test_case_1()
+        catalog = TestCases.basic_catalog()
         subcatalog = list(list(catalog.get_children())[0].get_children())[0]
         item = list(subcatalog.get_all_items())[0]
         item_path = item.get_self_href()
         with TemporaryDirectory() as tmp_dir:
-            target_catalog = create_temp_catalog_copy(tmp_dir)
+            target_catalog = create_planet_disaster_clone(tmp_dir)
 
             items = list(target_catalog.get_all_items())
             self.assertEqual(len(items), 5)
@@ -42,12 +33,12 @@ class AddTest(CliTestCase):
             self.assertEqual(len(items), 6)
 
     def test_add_item_to_specific_collection(self):
-        catalog = TestCases.test_case_1()
+        catalog = TestCases.basic_catalog()
         subcatalog = list(list(catalog.get_children())[0].get_children())[0]
         item = list(subcatalog.get_all_items())[0]
         item_path = item.get_self_href()
         with TemporaryDirectory() as tmp_dir:
-            target_catalog = create_temp_catalog_copy(tmp_dir)
+            target_catalog = create_planet_disaster_clone(tmp_dir)
             items = list(target_catalog.get_all_items())
             self.assertEqual(len(items), 5)
 
@@ -68,12 +59,12 @@ class AddTest(CliTestCase):
             self.assertIsNotNone(target_item)
 
     def test_add_item_to_missing_collection(self):
-        catalog = TestCases.test_case_1()
+        catalog = TestCases.basic_catalog()
         subcatalog = list(list(catalog.get_children())[0].get_children())[0]
         item = list(subcatalog.get_all_items())[0]
         item_path = item.get_self_href()
         with TemporaryDirectory() as tmp_dir:
-            target_catalog = create_temp_catalog_copy(tmp_dir)
+            target_catalog = create_planet_disaster_clone(tmp_dir)
 
             items = list(target_catalog.get_all_items())
             self.assertEqual(len(items), 5)
