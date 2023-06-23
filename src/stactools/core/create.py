@@ -1,4 +1,5 @@
 import datetime
+import json
 import os.path
 from typing import Optional
 
@@ -38,14 +39,14 @@ def item(href: str, read_href_modifier: Optional[ReadHrefModifier] = None) -> It
         proj_bbox = dataset.bounds
         proj_transform = list(dataset.transform)[0:6]
         proj_shape = dataset.shape
-    proj_geometry = shapely.geometry.mapping(shapely.geometry.box(*proj_bbox))
-    geometry = stactools.core.projection.reproject_geom(
-        crs, "EPSG:4326", proj_geometry, precision=6
+    geom = stactools.core.projection.reproject_shape(
+        crs, "EPSG:4326", shapely.geometry.box(*proj_bbox), precision=6
     )
-    bbox = list(shapely.geometry.shape(geometry).bounds)
+    bbox = list(geom.bounds)
+    geojson = json.loads(json.dumps(shapely.geometry.mapping(geom)))
     item = Item(
         id=id,
-        geometry=geometry,
+        geometry=geojson,
         bbox=bbox,
         datetime=datetime.datetime.now(),
         properties={},
