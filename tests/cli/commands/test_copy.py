@@ -85,6 +85,18 @@ class CopyTest(CliTestCase):
             for link in cat2.get_child_links():
                 self.assertTrue(cast(str, link.target).startswith(href))
 
+            self.assertTrue(
+                os.path.exists(
+                    os.path.join(
+                        cat2_dir,
+                        "hurricane-harvey",
+                        "hurricane-harvey-0831",
+                        "Houston-East-20170831-103f-100d-0f4f-RGB",
+                        "Houston-East-20170831-103f-100d-0f4f-3-band.tif",
+                    )
+                )
+            )
+
     def test_move_assets(self):
         cat = TestCases.planet_disaster()
 
@@ -110,6 +122,26 @@ class CopyTest(CliTestCase):
                     )
 
                     self.assertEqual(common_path, os.path.dirname(item_href))
+
+    def test_copy_assets(self):
+        cat = TestCases.planet_disaster()
+        with TemporaryDirectory() as tmp_dir:
+            self.run_command(["copy", cat.get_self_href(), tmp_dir, "-a"])
+            cat2 = pystac.read_file(os.path.join(tmp_dir, "collection.json"))
+            for item in cat2.get_all_items():
+                assert all(v.href.startswith("./") for v in item.assets.values())
+
+            self.assertTrue(
+                os.path.exists(
+                    os.path.join(
+                        tmp_dir,
+                        "hurricane-harvey",
+                        "hurricane-harvey-0831",
+                        "Houston-East-20170831-103f-100d-0f4f-RGB",
+                        "Houston-East-20170831-103f-100d-0f4f-3-band.tif",
+                    )
+                )
+            )
 
     def test_copy_using_no_resolve_links(self) -> None:
         path = test_data.get_path("data-files/external-child/catalog.json")

@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `copy --copy-assets` now works even with relative asset hrefs ([#436](https://github.com/stac-utils/stactools/pull/436))
+
 ### Removed
 
 - Unused files under `tests/data-files` ([#438](https://github.com/stac-utils/stactools/pull/438))
+
 
 ## [0.4.8] - 2023-06-01
 
