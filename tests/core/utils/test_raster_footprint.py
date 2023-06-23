@@ -6,6 +6,7 @@ from shapely.geometry.multipolygon import MultiPolygon
 from shapely.geometry.polygon import Polygon, orient
 from stactools.core import use_fsspec
 from stactools.core.utils.raster_footprint import (
+    RasterFootprint,
     data_footprint,
     densify_by_distance,
     densify_by_factor,
@@ -402,6 +403,29 @@ def test_multiband_footprint() -> None:
     assert Polygon(geometry["coordinates"][0]).exterior.is_ccw is True
     expected = shape(geometry)
     assert shape(footprint) == expected
+
+
+def test_non_epsg_4326() -> None:
+    href = test_data.get_path(
+        "data-files/raster_footprint/AST_L1T_00310012006175412_20150516104359-SWIR-cropped.tif"
+    )
+    dst_crs = "EPSG:32632"
+    footprint = RasterFootprint.from_href(href, dst_crs=dst_crs).footprint()
+
+    expected = {
+        "coordinates": (
+            (
+                (-4911755.5260918, 12918049.3475228),
+                (-4923069.7724882, 12925942.0386698),
+                (-4939666.5013561, 12902106.798009),
+                (-4928311.3586291, 12894229.1179033),
+                (-4911755.5260918, 12918049.3475228),
+            ),
+        ),
+        "type": "Polygon",
+    }
+
+    assert expected == footprint
 
 
 def test_densify_by_distance() -> None:
