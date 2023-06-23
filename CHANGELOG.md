@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- For raster footprints users can set destination CRS rather than it being hardcoded to EPSG:4326 ([#440](https://github.com/stac-utils/stactools/pull/440))
+
 ### Fixed
 
 - `copy --copy-assets` now works even with relative asset hrefs ([#436](https://github.com/stac-utils/stactools/pull/436))

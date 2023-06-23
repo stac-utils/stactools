@@ -94,10 +94,12 @@ def densify_by_distance(
 
 
 def reproject_polygon(
-    polygon: Polygon, crs: CRS, precision: Optional[int] = DEFAULT_PRECISION
+    polygon: Polygon,
+    crs: CRS,
+    precision: Optional[int] = DEFAULT_PRECISION,
+    dst_crs: CRS = "EPSG:4326",
 ) -> Polygon:
-    """Projects a polygon to EPSG 4326 and rounds the projected vertex
-    coordinates to ``precision``.
+    """Projects a polygon and rounds the projected vertex coordinates to ``precision``.
 
     Duplicate points caused by rounding are removed.
 
@@ -106,11 +108,12 @@ def reproject_polygon(
         crs (CRS): The CRS of the input polygon.
         precision (int): The number of decimal places to include in the final
             polygon vertex coordinates.
+        dst_crs (CRS): The CRS of the output polygon. Defaults to EPSG 4326
 
     Returns:
-        Polygon: Polygon in EPSG 4326.
+        Polygon: Polygon in 'dst_crs'. Default to EPSG 4326
     """
-    polygon = shape(transform_geom(crs, "EPSG:4326", polygon, precision=precision))
+    polygon = shape(transform_geom(crs, dst_crs, polygon, precision=precision))
     # Rounding to precision can produce duplicate coordinates, so we remove
     # them. Once once shapely>=2.0.0 is required, this can be replaced with
     # shapely.constructive.remove_repeated_points
@@ -127,7 +130,7 @@ class RasterFootprint:
 
     Two important operations during this calculation are the densification of
     the footprint in the native CRS and simplification of the footprint after
-    reprojection to EPSG 4326. If the initial low-vertex polygon in the native
+    reprojection. If the initial low-vertex polygon in the native
     CRS is not densified, this can result in a reprojected polygon that does not
     accurately represent the data footprint. For example, a MODIS asset
     represented by a rectangular 5 point Polygon in a sinusoidal projection will
@@ -136,7 +139,7 @@ class RasterFootprint:
     difference between these representations is greater the further away from
     the meridian and equator the asset is located.
 
-    After reprojection to EPSG 4326, the footprint may have more points than
+    After reprojection, the footprint may have more points than
     desired. This can be simplified to a polygon with fewer points that maintain
     a maximum distance to the original geometry.
 
@@ -144,13 +147,15 @@ class RasterFootprint:
         data_array (numpy.NDArray[Any]): The raster data used for the
             footprint calculation.
         crs (CRS): Coordinate reference system of the raster data.
+        dst_crs (CRS): Coordinate reference system of the footprint data. Defaults
+            to EPSG 4236.
         transform (Affine): Matrix defining the transformation from pixel to CRS
             coordinates.
         precision (int): The number of decimal places to include in the
             final footprint coordinates.
         densification_factor (Optional[int]): The factor by which to
             increase point density within the footprint polygon before
-            projection to EPSG 4326. A factor of 2 would double the density of
+            projection. A factor of 2 would double the density of
             points (placing one new point between each existing pair of points),
             a factor of 3 would place two points between each point, etc. Higher
             densities produce higher fidelity footprints in areas of high
@@ -158,7 +163,7 @@ class RasterFootprint:
             ``densification_distance``.
         densification_distance (Optional[float]): The distance by which to
             increase point density within the footprint polygon before
-            projection to EPSG 4326. If the distance is set to 2 and the segment
+            projection. If the distance is set to 2 and the segment
             length between two polygon vertices is 10, 4 new vertices would be
             created along the segment. Higher densities produce higher
             fidelity footprints in areas of high projection distortion.
@@ -174,16 +179,17 @@ class RasterFootprint:
     crs: CRS
     """Coordinate reference system of the raster data."""
 
+    dst_crs: CRS = "EPSG:4326"
+    """Coordinate reference system of the footprint."""
+
     data_array: npt.NDArray[Any]
     """2D or 3D array of raster data."""
 
     densification_distance: Optional[float]
-    """Optional distance for densifying polygon vertices before reprojection to
-    EPSG 4326."""
+    """Optional distance for densifying polygon vertices before reprojection."""
 
     densification_factor: Optional[int]
-    """Optional factor for densifying polygon vertices before reprojection to
-    EPSG 4326."""
+    """Optional factor for densifying polygon vertices before reprojection."""
 
     no_data: Optional[Union[int, float]]
     """Optional value defining pixels to exclude from the footprint."""
@@ -204,6 +210,7 @@ class RasterFootprint:
         crs: CRS,
         transform: Affine,
         *,
+        dst_crs: CRS = "EPSG:4326",
         precision: int = DEFAULT_PRECISION,
         densification_factor: Optional[int] = None,
         densification_distance: Optional[float] = None,
@@ -214,6 +221,7 @@ class RasterFootprint:
             data_array = data_array[np.newaxis, :]
         self.data_array = data_array
         self.crs = crs
+        self.dst_crs = dst_crs
         self.transform = transform
         self.precision = precision
         if densification_factor is not None and densification_distance is not None:
@@ -320,8 +328,8 @@ class RasterFootprint:
             return polygon
 
     def reproject_polygon(self, polygon: Polygon) -> Polygon:
-        """Projects a polygon to EPSG 4326 and rounds the projected vertex
-        coordinates to ``self.precision``.
+        """Projects a polygon and rounds the projected vertex coordinates to
+        ``self.precision``.
 
         Duplicate points caused by rounding are removed.
 
@@ -329,9 +337,11 @@ class RasterFootprint:
             polygon (Polygon): Footprint polygon in the native CRS.
 
         Returns:
-            Polygon: Footprint polygon in EPSG 4326.
+            Polygon: Footprint polygon in 'dst_crs'.
         """
-        return reproject_polygon(polygon, self.crs, self.precision)
+        return reproject_polygon(
+            polygon, crs=self.crs, dst_crs=self.dst_crs, precision=self.precision
+        )
 
     def simplify_polygon(self, polygon: Polygon) -> Polygon:
         """Reduces the number of polygon vertices such that the simplified
@@ -357,6 +367,7 @@ class RasterFootprint:
         cls: Type[T],
         href: str,
         *,
+        dst_crs: CRS = "EPSG:4326",
         precision: int = DEFAULT_PRECISION,
         densification_factor: Optional[int] = None,
         densification_distance: Optional[float] = None,
@@ -370,11 +381,13 @@ class RasterFootprint:
 
         Args:
             href (str): The href of the image to process.
+            dst_crs (CRS): Coordinate reference system of the footprint data. Defaults
+                to EPSG 4236.
             precision (int): The number of decimal places to include in the
                 final footprint coordinates.
             densification_factor (Optional[int]): The factor by which to
                 increase point density within the footprint polygon before
-                projection to EPSG 4326. A factor of 2 would double the density
+                projection. A factor of 2 would double the density
                 of points (placing one new point between each existing pair of
                 points), a factor of 3 would place two points between each point,
                 etc. Higher densities produce higher fidelity footprints in
@@ -382,7 +395,7 @@ class RasterFootprint:
                 ``densification_distance``.
             densification_distance (Optional[float]): The distance by which to
                 increase point density within the footprint polygon before
-                projection to EPSG 4326. If the distance is set to 2 and the
+                projection. If the distance is set to 2 and the
                 segment length between two polygon vertices is 10, 4 new
                 vertices would be created along the segment. Higher densities
                 produce higher fidelity footprints in areas of high projection
@@ -404,6 +417,7 @@ class RasterFootprint:
         with rasterio.open(href) as source:
             return cls.from_rasterio_dataset_reader(
                 reader=source,
+                dst_crs=dst_crs,
                 no_data=no_data,
                 bands=bands,
                 precision=precision,
@@ -417,6 +431,7 @@ class RasterFootprint:
         cls: Type[T],
         reader: DatasetReader,
         *,
+        dst_crs: CRS = "EPSG:4326",
         precision: int = DEFAULT_PRECISION,
         densification_factor: Optional[int] = None,
         densification_distance: Optional[float] = None,
@@ -431,11 +446,13 @@ class RasterFootprint:
         Args:
             reader (DatasetReader): A rasterio dataset reader object for the
                 image to process.
+            dst_crs (CRS): Coordinate reference system of the footprint data. Defaults
+                to EPSG 4236.
             precision (int): The number of decimal places to include in the
                 final footprint coordinates.
             densification_factor (Optional[int]): The factor by which to
                 increase point density within the footprint polygon before
-                projection to EPSG 4326. A factor of 2 would double the density
+                projection. A factor of 2 would double the density
                 of points (placing one new point between each existing pair of
                 points), a factor of 3 would place two points between each point,
                 etc. Higher densities produce higher fidelity footprints in
@@ -443,7 +460,7 @@ class RasterFootprint:
                 ``densification_distance``.
             densification_distance (Optional[float]): The distance by which to
                 increase point density within the footprint polygon before
-                projection to EPSG 4326. If the distance is set to 2 and the
+                projection. If the distance is set to 2 and the
                 segment length between two polygon vertices is 10, 4 new
                 vertices would be created along the segment. Higher densities
                 produce higher fidelity footprints in areas of high projection
@@ -481,6 +498,7 @@ class RasterFootprint:
         return cls(
             data_array=np.asarray(band_data),
             crs=reader.crs,
+            dst_crs=dst_crs,
             transform=reader.transform,
             no_data=no_data,
             precision=precision,
@@ -495,6 +513,7 @@ class RasterFootprint:
         item: Item,
         *,
         asset_names: List[str] = [],
+        dst_crs: CRS = "EPSG:4326",
         precision: int = DEFAULT_PRECISION,
         densification_factor: Optional[int] = None,
         densification_distance: Optional[float] = None,
@@ -517,11 +536,13 @@ class RasterFootprint:
             asset_names (List[str]): The names of the assets for which to attempt to
                 extract footprints. The first successful footprint will be used. If
                 the list is empty, all assets will be tried until one is successful.
+            dst_crs (CRS): Coordinate reference system of the footprint data. Defaults
+                to EPSG 4236.
             precision (int): The number of decimal places to include in the final
                 footprint coordinates.
             densification_factor (Optional[int]): The factor by which to
                 increase point density within the footprint polygon before
-                projection to EPSG 4326. A factor of 2 would double the density
+                projection. A factor of 2 would double the density
                 of points (placing one new point between each existing pair of
                 points), a factor of 3 would place two points between each point,
                 etc. Higher densities produce higher fidelity footprints in
@@ -529,7 +550,7 @@ class RasterFootprint:
                 ``densification_distance``.
             densification_distance (Optional[float]): The distance by which to
                 increase point density within the footprint polygon before
-                projection to EPSG 4326. If the distance is set to 2 and the
+                projection. If the distance is set to 2 and the
                 segment length between two polygon vertices is 10, 4 new
                 vertices would be created along the segment. Higher densities
                 produce higher fidelity footprints in areas of high projection
@@ -554,6 +575,7 @@ class RasterFootprint:
             cls.data_footprints_for_data_assets(
                 item,
                 asset_names=asset_names,
+                dst_crs=dst_crs,
                 precision=precision,
                 densification_factor=densification_factor,
                 densification_distance=densification_distance,
@@ -578,6 +600,7 @@ class RasterFootprint:
         item: Item,
         *,
         asset_names: List[str] = [],
+        dst_crs: CRS = "EPSG:4326",
         precision: int = DEFAULT_PRECISION,
         densification_factor: Optional[int] = None,
         densification_distance: Optional[float] = None,
@@ -599,11 +622,13 @@ class RasterFootprint:
             asset_names (List[str]): The names of the assets for which to attempt to
                 extract footprints. The first successful footprint will be used. If
                 the list is empty, all assets will be tried until one is successful.
+            dst_crs (CRS): Coordinate reference system of the footprint data. Defaults
+                to EPSG 4236.
             precision (int): The number of decimal places to include in the final
                 footprint coordinates.
             densification_factor (Optional[int]): The factor by which to
                 increase point density within the footprint polygon before
-                projection to EPSG 4326. A factor of 2 would double the density
+                projection. A factor of 2 would double the density
                 of points (placing one new point between each existing pair of
                 points), a factor of 3 would place two points between each point,
                 etc. Higher densities produce higher fidelity footprints in
@@ -611,7 +636,7 @@ class RasterFootprint:
                 ``densification_distance``.
             densification_distance (Optional[float]): The distance by which to
                 increase point density within the footprint polygon before
-                projection to EPSG 4326. If the distance is set to 2 and the
+                projection. If the distance is set to 2 and the
                 segment length between two polygon vertices is 10, 4 new
                 vertices would be created along the segment. Higher densities
                 produce higher fidelity footprints in areas of high projection
@@ -651,6 +676,7 @@ class RasterFootprint:
                 else:
                     extent = cls.from_href(
                         href=href,
+                        dst_crs=dst_crs,
                         no_data=no_data,
                         bands=bands,
                         precision=precision,
@@ -876,11 +902,12 @@ def densify_reproject_simplify(
     polygon: Polygon,
     crs: CRS,
     *,
+    dst_crs: CRS = "EPSG:4326",
     densification_factor: Optional[int] = None,
     precision: int = DEFAULT_PRECISION,
     simplify_tolerance: Optional[float] = None,
 ) -> Polygon:
-    """Densifies the input polygon, reprojects it to EPSG 4326, and simplifies
+    """Densifies the input polygon, reprojects it, and simplifies
     the resulting polygon.
 
     See :class:`RasterFootprint` for details on densification and
@@ -889,9 +916,10 @@ def densify_reproject_simplify(
     Args:
         polygon (Polygon): The input polygon.
         crs (CRS): The CRS of the input polygon.
+        dst_crs (CRS): The CRS of the output polygon. Defaults to EPSG 4326
         densification_factor (Optional[int]): The factor by which to
-            increase point density within the polygon before projection to
-            EPSG 4326. A factor of 2 would double the density of points (placing
+            increase point density within the polygon before projection.
+            A factor of 2 would double the density of points (placing
             one new point between each existing pair of points), a factor of
             3 would place two points between each point, etc. Higher
             densities produce higher fidelity footprints in areas of high
@@ -909,7 +937,7 @@ def densify_reproject_simplify(
         polygon = Polygon(
             densify_by_factor(polygon.exterior.coords, factor=densification_factor)
         )
-    polygon = reproject_polygon(polygon, crs, precision)
+    polygon = reproject_polygon(polygon, crs=crs, dst_crs=dst_crs, precision=precision)
     if simplify_tolerance is not None:
         polygon = polygon.simplify(
             tolerance=simplify_tolerance, preserve_topology=False
