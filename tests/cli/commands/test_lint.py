@@ -23,7 +23,7 @@ class LintTest(CliTestCase):
 
     def test_collection_with_invalid_name(self) -> None:
         path = test_data.get_path(
-            "data-files/catalogs/test-case-1/country-1/area-1-1/collection-invalid.json"
+            "data-files/basic/country-1/area-1-1/collection-invalid.json"
         )
         result = self.run_command(["lint", path])
         self.assertEqual(1, result.exit_code)
