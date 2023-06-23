@@ -7,7 +7,7 @@ from stactools.cli.commands.merge import create_merge_command
 from stactools.core import move_all_assets
 from stactools.testing import CliTestCase
 
-from .test_cases import TestCases
+from tests import test_data
 
 
 def copy_two_planet_disaster_subsets(tmp_dir):
@@ -20,7 +20,9 @@ def copy_two_planet_disaster_subsets(tmp_dir):
     item_ids = ["20170831_172754_101c", "20170831_162740_ssc1d1"]
     new_cols = []
     for item_id in item_ids:
-        col = TestCases.planet_disaster()
+        col = pystac.Collection.from_file(
+            test_data.get_path("data-files/planet-disaster/collection.json")
+        )
         for item in list(col.get_all_items()):
             if item.id != item_id:
                 item.get_parent().remove_item(item.id)
@@ -124,7 +126,7 @@ class MergeTest(CliTestCase):
         item_id = "2017831_195552_SS02"
 
         with TemporaryDirectory() as tmp_dir:
-            orig_data = os.path.dirname(TestCases.planet_disaster().get_self_href())
+            orig_data = test_data.get_path("data-files/planet-disaster")
             shutil.copytree(orig_data, os.path.join(tmp_dir, "0"))
 
             col0 = pystac.read_file(os.path.join(tmp_dir, "0/collection.json"))
