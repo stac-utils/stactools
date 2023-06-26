@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Update pystac dependency to 0.7.0 and shapely to 2.0.0 ([#441](https://github.com/stac-utils/stactools/pull/441))
+- Update pystac dependency to 0.7 and shapely to 2.0 ([#441](https://github.com/stac-utils/stactools/pull/441))
 
 ### Fixed
 
@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Deprecated
 
-- `raster_footprint.reproject_polygon` and `projection.reproject_geom`. Use `projection.reproject_shape` instead with `shapely.Geometry` objects as the input and output ([#441](https://github.com/stac-utils/pull/441))
+- `raster_footprint.reproject_polygon` and `projection.reproject_geom`. Use `projection.reproject_shape` instead with `shapely.Geometry` objects as the input and output ([#441](https://github.com/stac-utils/stactools/pull/441))
 
 ### Removed
 
