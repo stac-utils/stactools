@@ -10,6 +10,8 @@ from shapely import Geometry
 from shapely.constructive import remove_repeated_points
 from shapely.geometry import mapping, shape
 
+from .geometry import GeoInterface
+
 
 def epsg_from_utm_zone_number(utm_zone_number: int, south: bool) -> int:
     """Returns the EPSG code for a UTM zone number.
@@ -29,7 +31,7 @@ def epsg_from_utm_zone_number(utm_zone_number: int, south: bool) -> int:
 def reproject_shape(
     src_crs: rasterio.crs.CRS,
     dst_crs: rasterio.crs.CRS,
-    geom: Geometry,
+    geom: GeoInterface,
     precision: Optional[int] = None,
 ) -> Geometry:
     """Projects a shapely.Geometry and rounds the projected vertex coordinates
@@ -40,12 +42,12 @@ def reproject_shape(
     Args:
         src_crs (rasterio.crs.CRS): The CRS of the input geometry.
         dst_crs (rasterio.crs.CRS): The CRS of the output geometry.
-        geom (shapely.Geometry): The shapely.Geometry to reproject
+        geom (GeoInterface): GeoJSON like dict or shapely geometry object to reproject
         precision (int): The number of decimal places to include in the final
             Geometry vertex coordinates.
 
     Returns:
-        geom: the reprojected shapely.Geometry
+        geom: the reprojected shapely geometry object
     """
     return remove_repeated_points(
         shape(transform_geom(src_crs, dst_crs, geom, precision=precision))
