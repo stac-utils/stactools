@@ -1,5 +1,4 @@
 import datetime
-import json
 import os.path
 from typing import Optional
 
@@ -43,7 +42,7 @@ def item(href: str, read_href_modifier: Optional[ReadHrefModifier] = None) -> It
         crs, "EPSG:4326", shapely.geometry.box(*proj_bbox), precision=6
     )
     bbox = list(geom.bounds)
-    geojson = json.loads(json.dumps(shapely.geometry.mapping(geom)))
+    geojson = shapely.geometry.mapping(geom)
     item = Item(
         id=id,
         geometry=geojson,
