@@ -49,6 +49,7 @@ More information
 
 .. toctree::
    :maxdepth: 1
+   :hidden:
 
    cli
    api
