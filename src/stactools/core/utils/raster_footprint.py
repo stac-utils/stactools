@@ -15,6 +15,8 @@ from rasterio.crs import CRS
 from shapely.geometry import mapping, shape
 from shapely.geometry.multipolygon import MultiPolygon
 from shapely.geometry.polygon import Polygon, orient
+from shapely.ops import unary_union
+from stactools.core.geometry import mutual_intersection
 
 from ..projection import reproject_shape
 
@@ -531,6 +533,7 @@ class RasterFootprint:
         no_data: Optional[Union[int, float]] = None,
         bands: List[int] = [1],
         skip_errors: bool = True,
+        footprint_aggregator: Optional[str] = None,
     ) -> bool:
         """Accepts an Item and an optional list of asset names within that
         Item, and updates the geometry of that Item in-place with the data
@@ -577,32 +580,47 @@ class RasterFootprint:
                 bands must have nodata in that pixel.
             skip_errors (bool): If False, raise an error for a missing href or
                 footprint calculation failure.
+            footprint_aggregator (Optional[str]): Provides a means to control how
+                assets with differing footprints are aggregated; use 'intersection'
+                to select the region common to all assets, 'union' to take the
+                combined footprints
 
         Returns:
             bool: True if the Item geometry was successfully updated, False if not.
         """
-        asset_name_and_extent = next(
-            cls.data_footprints_for_data_assets(
-                item,
-                asset_names=asset_names,
-                dst_crs=dst_crs,
-                precision=precision,
-                densification_factor=densification_factor,
-                densification_distance=densification_distance,
-                simplify_tolerance=simplify_tolerance,
-                no_data=no_data,
-                bands=bands,
-                skip_errors=skip_errors,
-            ),
-            None,
+        asset_extent_iterator = cls.data_footprints_for_data_assets(
+            item,
+            asset_names=asset_names,
+            dst_crs=dst_crs,
+            precision=precision,
+            densification_factor=densification_factor,
+            densification_distance=densification_distance,
+            simplify_tolerance=simplify_tolerance,
+            no_data=no_data,
+            bands=bands,
+            skip_errors=skip_errors,
         )
-        if asset_name_and_extent is not None:
-            _, extent = asset_name_and_extent
-            item.geometry = extent
-            item.bbox = list(shape(extent).bounds)
-            return True
+
+        if footprint_aggregator is None:
+            asset_name_extent = next(asset_extent_iterator, None)
+            if asset_name_extent is None:
+                return False
+            _, extent = asset_name_extent
         else:
-            return False
+            extents = [shape(extent) for _, extent in asset_extent_iterator]
+            if extents == []:
+                return False
+            if footprint_aggregator == "intersection":
+                extent = mutual_intersection(extents)
+            elif footprint_aggregator == "union":
+                extent = unary_union(extents)
+            else:
+                raise Exception(
+                    "Unrecognized aggregation strategy " f'"{footprint_aggregator}"'
+                )
+        item.geometry = extent
+        item.bbox = list(shape(extent).bounds)
+        return True
 
     @classmethod
     def data_footprints_for_data_assets(
