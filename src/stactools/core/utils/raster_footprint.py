@@ -3,6 +3,8 @@ geometries."""
 
 import logging
 import warnings
+from enum import Enum, auto
+from itertools import groupby
 from typing import Any, Dict, Iterator, List, Optional, Tuple, Type, TypeVar, Union
 
 import numpy as np
@@ -26,6 +28,19 @@ logger = logging.getLogger(__name__)
 DEFAULT_PRECISION = 7
 
 T = TypeVar("T", bound="RasterFootprint")
+
+
+class FootprintMergeStrategy(Enum):
+    """Strategy for handling the aggregation of differing asset footprints."""
+
+    FIRST = auto()
+    """Use the footprint of the first matching asset."""
+
+    UNION = auto()
+    """Union the geometries of all matching assets."""
+
+    INTERSECTION = auto()
+    """Use the mutual intersection of all matching asset footprints."""
 
 
 def densify_by_factor(
@@ -533,7 +548,7 @@ class RasterFootprint:
         no_data: Optional[Union[int, float]] = None,
         bands: List[int] = [1],
         skip_errors: bool = True,
-        footprint_aggregator: Optional[str] = None,
+        footprint_aggregator: FootprintMergeStrategy = FootprintMergeStrategy.FIRST,
     ) -> bool:
         """Accepts an Item and an optional list of asset names within that
         Item, and updates the geometry of that Item in-place with the data
@@ -580,10 +595,10 @@ class RasterFootprint:
                 bands must have nodata in that pixel.
             skip_errors (bool): If False, raise an error for a missing href or
                 footprint calculation failure.
-            footprint_aggregator (Optional[str]): Provides a means to control how
-                assets with differing footprints are aggregated; use 'intersection'
-                to select the region common to all assets, 'union' to take the
-                combined footprints
+            footprint_aggregator (FootprintMergeStrategy): Provides a
+                means to control how the footprints of assets are aggregated;
+                see :class:`FootprintMergeStrategy` for details; defaults to using
+                the `FIRST` strategy
 
         Returns:
             bool: True if the Item geometry was successfully updated, False if not.
@@ -601,7 +616,7 @@ class RasterFootprint:
             skip_errors=skip_errors,
         )
 
-        if footprint_aggregator is None:
+        if footprint_aggregator == FootprintMergeStrategy.FIRST:
             asset_name_extent = next(asset_extent_iterator, None)
             if asset_name_extent is None:
                 return False
@@ -610,13 +625,13 @@ class RasterFootprint:
             extents = [shape(extent) for _, extent in asset_extent_iterator]
             if extents == []:
                 return False
-            if footprint_aggregator == "intersection":
+            if footprint_aggregator == FootprintMergeStrategy.INTERSECTION:
                 extent = mutual_intersection(extents)
-            elif footprint_aggregator == "union":
+            elif footprint_aggregator == FootprintMergeStrategy.UNION:
                 extent = unary_union(extents)
             else:
                 raise Exception(
-                    "Unrecognized aggregation strategy " f'"{footprint_aggregator}"'
+                    f"Unrecognized aggregation strategy: {footprint_aggregator}"
                 )
         item.geometry = extent
         item.bbox = list(shape(extent).bounds)
