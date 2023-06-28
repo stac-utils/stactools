@@ -354,7 +354,7 @@ def test_remove_duplicate_points() -> None:
         }
     )
 
-    deduplicated_shape = shape(
+    expected = shape(
         {
             "type": "Polygon",
             "coordinates": [
@@ -373,10 +373,8 @@ def test_remove_duplicate_points() -> None:
         }
     )
 
-    assert (
-        densify_reproject_simplify(redundant_shape, CRS.from_epsg(4326))
-        == deduplicated_shape
-    )
+    actual = densify_reproject_simplify(redundant_shape, CRS.from_epsg(4326))
+    assert actual == expected
 
 
 def test_multiband_footprint() -> None:
