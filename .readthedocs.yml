@@ -5,9 +5,8 @@
 # Required
 version: 2
 
-# Build documentation in the docs/ directory with Sphinx
 sphinx:
-  configuration: docs/conf.py
+  fail_on_warning: false
 
 # Optionally build your docs in additional formats such as PDF
 formats:
@@ -16,7 +15,11 @@ formats:
 build:
   os: ubuntu-20.04
   tools:
-    python: mambaforge-4.10
+    python: "3.10"
 
-conda:
-  environment: .readthedocs.environment.yml
+python:
+  install:
+    - method: pip
+      path: .
+      extra_requirements:
+        - docs
