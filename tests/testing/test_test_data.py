@@ -10,8 +10,8 @@ def test_external_data_https():
     assert "20201211_223832_CS2" == item.id
 
 
-@pytest.importorskip("s3fs")
 def test_external_data_s3():
+    pytest.importorskip("s3fs")
     path = test_data.get_external_data("AW3D30_global.vrt")
     with open(path) as f:
         xml = f.read()
