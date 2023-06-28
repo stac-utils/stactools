@@ -548,7 +548,7 @@ class RasterFootprint:
         no_data: Optional[Union[int, float]] = None,
         bands: List[int] = [1],
         skip_errors: bool = True,
-        footprint_aggregator: FootprintMergeStrategy = FootprintMergeStrategy.FIRST,
+        footprint_merge_strategy: FootprintMergeStrategy = FootprintMergeStrategy.FIRST,
     ) -> bool:
         """Accepts an Item and an optional list of asset names within that
         Item, and updates the geometry of that Item in-place with the data
@@ -616,7 +616,7 @@ class RasterFootprint:
             skip_errors=skip_errors,
         )
 
-        if footprint_aggregator == FootprintMergeStrategy.FIRST:
+        if footprint_merge_strategy == FootprintMergeStrategy.FIRST:
             asset_name_extent = next(asset_extent_iterator, None)
             if asset_name_extent is None:
                 return False
@@ -625,13 +625,13 @@ class RasterFootprint:
             extents = [shape(extent) for _, extent in asset_extent_iterator]
             if extents == []:
                 return False
-            if footprint_aggregator == FootprintMergeStrategy.INTERSECTION:
+            if footprint_merge_strategy == FootprintMergeStrategy.INTERSECTION:
                 extent = mutual_intersection(extents)
-            elif footprint_aggregator == FootprintMergeStrategy.UNION:
+            elif footprint_merge_strategy == FootprintMergeStrategy.UNION:
                 extent = unary_union(extents)
             else:
                 raise Exception(
-                    f"Unrecognized aggregation strategy: {footprint_aggregator}"
+                    f"Unrecognized aggregation strategy: {footprint_merge_strategy}"
                 )
         item.geometry = extent
         item.bbox = list(shape(extent).bounds)
