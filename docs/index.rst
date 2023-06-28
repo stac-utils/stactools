@@ -44,9 +44,6 @@ To enable AWS S3 support via `s3fs <https://github.com/fsspec/s3fs>`_, you can e
 
     If you need to access s3 data via requester pays, use this environment variable: ``AWS_REQUEST_PAYER='requester'``.
 
-More information
-================
-
 .. toctree::
    :maxdepth: 1
    :hidden:
