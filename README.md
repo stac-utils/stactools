@@ -207,7 +207,7 @@ pip install -e '.[dev]'
 
 ### Developing the docs
 
-To build and serve the docs, the development requirements must be installed with `pip install -e '.[dev]'`.
+To build and serve the docs, the development requirements must be installed with `pip install -e '.[docs]'`.
 To build the docs, you can use `make html` from inside of the docs directory, and to build the docs and start a server that watches for changes, use `make livehtml`:
 
 ```sh
