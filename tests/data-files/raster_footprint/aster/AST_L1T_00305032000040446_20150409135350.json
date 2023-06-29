@@ -1,0 +1,425 @@
+{
+  "type": "Feature",
+  "stac_version": "1.0.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/sat/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/view/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/projection/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
+  ],
+  "id": "AST_L1T_00305032000040446_20150409135350",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          102.8949819,
+          15.7523826
+        ],
+        [
+          103.3027958560544,
+          15.691476698962465
+        ],
+        [
+          103.4304796,
+          15.672591
+        ],
+        [
+          103.4304392148606,
+          15.672413511780825
+        ],
+        [
+          103.430908,
+          15.6723435
+        ],
+        [
+          103.43080548601525,
+          15.671892936646794
+        ],
+        [
+          103.4326177,
+          15.6716255
+        ],
+        [
+          103.3062868,
+          15.1166352
+        ],
+        [
+          103.3045300527689,
+          15.116894681964816
+        ],
+        [
+          103.3042234,
+          15.1155469
+        ],
+        [
+          103.30374740229472,
+          15.1156170135357
+        ],
+        [
+          103.3036385,
+          15.1151384
+        ],
+        [
+          102.7316155,
+          15.1996869
+        ],
+        [
+          102.7316598658326,
+          15.199884394381945
+        ],
+        [
+          102.7261567,
+          15.200695
+        ],
+        [
+          102.72651087976816,
+          15.202271535308851
+        ],
+        [
+          102.7249973,
+          15.2024951
+        ],
+        [
+          102.8497631,
+          15.75764
+        ],
+        [
+          102.85122969641492,
+          15.757423567707397
+        ],
+        [
+          102.8512796,
+          15.7576457
+        ],
+        [
+          102.85680776838277,
+          15.7569799386324
+        ],
+        [
+          102.8569084,
+          15.7574279
+        ],
+        [
+          102.87365124000723,
+          15.754951467007178
+        ],
+        [
+          102.8949819,
+          15.7523826
+        ]
+      ]
+    ]
+  },
+  "bbox": [
+    102.7249973,
+    15.1151384,
+    103.4326177,
+    15.7576457
+  ],
+  "properties": {
+    "datetime": "2000-05-03T04:04:46.534000Z",
+    "created": "2015-04-09T13:56:57.771000Z",
+    "platform": "terra",
+    "proj:epsg": 32648,
+    "instruments": [
+      "aster"
+    ],
+    "eo:cloud_cover": 57.0,
+    "view:off_nadir": 5.709,
+    "sat:orbit_state": "descending",
+    "view:sun_azimuth": 86.162211,
+    "view:sun_elevation": 75.830363,
+    "aster:processing_number": "78838",
+    "aster:lower_left_quad_cloud_cover": 75.0,
+    "aster:upper_left_quad_cloud_cover": 64.0,
+    "aster:lower_right_quad_cloud_cover": 44.0,
+    "aster:upper_right_quad_cloud_cover": 44.0
+  },
+  "links": [],
+  "assets": {
+    "VNIR": {
+      "href": "./AST_L1T_00305032000040446_20150409135350_78838.VNIR.SIMPLIFIED.tif",
+      "title": "VNIR Swath data",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ],
+      "eo:bands": [
+        {
+          "common_name": "green",
+          "name": "VNIR_Band1",
+          "description": "visible yellow/green",
+          "center_wavelength": 0.56,
+          "full_width_half_max": 0.08
+        },
+        {
+          "name": "VNIR_Band2",
+          "common_name": "red",
+          "description": "visible red",
+          "center_wavelength": 0.66,
+          "full_width_half_max": 0.06
+        },
+        {
+          "common_name": "nir08",
+          "name": "VNIR_Band3N",
+          "description": "near infrared",
+          "center_wavelength": 0.82,
+          "full_width_half_max": 0.08
+        }
+      ],
+      "proj:bbox": [
+        251999.9999789854,
+        1670399.999999571,
+        335879.9999989178,
+        1744559.9999996407
+      ],
+      "proj:shape": [
+        4945,
+        5593
+      ],
+      "proj:transform": [
+        14.997318079730448,
+        0.0,
+        251999.9999789854,
+        0.0,
+        -14.996966632976712,
+        1744559.9999996407,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "raster:bands": [
+        {
+          "name": "VNIR_Band1",
+          "nodata": 0,
+          "data_type": "uint8",
+          "spatial_resolution": 15
+        },
+        {
+          "name": "VNIR_Band2",
+          "nodata": 0,
+          "data_type": "uint8",
+          "spatial_resolution": 15
+        },
+        {
+          "name": "VNIR_Band3N",
+          "nodata": 0,
+          "data_type": "uint8",
+          "spatial_resolution": 15
+        }
+      ]
+    },
+    "TIR": {
+      "href": "./AST_L1T_00305032000040446_20150409135350_78838.TIR.SIMPLIFIED.tif",
+      "title": "TIR Swath data",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ],
+      "eo:bands": [
+        {
+          "name": "TIR_Band10",
+          "common_name": "lwir",
+          "description": "thermal infrared",
+          "center_wavelength": 8.3,
+          "full_width_half_max": 0.35
+        },
+        {
+          "name": "TIR_Band11",
+          "common_name": "lwir",
+          "description": "thermal infrared",
+          "center_wavelength": 8.65,
+          "full_width_half_max": 0.35
+        },
+        {
+          "name": "TIR_Band12",
+          "common_name": "lwir",
+          "description": "thermal infrared",
+          "center_wavelength": 9.11,
+          "full_width_half_max": 0.35
+        },
+        {
+          "name": "TIR_Band13",
+          "common_name": "lwir",
+          "description": "thermal infrared",
+          "center_wavelength": 10.6,
+          "full_width_half_max": 0.7
+        },
+        {
+          "name": "TIR_Band14",
+          "common_name": "lwir",
+          "description": "thermal infrared",
+          "center_wavelength": 11.3,
+          "full_width_half_max": 0.7
+        }
+      ],
+      "proj:bbox": [
+        251999.9999789854,
+        1670399.999999571,
+        335879.9999989178,
+        1744559.9999996407
+      ],
+      "proj:shape": [
+        825,
+        933
+      ],
+      "proj:transform": [
+        89.90353699885573,
+        0.0,
+        251999.9999789854,
+        0.0,
+        -89.89090909099376,
+        1744559.9999996407,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "raster:bands": [
+        {
+          "name": "TIR_Band10",
+          "nodata": 0,
+          "data_type": "uint16",
+          "spatial_resolution": 90
+        },
+        {
+          "name": "TIR_Band11",
+          "nodata": 0,
+          "data_type": "uint16",
+          "spatial_resolution": 90
+        },
+        {
+          "name": "TIR_Band12",
+          "nodata": 0,
+          "data_type": "uint16",
+          "spatial_resolution": 90
+        },
+        {
+          "name": "TIR_Band13",
+          "nodata": 0,
+          "data_type": "uint16",
+          "spatial_resolution": 90
+        },
+        {
+          "name": "TIR_Band14",
+          "nodata": 0,
+          "data_type": "uint16",
+          "spatial_resolution": 90
+        }
+      ]
+    },
+    "SWIR": {
+      "href": "./AST_L1T_00305032000040446_20150409135350_78838.SWIR.SIMPLIFIED.tif",
+      "title": "SWIR Swath data",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ],
+      "eo:bands": [
+        {
+          "common_name": "swir16",
+          "name": "SWIR_Band4",
+          "description": "short-wave infrared",
+          "center_wavelength": 1.65,
+          "full_width_half_max": 0.1
+        },
+        {
+          "common_name": "swir22",
+          "name": "SWIR_Band5",
+          "description": "short-wave infrared",
+          "center_wavelength": 2.165,
+          "full_width_half_max": 0.04
+        },
+        {
+          "common_name": "swir22",
+          "name": "SWIR_Band6",
+          "description": "short-wave infrared",
+          "center_wavelength": 2.205,
+          "full_width_half_max": 0.04
+        },
+        {
+          "common_name": "swir22",
+          "name": "SWIR_Band7",
+          "description": "short-wave infrared",
+          "center_wavelength": 2.26,
+          "full_width_half_max": 0.05
+        },
+        {
+          "name": "SWIR_Band8",
+          "common_name": "swir",
+          "description": "short-wave infrared",
+          "center_wavelength": 2.339,
+          "full_width_half_max": 0.07
+        },
+        {
+          "name": "SWIR_Band9",
+          "common_name": "swir",
+          "description": "short-wave infrared",
+          "center_wavelength": 2.395,
+          "full_width_half_max": 0.07
+        }
+      ],
+      "proj:bbox": [
+        251999.9999789854,
+        1670399.999999571,
+        335879.9999989178,
+        1744559.9999996407
+      ],
+      "proj:shape": [
+        2473,
+        2797
+      ],
+      "proj:transform": [
+        29.989274229507473,
+        0.0,
+        251999.9999789854,
+        0.0,
+        -29.987868985066655,
+        1744559.9999996407,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "raster:bands": [
+        {
+          "name": "SWIR_Band4",
+          "nodata": 0,
+          "data_type": "uint8",
+          "spatial_resolution": 30
+        },
+        {
+          "name": "SWIR_Band5",
+          "nodata": 0,
+          "data_type": "uint8",
+          "spatial_resolution": 30
+        },
+        {
+          "name": "SWIR_Band6",
+          "nodata": 0,
+          "data_type": "uint8",
+          "spatial_resolution": 30
+        },
+        {
+          "name": "SWIR_Band7",
+          "nodata": 0,
+          "data_type": "uint8",
+          "spatial_resolution": 30
+        },
+        {
+          "name": "SWIR_Band8",
+          "nodata": 0,
+          "data_type": "uint8",
+          "spatial_resolution": 30
+        },
+        {
+          "name": "SWIR_Band9",
+          "nodata": 0,
+          "data_type": "uint8",
+          "spatial_resolution": 30
+        }
+      ]
+    }
+  },
+  "collection": "aster-l1t"
+}
