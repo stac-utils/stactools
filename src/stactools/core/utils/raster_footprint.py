@@ -4,7 +4,6 @@ geometries."""
 import logging
 import warnings
 from enum import Enum, auto
-from itertools import groupby
 from typing import Any, Dict, Iterator, List, Optional, Tuple, Type, TypeVar, Union
 
 import numpy as np
