@@ -1,9 +1,16 @@
-from copy import deepcopy
-from typing import Any, Dict, List, Optional, Sequence, Union
+import json
+import warnings
+from typing import Any, Dict, List, Optional, Union, cast
 
 import pyproj
 import rasterio.crs
 import rasterio.transform
+from rasterio.warp import transform_geom
+from shapely import Geometry
+from shapely.constructive import remove_repeated_points
+from shapely.geometry import mapping, shape
+
+from .geometry import GeoInterface
 
 
 def epsg_from_utm_zone_number(utm_zone_number: int, south: bool) -> int:
@@ -21,13 +28,44 @@ def epsg_from_utm_zone_number(utm_zone_number: int, south: bool) -> int:
     return int(crs.to_authority()[1])
 
 
+def reproject_shape(
+    src_crs: rasterio.crs.CRS,
+    dst_crs: rasterio.crs.CRS,
+    geom: GeoInterface,
+    precision: Optional[int] = None,
+) -> Geometry:
+    """Projects a shapely.Geometry and rounds the projected vertex coordinates
+    to ``precision``.
+
+    Duplicate points caused by rounding are removed.
+
+    Args:
+        src_crs (rasterio.crs.CRS): The CRS of the input geometry.
+        dst_crs (rasterio.crs.CRS): The CRS of the output geometry.
+        geom (GeoInterface): GeoJSON like dict or shapely geometry object to reproject
+        precision (int): The number of decimal places to include in the final
+            Geometry vertex coordinates.
+
+    Returns:
+        geom: the reprojected shapely geometry object
+    """
+    return remove_repeated_points(
+        shape(transform_geom(src_crs, dst_crs, geom, precision=precision))
+    )
+
+
 def reproject_geom(
     src_crs: Union[pyproj.CRS, rasterio.crs.CRS, str],
     dest_crs: Union[pyproj.CRS, rasterio.crs.CRS, str],
     geom: Dict[str, Any],
     precision: Optional[int] = None,
 ) -> Dict[str, Any]:
-    """Reprojects a geometry represented as GeoJSON from the src_crs to the
+    """DEPRECATED.
+
+    .. deprecated:: 0.5.0
+        Use :func:`reproject_shape` instead.
+
+    Reprojects a geometry represented as GeoJSON from the src_crs to the
     dest crs.
 
     Args:
@@ -39,28 +77,19 @@ def reproject_geom(
     Returns:
         dict: The reprojected geometry
     """
-    transformer = pyproj.Transformer.from_crs(src_crs, dest_crs, always_xy=True)
-    result = deepcopy(geom)
-
-    def fn(coords: Sequence[Any]) -> Sequence[Any]:
-        coords = list(coords)
-        for i in range(0, len(coords)):
-            coord = coords[i]
-            if isinstance(coord[0], Sequence):
-                coords[i] = fn(coord)
-            else:
-                x, y = coord
-                reprojected_coords = list(transformer.transform(x, y, errcheck=True))
-                if precision is not None:
-                    reprojected_coords = [
-                        round(n, precision) for n in reprojected_coords
-                    ]
-                coords[i] = reprojected_coords
-        return coords
-
-    result["coordinates"] = fn(result["coordinates"])
-
-    return result
+    warnings.warn(
+        "``reproject_geom`` is deprecated and will be removed in v0.6.0. "
+        "Use ``reproject_shape`` instead.",
+        DeprecationWarning,
+    )
+    return cast(
+        Dict[str, Any],
+        json.loads(
+            json.dumps(
+                mapping(reproject_shape(src_crs, dest_crs, shape(geom), precision))
+            )
+        ),
+    )
 
 
 def transform_from_bbox(bbox: List[float], shape: List[int]) -> List[float]:

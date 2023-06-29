@@ -1,3 +1,4 @@
+import json
 import os.path
 from unittest import TestCase
 
@@ -18,8 +19,12 @@ class CreateItem(TestCase):
         item = create.item(self.path)
         self.assertEqual(item.id, os.path.splitext(os.path.basename(self.path))[0])
         self.assertIsNotNone(item.datetime)
+        assert item.validate()
+
+        # convert any tuples to lists
+        geojson = json.loads(json.dumps(item.geometry))
         self.assertEqual(
-            item.geometry,
+            geojson,
             {
                 "type": "Polygon",
                 "coordinates": [

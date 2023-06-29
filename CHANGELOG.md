@@ -12,9 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - For raster footprints users can set destination CRS rather than it being hardcoded to EPSG:4326 ([#440](https://github.com/stac-utils/stactools/pull/440))
 - On `stac create-item` asset key name and roles are settable ([#442](https://github.com/stac-utils/stactools/pull/442))
 
+### Changed
+
+- Update pystac dependency to 0.7 and shapely to 2.0 ([#441](https://github.com/stac-utils/stactools/pull/441))
+
 ### Fixed
 
 - `copy --copy-assets` now works even with relative asset hrefs ([#436](https://github.com/stac-utils/stactools/pull/436))
+
+### Deprecated
+
+- `raster_footprint.reproject_polygon` and `projection.reproject_geom`. Use `projection.reproject_shape` instead with `shapely.Geometry` objects as the input and output ([#441](https://github.com/stac-utils/stactools/pull/441))
 
 ### Removed
 

@@ -3,7 +3,6 @@ geometries."""
 
 import logging
 import warnings
-from itertools import groupby
 from typing import Any, Dict, Iterator, List, Optional, Tuple, Type, TypeVar, Union
 
 import numpy as np
@@ -13,10 +12,11 @@ import rasterio.features
 from pystac import Item
 from rasterio import Affine, DatasetReader
 from rasterio.crs import CRS
-from rasterio.warp import transform_geom
 from shapely.geometry import mapping, shape
 from shapely.geometry.multipolygon import MultiPolygon
 from shapely.geometry.polygon import Polygon, orient
+
+from ..projection import reproject_shape
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +99,12 @@ def reproject_polygon(
     precision: Optional[int] = DEFAULT_PRECISION,
     dst_crs: CRS = "EPSG:4326",
 ) -> Polygon:
-    """Projects a polygon and rounds the projected vertex coordinates to ``precision``.
+    """DEPRECATED.
+
+    .. deprecated:: 0.5.0
+        Use :func:`projection.reproject_shape` instead.
+
+    Projects a polygon and rounds the projected vertex coordinates to ``precision``.
 
     Duplicate points caused by rounding are removed.
 
@@ -113,12 +118,14 @@ def reproject_polygon(
     Returns:
         Polygon: Polygon in 'dst_crs'. Default to EPSG 4326
     """
-    polygon = shape(transform_geom(crs, dst_crs, polygon, precision=precision))
-    # Rounding to precision can produce duplicate coordinates, so we remove
-    # them. Once once shapely>=2.0.0 is required, this can be replaced with
-    # shapely.constructive.remove_repeated_points
-    polygon = Polygon([k for k, _ in groupby(polygon.exterior.coords)])
-    return polygon
+    warnings.warn(
+        "``utils.reproject_polygon`` is deprecated and will be removed in v0.6.0. "
+        "Use ``projection.reproject_shape`` instead.",
+        DeprecationWarning,
+    )
+    return reproject_shape(
+        src_crs=crs, dst_crs=dst_crs, geom=polygon, precision=precision
+    )
 
 
 class RasterFootprint:
@@ -339,8 +346,11 @@ class RasterFootprint:
         Returns:
             Polygon: Footprint polygon in 'dst_crs'.
         """
-        return reproject_polygon(
-            polygon, crs=self.crs, dst_crs=self.dst_crs, precision=self.precision
+        return reproject_shape(
+            src_crs=self.crs,
+            dst_crs=self.dst_crs,
+            geom=polygon,
+            precision=self.precision,
         )
 
     def simplify_polygon(self, polygon: Polygon) -> Polygon:
@@ -937,7 +947,9 @@ def densify_reproject_simplify(
         polygon = Polygon(
             densify_by_factor(polygon.exterior.coords, factor=densification_factor)
         )
-    polygon = reproject_polygon(polygon, crs=crs, dst_crs=dst_crs, precision=precision)
+    polygon = reproject_shape(
+        geom=polygon, src_crs=crs, dst_crs=dst_crs, precision=precision
+    )
     if simplify_tolerance is not None:
         polygon = polygon.simplify(
             tolerance=simplify_tolerance, preserve_topology=False
