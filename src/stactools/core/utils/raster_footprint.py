@@ -3,6 +3,7 @@ geometries."""
 
 import logging
 import warnings
+from enum import Enum, auto
 from typing import Any, Dict, Iterator, List, Optional, Tuple, Type, TypeVar, Union
 
 import numpy as np
@@ -15,6 +16,8 @@ from rasterio.crs import CRS
 from shapely.geometry import mapping, shape
 from shapely.geometry.multipolygon import MultiPolygon
 from shapely.geometry.polygon import Polygon, orient
+from shapely.ops import unary_union
+from stactools.core.geometry import mutual_intersection
 
 from ..projection import reproject_shape
 
@@ -24,6 +27,19 @@ logger = logging.getLogger(__name__)
 DEFAULT_PRECISION = 7
 
 T = TypeVar("T", bound="RasterFootprint")
+
+
+class FootprintMergeStrategy(Enum):
+    """Strategy for handling the aggregation of differing asset footprints."""
+
+    FIRST = auto()
+    """Use the footprint of the first matching asset."""
+
+    UNION = auto()
+    """Union the geometries of all matching assets."""
+
+    INTERSECTION = auto()
+    """Use the mutual intersection of all matching asset footprints."""
 
 
 def densify_by_factor(
@@ -531,6 +547,7 @@ class RasterFootprint:
         no_data: Optional[Union[int, float]] = None,
         bands: List[int] = [1],
         skip_errors: bool = True,
+        footprint_merge_strategy: FootprintMergeStrategy = FootprintMergeStrategy.FIRST,
     ) -> bool:
         """Accepts an Item and an optional list of asset names within that
         Item, and updates the geometry of that Item in-place with the data
@@ -577,32 +594,47 @@ class RasterFootprint:
                 bands must have nodata in that pixel.
             skip_errors (bool): If False, raise an error for a missing href or
                 footprint calculation failure.
+            footprint_aggregator (FootprintMergeStrategy): Provides a
+                means to control how the footprints of assets are aggregated;
+                see :class:`FootprintMergeStrategy` for details; defaults to using
+                the `FIRST` strategy
 
         Returns:
             bool: True if the Item geometry was successfully updated, False if not.
         """
-        asset_name_and_extent = next(
-            cls.data_footprints_for_data_assets(
-                item,
-                asset_names=asset_names,
-                dst_crs=dst_crs,
-                precision=precision,
-                densification_factor=densification_factor,
-                densification_distance=densification_distance,
-                simplify_tolerance=simplify_tolerance,
-                no_data=no_data,
-                bands=bands,
-                skip_errors=skip_errors,
-            ),
-            None,
+        asset_extent_iterator = cls.data_footprints_for_data_assets(
+            item,
+            asset_names=asset_names,
+            dst_crs=dst_crs,
+            precision=precision,
+            densification_factor=densification_factor,
+            densification_distance=densification_distance,
+            simplify_tolerance=simplify_tolerance,
+            no_data=no_data,
+            bands=bands,
+            skip_errors=skip_errors,
         )
-        if asset_name_and_extent is not None:
-            _, extent = asset_name_and_extent
-            item.geometry = extent
-            item.bbox = list(shape(extent).bounds)
-            return True
+
+        if footprint_merge_strategy == FootprintMergeStrategy.FIRST:
+            asset_name_extent = next(asset_extent_iterator, None)
+            if asset_name_extent is None:
+                return False
+            _, extent = asset_name_extent
         else:
-            return False
+            extents = [shape(extent) for _, extent in asset_extent_iterator]
+            if extents == []:
+                return False
+            if footprint_merge_strategy == FootprintMergeStrategy.INTERSECTION:
+                extent = mutual_intersection(extents)
+            elif footprint_merge_strategy == FootprintMergeStrategy.UNION:
+                extent = unary_union(extents)
+            else:
+                raise Exception(
+                    f"Unrecognized aggregation strategy: {footprint_merge_strategy}"
+                )
+        item.geometry = extent
+        item.bbox = list(shape(extent).bounds)
+        return True
 
     @classmethod
     def data_footprints_for_data_assets(
