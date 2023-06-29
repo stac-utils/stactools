@@ -1,3 +1,4 @@
+import json
 import os
 
 import pytest
@@ -19,7 +20,10 @@ def test_one_datetime(asset_path: str) -> None:
     item = create.item(asset_path)
     assert os.path.splitext(os.path.basename(asset_path))[0] == item.id
     assert item.datetime is not None
-    assert item.geometry == {
+
+    # convert any tuples to lists
+    geojson = json.loads(json.dumps(item.geometry))
+    assert geojson == {
         "type": "Polygon",
         "coordinates": [
             [
