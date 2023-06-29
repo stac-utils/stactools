@@ -1,6 +1,6 @@
 import datetime
 import os.path
-from typing import Optional
+from typing import List, Optional
 
 import rasterio
 import shapely.geometry
@@ -11,7 +11,13 @@ from pystac.extensions.projection import ProjectionExtension
 from .io import ReadHrefModifier
 
 
-def item(href: str, read_href_modifier: Optional[ReadHrefModifier] = None) -> Item:
+def item(
+    href: str,
+    *,
+    asset_key: str = "data",
+    roles: List[str] = ["data"],
+    read_href_modifier: Optional[ReadHrefModifier] = None,
+) -> Item:
     """Creates a STAC Item from the asset at the provided href.
 
     The ``read_href_modifer`` argument can be used to modify the href for the
@@ -22,6 +28,8 @@ def item(href: str, read_href_modifier: Optional[ReadHrefModifier] = None) -> It
 
     Args:
         href (str): The href of the asset that will be used to create the item.
+        asset_key (str): The unique key of the asset
+        roles (List[str]): The semantic roles of the asset
         read_href_modifier (Optional[ReadHrefModifier]):
             An optional callable that will be used to modify the href before reading.
 
@@ -60,6 +68,6 @@ def item(href: str, read_href_modifier: Optional[ReadHrefModifier] = None) -> It
     projection.transform = proj_transform
     projection.shape = proj_shape
 
-    item.add_asset("data", Asset(href=href, roles=["data"]))
+    item.add_asset(asset_key, Asset(href=href, roles=roles))
 
     return item
