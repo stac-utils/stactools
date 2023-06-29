@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Deprecated
 
+- Many functions in `stactools.testing.CliTestCase` ([#447](https://github.com/stac-utils/stactools/pull/447)).
 - `raster_footprint.reproject_polygon` and `projection.reproject_geom`. Use `projection.reproject_shape` instead with `shapely.Geometry` objects as the input and output ([#441](https://github.com/stac-utils/stactools/pull/441))
 
 ### Removed
