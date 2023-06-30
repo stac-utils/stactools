@@ -1,0 +1,3 @@
+include src/stactools/cli/py.typed
+include src/stactools/core/py.typed
+include src/stactools/testing/py.typed
