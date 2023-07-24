@@ -1,5 +1,6 @@
 import logging
 import unittest
+import warnings
 from abc import ABC, abstractmethod
 from typing import Callable, List, Optional, Sequence, Union
 
@@ -29,6 +30,11 @@ class CliTestCase(unittest.TestCase, ABC):
         def cli() -> None:
             pass
 
+        warnings.warn(
+            "CliTestCase is deprecated in v0.5.0 and will be removed in v0.6.0. "
+            "Please use `click.testing.CliRunner` instead",
+            DeprecationWarning,
+        )
         for create_subcommand in self.create_subcommand_functions():
             create_subcommand(cli)
         self.cli = cli

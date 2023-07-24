@@ -1,45 +1,27 @@
-from tempfile import TemporaryDirectory
-
 import pystac
-from pystac.utils import make_absolute_href
-from stactools.cli.commands.add_raster import create_add_raster_command
-from stactools.core import move_all_assets
-from stactools.testing import CliTestCase
+import pystac.utils
+from click.testing import CliRunner
+from stactools.cli.cli import cli
 
-from .cli_test_utils import expected_json
-from .test_cases import TestCases
+from tests.conftest import expected_json
 
 
-def create_temp_catalog_copy(tmp_dir):
-    col = TestCases.planet_disaster()
-    col.normalize_hrefs(tmp_dir)
-    col.save(catalog_type=pystac.CatalogType.SELF_CONTAINED)
-    move_all_assets(col, copy=True)
-    col.save()
+def test_add_raster_to_items(tmp_planet_disaster: pystac.Collection):
+    collection = tmp_planet_disaster
+    collection_path = collection.get_self_href()
+    items = list(collection.get_all_items())
+    item_path = pystac.utils.make_absolute_href(
+        items[0].get_self_href(), collection_path
+    )
 
-    return col
+    runner = CliRunner()
+    result = runner.invoke(cli, ["add-raster", item_path])
+    assert result.exit_code == 0
 
-
-class AddRasterTest(CliTestCase):
-    def create_subcommand_functions(self):
-        return [create_add_raster_command]
-
-    def test_add_raster_to_item(self):
-        with TemporaryDirectory() as tmp_dir:
-            catalog = create_temp_catalog_copy(tmp_dir)
-            items = list(catalog.get_all_items())
-            item_path = make_absolute_href(
-                items[0].get_self_href(), catalog.get_self_href()
-            )
-
-            cmd = ["add-raster", item_path]
-            self.run_command(cmd)
-
-            updated = pystac.read_file(catalog.get_self_href())
-            item = list(updated.get_all_items())[0]
-            asset = item.get_assets().get("analytic")
-            assert asset is not None
-            expected = expected_json("rasterbands.json")
-            self.maxDiff = None
-            for a, b in zip(expected, asset.to_dict().get("raster:bands")):
-                self.assertDictEqual(a, b)
+    updated = pystac.read_file(collection_path)
+    item = list(updated.get_all_items())[0]
+    asset = item.get_assets().get("analytic")
+    assert asset is not None
+    expected = expected_json("rasterbands.json")
+    for a, b in zip(expected, asset.to_dict().get("raster:bands")):
+        assert a == b

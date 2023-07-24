@@ -52,7 +52,7 @@ extensions = [
 ]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ["_templates"]
+# templates_path = ["_templates"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -105,7 +105,7 @@ html_theme_options = {
         {"name": "STAC spec", "url": "https://stacspec.org/"},
         {"name": "PySTAC", "url": "https://pystac.readthedocs.io/en/stable/"},
     ],
-    "show_nav_level": 3,
+    "header_links_before_dropdown": 7,
 }
 
 
@@ -122,13 +122,7 @@ html_theme_options = {
 # default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
 # 'searchbox.html']``.
 #
-html_sidebars = {
-    "**": [
-        "search-field.html",
-        "globaltoc.html",
-        "sourcelink.html",
-    ],
-}
+html_sidebars = {"index": []}
 
 
 # -- Options for HTMLHelp output ---------------------------------------------

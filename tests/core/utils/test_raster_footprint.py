@@ -6,6 +6,8 @@ from shapely.geometry.multipolygon import MultiPolygon
 from shapely.geometry.polygon import Polygon, orient
 from stactools.core import use_fsspec
 from stactools.core.utils.raster_footprint import (
+    FootprintMergeStrategy,
+    RasterFootprint,
     data_footprint,
     densify_by_distance,
     densify_by_factor,
@@ -353,7 +355,7 @@ def test_remove_duplicate_points() -> None:
         }
     )
 
-    deduplicated_shape = shape(
+    expected = shape(
         {
             "type": "Polygon",
             "coordinates": [
@@ -372,10 +374,8 @@ def test_remove_duplicate_points() -> None:
         }
     )
 
-    assert (
-        densify_reproject_simplify(redundant_shape, CRS.from_epsg(4326))
-        == deduplicated_shape
-    )
+    actual = densify_reproject_simplify(redundant_shape, CRS.from_epsg(4326))
+    assert actual == expected
 
 
 def test_multiband_footprint() -> None:
@@ -404,6 +404,29 @@ def test_multiband_footprint() -> None:
     assert shape(footprint) == expected
 
 
+def test_non_epsg_4326() -> None:
+    href = test_data.get_path(
+        "data-files/raster_footprint/AST_L1T_00310012006175412_20150516104359-SWIR-cropped.tif"
+    )
+    dst_crs = "EPSG:32632"
+    footprint = RasterFootprint.from_href(href, dst_crs=dst_crs).footprint()
+
+    expected = {
+        "coordinates": (
+            (
+                (-4911755.5260918, 12918049.3475228),
+                (-4923069.7724882, 12925942.0386698),
+                (-4939666.5013561, 12902106.798009),
+                (-4928311.3586291, 12894229.1179033),
+                (-4911755.5260918, 12918049.3475228),
+            ),
+        ),
+        "type": "Polygon",
+    }
+
+    assert expected == footprint
+
+
 def test_densify_by_distance() -> None:
     coords = [(0.0, 0.0), (10.0, 0.0), (10.0, 10.0), (0.0, 10.0), (0.0, 0.0)]
     assert len(coords) == 5
@@ -420,3 +443,66 @@ def test_densify_by_factor() -> None:
     for coord in coords:
         assert coord in densified_coords
     assert len(densified_coords) == 9
+
+
+def test_footprint_merge_strategies() -> None:
+    item = Item.from_file(
+        test_data.get_path(
+            "data-files/raster_footprint/aster/AST_L1T_00305032000040446_20150409135350.json"
+        )
+    )
+
+    simplify_tolerance = 0.001
+    bands = []
+    no_data = 0
+
+    footprints = {}
+    for name, asset in item.assets.items():
+        footprints[name] = shape(
+            RasterFootprint.from_href(
+                asset.get_absolute_href(),
+                bands=bands,
+                no_data=no_data,
+                simplify_tolerance=simplify_tolerance,
+            ).footprint()
+        )
+
+    base_footprints = {
+        k: shape(v)
+        for k, v in RasterFootprint.data_footprints_for_data_assets(
+            item, no_data=no_data, simplify_tolerance=simplify_tolerance, bands=bands
+        )
+    }
+    assert base_footprints == footprints
+
+    union_item = item.clone()
+    RasterFootprint.update_geometry_from_asset_footprint(
+        union_item,
+        no_data=no_data,
+        simplify_tolerance=simplify_tolerance,
+        bands=bands,
+        footprint_merge_strategy=FootprintMergeStrategy.UNION,
+    )
+    manually_unioned_geoms = (
+        footprints["VNIR"].union(footprints["SWIR"]).union(footprints["TIR"])
+    )
+    assert shape(union_item.geometry).buffer(1e-8).contains(manually_unioned_geoms)
+
+    intersection_item = item.clone()
+    RasterFootprint.update_geometry_from_asset_footprint(
+        union_item,
+        no_data=no_data,
+        simplify_tolerance=simplify_tolerance,
+        bands=bands,
+        footprint_merge_strategy=FootprintMergeStrategy.INTERSECTION,
+    )
+    manually_intersected_geoms = (
+        footprints["VNIR"]
+        .intersection(footprints["SWIR"])
+        .intersection(footprints["TIR"])
+    )
+    assert (
+        shape(intersection_item.geometry)
+        .buffer(1e-8)
+        .contains(manually_intersected_geoms)
+    )

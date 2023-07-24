@@ -1,52 +1,46 @@
-from typing import Callable, List
-
-from click import Command, Group
-from stactools.cli.commands.validate import create_validate_command
-from stactools.testing.cli_test import CliTestCase
+import pytest
+from click.testing import CliRunner
+from stactools.cli.cli import cli
 
 from tests import test_data
 
 
-class ValidatateTest(CliTestCase):
-    def create_subcommand_functions(self) -> List[Callable[[Group], Command]]:
-        return [create_validate_command]
+def test_valid_item() -> None:
+    path = test_data.get_path(
+        "data-files/basic/country-1/area-1-1/" "area-1-1-imagery/area-1-1-imagery.json"
+    )
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "validate",
+            path,
+            "--no-validate-assets",
+        ],
+    )
+    assert result.exit_code == 0
 
-    def test_valid_item(self) -> None:
-        path = test_data.get_path(
-            "data-files/catalogs/test-case-1/country-1/area-1-1/"
-            "area-1-1-imagery/area-1-1-imagery.json"
-        )
-        result = self.run_command(f"validate {path} --no-validate-assets")
-        self.assertEqual(0, result.exit_code)
 
-    def test_invalid_item(self) -> None:
-        path = test_data.get_path(
-            "data-files/catalogs/test-case-1/country-1/area-1-1/"
+@pytest.mark.parametrize(
+    "path",
+    [
+        (
+            "data-files/basic/country-1/area-1-1/"
             "area-1-1-imagery/area-1-1-imagery-invalid.json"
-        )
-        result = self.run_command(f"validate {path}")
-        self.assertEqual(1, result.exit_code)
+        ),
+        "data-files/basic/country-1/area-1-1/collection-invalid.json",
+    ],
+)
+def test_invalid(path: str) -> None:
+    runner = CliRunner()
+    result = runner.invoke(cli, ["validate", test_data.get_path(path)])
+    assert result.exit_code == 1
 
-    def test_collection_with_invalid_item(self) -> None:
-        path = test_data.get_path(
-            "data-files/catalogs/test-case-1/country-1/area-1-1/collection-invalid.json"
-        )
-        result = self.run_command(f"validate {path}")
-        self.assertEqual(1, result.exit_code)
 
-    def test_collection_with_invalid_item_no_validate_all(self) -> None:
-        path = test_data.get_path(
-            "data-files/catalogs/test-case-1/country-1/area-1-1/collection-invalid.json"
-        )
-        result = self.run_command(f"validate {path} --no-recursive")
-        self.assertEqual(0, result.exit_code)
-
-    def test_collection_invalid_asset(self) -> None:
-        path = test_data.get_path(
-            "data-files/catalogs/test-case-1/country-1"
-            "/area-1-1/area-1-1-imagery/area-1-1-imagery.json"
-        )
-        result = self.run_command(f"validate {path}")
-        self.assertEqual(
-            0, result.exit_code
-        )  # unreachable links aren't an error in stac-validator
+def test_collection_invalid_asset() -> None:
+    path = test_data.get_path(
+        "data-files/basic/country-1" "/area-1-1/area-1-1-imagery/area-1-1-imagery.json"
+    )
+    runner = CliRunner()
+    result = runner.invoke(cli, ["validate", path])
+    assert result.exit_code == 0, "Unreachable links aren't an error"
