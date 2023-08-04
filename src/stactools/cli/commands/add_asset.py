@@ -3,11 +3,11 @@ from typing import List, Optional
 import click
 import pystac
 import pystac.utils
-from stactools.core import add_asset_to_item
+from stactools.core import add_asset
 
 
 def _add_asset(
-    item_path: str,
+    owner_path: str,
     asset_key: str,
     asset_path: str,
     title: Optional[str] = None,
@@ -17,23 +17,23 @@ def _add_asset(
     move_assets: bool = False,
     ignore_conflicts: bool = False,
 ) -> None:
-    item = pystac.read_file(item_path)
-    if not isinstance(item, pystac.Item):
-        raise click.BadArgumentUsage(f"{item_path} is not a STAC Item")
+    owner = pystac.read_file(owner_path)
+    if not isinstance(owner, (pystac.Item, pystac.Collection)):
+        raise click.BadArgumentUsage(f"{owner_path} is not a STAC Item or Collection")
     asset = pystac.Asset(asset_path, title, description, media_type, roles)
-    item = add_asset_to_item(
-        item,
+    owner = add_asset(
+        owner,
         asset_key,
         asset,
         move_assets=move_assets,
         ignore_conflicts=ignore_conflicts,
     )
-    item.save_object()
+    owner.save_object()
 
 
 def create_add_asset_command(cli: click.Group) -> click.Command:
-    @cli.command("add-asset", short_help="Add an asset to an item.")
-    @click.argument("item_path")
+    @cli.command("add-asset", short_help="Add an asset to an item or collection.")
+    @click.argument("owner_path")
     @click.argument("asset_key")
     @click.argument("asset_path")
     @click.option("--title", help="Optional title of the asset")
@@ -55,7 +55,7 @@ def create_add_asset_command(cli: click.Group) -> click.Command:
     @click.option(
         "--move-assets",
         is_flag=True,
-        help="Move asset to the target Item's location.",
+        help="Move asset to the target Item or Collection's location.",
     )
     @click.option(
         "--ignore-conflicts",
@@ -67,7 +67,7 @@ def create_add_asset_command(cli: click.Group) -> click.Command:
         ),
     )
     def add_asset_command(
-        item_path: str,
+        owner_path: str,
         asset_key: str,
         asset_path: str,
         title: Optional[str] = None,
@@ -78,7 +78,7 @@ def create_add_asset_command(cli: click.Group) -> click.Command:
         ignore_conflicts: bool = False,
     ) -> None:
         _add_asset(
-            pystac.utils.make_absolute_href(item_path),
+            pystac.utils.make_absolute_href(owner_path),
             asset_key,
             pystac.utils.make_absolute_href(asset_path),
             title,

@@ -5,7 +5,7 @@ import pystac
 from pystac.layout import BestPracticesLayoutStrategy
 from pystac.utils import is_absolute_href, make_relative_href
 from shapely.geometry import mapping, shape
-from stactools.core.copy import copy_catalog, move_asset_file_to_item
+from stactools.core.copy import copy_catalog, move_asset_file
 from stactools.core.copy import move_assets as do_move_assets
 
 
@@ -51,7 +51,7 @@ def merge_items(
             if asset_href is None:
                 raise ValueError(f"Asset {asset.title} must have an HREF for merge")
             if move_assets:
-                new_asset_href = move_asset_file_to_item(
+                new_asset_href = move_asset_file(
                     target_item, asset_href, ignore_conflicts=ignore_conflicts
                 )
             else:
