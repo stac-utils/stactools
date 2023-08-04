@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Update pystac dependency to 0.7 and shapely to 2.0 ([#441](https://github.com/stac-utils/stactools/pull/441))
+- Make `stac copy --copy-assets` copy assets to collections ([#437](https://github.com/stac-utils/stactools/pull/437))
 
 ### Fixed
 
