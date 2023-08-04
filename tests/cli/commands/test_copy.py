@@ -141,3 +141,13 @@ def test_copy_using_no_resolve_links(tmp_path: Path) -> None:
     assert result.exit_code == 0
 
     assert os.listdir(tmp_path) == ["catalog.json"]
+
+
+def test_copy_collection_with_assets(tmp_path: Path) -> None:
+    cat_path = test_data.get_path("data-files/catalogs/collection-assets/catalog.json")
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["copy", cat_path, str(tmp_path), "-a"])
+    assert result.exit_code == 0
+
+    assert (tmp_path / "sentinel-2" / "metadata.xml").exists()
