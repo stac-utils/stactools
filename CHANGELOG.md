@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2023-08-04
+
 ### Added
 
 - For raster footprints users can set destination CRS rather than it being hardcoded to EPSG:4326 ([#440](https://github.com/stac-utils/stactools/pull/440))
@@ -17,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Update pystac dependency to 0.7 and shapely to 2.0 ([#441](https://github.com/stac-utils/stactools/pull/441))
+- Make `stac copy --copy-assets` copy assets to collections ([#437](https://github.com/stac-utils/stactools/pull/437))
 
 ### Fixed
 
@@ -30,7 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - Unused files under `tests/data-files` ([#438](https://github.com/stac-utils/stactools/pull/438))
-
 
 ## [0.4.8] - 2023-06-01
 
@@ -414,7 +416,8 @@ See [#9](https://github.com/stac-utils/stactools/pull/9)
 - `stac.cli.command.layout` for modifying the layout of STACs
 - `stac.browse` for launching a local instance of stac-browser using docker.
 
-[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.4.8..main>
+[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.5.0..main>
+[0.5.0]: <https://github.com/stac-utils/stactools/compare/v0.4.8..v0.5.0>
 [0.4.8]: <https://github.com/stac-utils/stactools/compare/v0.4.7..v0.4.8>
 [0.4.7]: <https://github.com/stac-utils/stactools/compare/v0.4.6..v0.4.7>
 [0.4.6]: <https://github.com/stac-utils/stactools/compare/v0.4.5..v0.4.6>

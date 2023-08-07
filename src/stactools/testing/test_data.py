@@ -1,41 +1,65 @@
 import os
 import shutil
+from dataclasses import dataclass
 from tempfile import TemporaryDirectory
-from typing import Any, Dict
+from typing import Any, Dict, Optional, Union
 from zipfile import ZipFile
 
 import fsspec
 import requests
 
-# TODO make external data a dataclass
 
-# example external data:
-# {
-#     'AST_L1T_00305032000040446_20150409135350_78838.hdf': {
-#         'url':
-#         ('https://ai4epublictestdata.blob.core.windows.net/'
-#          'stactools/aster/AST_L1T_00305032000040446_20150409135350_78838.zip'),
-#         'compress':
-#         'zip'
-#     }
-# }
+@dataclass
+class ExternalData:
+    """External data configurations for fetching and storing remote files.
+
+    Args:
+        url (str): URL at which the external data is found.
+        compress (str): Compression method that has been used on external data.
+            If provided, data is extracted after it is fetched.
+            Only zip is supported. Defaults to None.
+        s3 (Dict[str, Any]): Dictionary containing keyword arguments to use
+            when instantiating ``s3fs.S3FileSystem``. Defaults to None.
+        planetary_computer (bool): Whether external data is on planetary computer
+            and needs to be signed. Defaults to False.
+
+    """
+
+    url: str
+    compress: Optional[str] = None
+    s3: Optional[Dict[str, Any]] = None
+    planetary_computer: bool = False
 
 
+@dataclass
 class TestData:
     """A structure for getting paths to test data files, and fetching external
     data for local testing.
 
-    Initialize this from, e.g., ``tests/__init__.py``:
+    Initializing this from, e.g., ``/home/user/my-package/tests/__init__.py``:
 
     .. code-block:: python
 
         test_data = TestData(__file__)
 
-    The external data dictionary should look something like this:
+    Means that ``get_path`` will be relative to ``/home/user/my-package/tests``.
 
     .. code-block:: python
 
-        {
+        test_data.get_path("data-files/basic")
+        # "/home/user/my-package/tests/data-files/basic"
+
+    When caching external data that base path is appended with
+    ``test_data.external_subpath``  which by default is 'data-files/external'.
+
+    For instance with the following external data configuration the external
+    data file will be fetched from the URL, extracted from its zip file and
+    locally stored at:
+    ``/home/user/my-package/tests/data-files/external/AST_L1T_00305032000040446_20150409135350_78838.hdf``
+
+    .. code-block:: python
+
+        test_data.external_data = {
             'AST_L1T_00305032000040446_20150409135350_78838.hdf': {
                 'url':
                     ('https://ai4epublictestdata.blob.core.windows.net/'
@@ -43,60 +67,81 @@ class TestData:
                 'compress': 'zip'
             }
         }
+        test_data.get_external_data("AST_L1T_00305032000040446_20150409135350_78838.hdf")
 
     Args:
-        path (str): The path to the file at the root of the test data directory.
-        external_data (dict[str, Any]):
-            External data configurations. These dictionaries can be used to
-            configure files that are fetched from remote locations and stored
-            locally for testing.
+        path (str): The path to any file in the directory where data is
+            (or will be) stored. The directory information is taken from this
+            path and used as the base for relative paths for the local data. It
+            is stored on the class as ``self.base_path``
+        external_data (Dict[str, ExternalData]):
+            External data configurations for fetching and storing remote files.
+            This is defined as a dictionary with the following structure: the
+            key is the relative path (relative to
+            ``self.base_path / self.external_subpath``) for cached data
+            after it is fetched from remote and the value is the configuration
+            as defined in :class:`ExternalData`.
+        external_subpath (str): The subpath under ``self.base_path`` that is
+            used for storing external data files. Defaults to 'data-files/external'
     """
 
     __test__ = False
 
-    def __init__(self, path: str, external_data: Dict[str, Any] = {}) -> None:
-        self.path = path
+    def __init__(
+        self,
+        path: str,
+        external_data: Dict[str, Union[Dict[str, Any], ExternalData]] = {},
+        external_subpath: str = "data-files/external",
+    ) -> None:
+        self.base_path = os.path.abspath(os.path.dirname(path))
+        self.external_subpath = external_subpath
         self.external_data = external_data
 
     def get_path(self, rel_path: str) -> str:
-        """Returns an absolute path to a local test file.
+        """Returns an absolute path to a local data file.
 
         Args:
             rel_path (str):
                 The relative path to the test data file. The path is
-                assumed to be relative to the directory containing ``self.path``.
+                assumed to be relative to ``self.base_path``.
 
         Returns:
-            str: An absolute path.
+            str: The absolute path joining ``self.base_path`` and ``rel_path``
         """
-        return os.path.abspath(os.path.join(os.path.dirname(self.path), rel_path))
+        return os.path.join(self.base_path, rel_path)
 
     def get_external_data(self, rel_path: str) -> str:
-        """Returns an absolute path to a local test file after downloading it
-        from an external source.
+        """Returns the path to the local cached version of the external data.
+
+        If data is not yet cached, this method fetches it, caches it, then returns
+        the path to the local cached version.
 
         Args:
-            rel_path (str): The key to the external data, as configured in class
-                instantiation.
+            rel_path (str): This is both the filename that the local data will be
+                stored at _and_ a key in the ``external_data`` dictionary where the
+                corresponding value is the configuration information for the external
+                data.
 
         Returns:
-            str: The absolute path to the external data file.
+            str: The absolute path to the local cached version of the
+                external data file.
         """
-        path = self.get_path(os.path.join("data-files/external", rel_path))
+        path = self.get_path(os.path.join(self.external_subpath, rel_path))
         if not os.path.exists(path):
-            entry = self.external_data.get(rel_path)
-            if entry is None:
+            config = self.external_data.get(rel_path)
+            if config is None:
                 raise Exception(
-                    "Path {} does not exist and there is no entry "
-                    "for external test data {}.".format(path, rel_path)
+                    f"Local path {path} does not exist and there is no key "
+                    f"in ``external_data`` that matches {rel_path}"
                 )
 
-            print("Downloading external test data {}...".format(rel_path))
+            print(f"Downloading external test data {rel_path}...")
             os.makedirs(os.path.dirname(path), exist_ok=True)
 
-            s3_config = entry.get("s3")
-            is_pc = entry.get("planetary_computer")  # True if from PC, needs signing
-            if s3_config:
+            if not isinstance(config, ExternalData):
+                config = ExternalData(**config)
+
+            if config.s3:
                 try:
                     import s3fs
                 except ImportError as e:
@@ -107,11 +152,11 @@ class TestData:
                         "with s3fs via `pip install stactools[s3]` and try again."
                     )
                     raise (e)
-                s3 = s3fs.S3FileSystem(**s3_config)
-                with s3.open(entry["url"]) as f:
+                s3 = s3fs.S3FileSystem(**config.s3)
+                with s3.open(config.url) as f:
                     data = f.read()
-            elif is_pc:
-                href = entry["url"]
+            elif config.planetary_computer:
+                href = config.url
                 r = requests.get(
                     "https://planetarycomputer.microsoft.com/api/sas/v1/sign?"
                     f"href={href}"
@@ -123,10 +168,10 @@ class TestData:
                     data = f.read()
 
             else:
-                with fsspec.open(entry["url"]) as f:
+                with fsspec.open(config.url) as f:
                     data = f.read()
 
-            if entry.get("compress") == "zip":
+            if config.compress == "zip":
                 with TemporaryDirectory() as tmp_dir:
                     tmp_path = os.path.join(tmp_dir, "file.zip")
                     with open(tmp_path, "wb") as f:
