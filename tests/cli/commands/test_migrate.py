@@ -130,13 +130,23 @@ def test_migrate_show_diff_and_recursive(tmp_planet_disaster_path: str):
     assert item_path in result.output
 
 
-def test_migrate_hide_diff(tmp_planet_disaster_path: str):
+def test_migrate_hide_diff_with_no_save_raises(tmp_planet_disaster_path: str):
     path = tmp_planet_disaster_path
 
     runner = CliRunner()
     result = runner.invoke(cli, ["migrate", path, "--hide-diff"])
-    assert result.exit_code == 0
+    assert result.exit_code == 2
+    assert (
+        "Error: It is only valid to use 'hide-diff' when 'save' is enabled "
+        "otherwise there would be no output." in result.output
+    )
 
+
+def test_migrate_hide_diff(tmp_planet_disaster_path: str):
+    path = tmp_planet_disaster_path
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["migrate", path, "--hide-diff", "--save"])
     assert not result.output
 
 

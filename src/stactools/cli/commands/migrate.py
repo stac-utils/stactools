@@ -6,6 +6,12 @@ from stactools.core import migrate_object
 def _migrate(
     href: str, save: bool = False, recursive: bool = False, show_diff: bool = True
 ) -> pystac.STACObject:
+    if save is False and show_diff is False:
+        raise click.BadArgumentUsage(
+            "It is only valid to use 'hide-diff' when 'save' is enabled "
+            "otherwise there would be no output."
+        )
+
     stac_object = pystac.read_file(href)
     if recursive and not isinstance(stac_object, (pystac.Catalog, pystac.Collection)):
         raise click.BadArgumentUsage(
