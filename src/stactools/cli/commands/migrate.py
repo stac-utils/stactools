@@ -24,7 +24,7 @@ def _migrate(
 
 
 def create_migrate_command(cli: click.Group) -> click.Command:
-    @cli.command("migrate", short_help="Migrate a STAC object")
+    @cli.command("migrate", short_help="Migrate a STAC object to the latest version")
     @click.argument("href")
     @click.option(
         "-s",
