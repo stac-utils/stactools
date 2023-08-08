@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `stac migrate` command ([#443](https://github.com/stac-utils/stactools/pull/443))
+
+
 ## [0.5.0] - 2023-08-04
 
 ### Added
@@ -14,7 +19,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - For raster footprints users can set destination CRS rather than it being hardcoded to EPSG:4326 ([#440](https://github.com/stac-utils/stactools/pull/440))
 - Raster footprint calculation for multi-asset items can elect to use the union or intersection of the asset footprints ([#445](https://github.com/stac-utils/stactools/pull/445))
 - On `stac create-item` asset key name and roles are settable ([#442](https://github.com/stac-utils/stactools/pull/442))
-- Add `stac migrate` command ([#443](https://github.com/stac-utils/stactools/pull/443))
 
 ### Changed
 
