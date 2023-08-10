@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `stac migrate` command ([#443](https://github.com/stac-utils/stactools/pull/443))
+
 ### Fixed
 
 - `reproject_shape` without a precision ([#454](https://github.com/stac-utils/stactools/pull/454))

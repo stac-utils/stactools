@@ -11,6 +11,7 @@ from stactools.core.copy import (
 from stactools.core.io import use_fsspec
 from stactools.core.layout import layout_catalog
 from stactools.core.merge import merge_all_items, merge_items
+from stactools.core.migrate import migrate_object
 
 __all__ = [
     "add_item",
@@ -21,6 +22,7 @@ __all__ = [
     "layout_catalog",
     "merge_all_items",
     "merge_items",
+    "migrate_object",
     "move_asset_file",
     "move_asset_file_to_item",
     "move_assets",
