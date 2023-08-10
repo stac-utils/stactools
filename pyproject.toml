@@ -4,17 +4,11 @@ description = "Command line tool and Python library for working with STAC"
 readme = "README.md"
 authors = [
     { name = "Rob Emanuele", email = "rdemanuele@gmail.com" },
-    { name = "Pete Gadomski", email =  "pete.gadomski@gmail.com" },
+    { name = "Pete Gadomski", email = "pete.gadomski@gmail.com" },
 ]
-maintainers = [{ name = "Pete Gadomski", email =  "pete.gadomski@gmail.com" }]
+maintainers = [{ name = "Pete Gadomski", email = "pete.gadomski@gmail.com" }]
 license = { text = "Apache-2.0" }
-keywords = [
-    "pystac",
-    "imagery",
-    "raster",
-    "catalog",
-    "STAC",
-]
+keywords = ["pystac", "imagery", "raster", "catalog", "STAC"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "License :: OSI Approved :: Apache Software License",
@@ -100,11 +94,5 @@ strict = true
 warn_unused_ignores = true
 
 [[tool.mypy.overrides]]
-module = [
-    "fsspec",
-    "osgeo",
-    "rasterio",
-    "s3fs",
-    "shapely"
-]
+module = ["fsspec", "osgeo", "rasterio", "s3fs", "shapely"]
 ignore_missing_imports = true

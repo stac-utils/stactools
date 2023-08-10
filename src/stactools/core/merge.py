@@ -108,7 +108,7 @@ def merge_all_items(
     Returns:
         pystac.Catalog or pystac.Collection: The ``target_catalog``
     """
-    source_items = source_catalog.get_all_items()
+    source_items = source_catalog.get_items(recursive=True)
     ids_to_items = {item.id: item for item in source_items}
 
     parent_dir = os.path.dirname(target_catalog.self_href)
@@ -128,7 +128,7 @@ def merge_all_items(
         source_catalog = new_source_catalog
         target_catalog.add_child(source_catalog, source_catalog.title)
     else:
-        for item in target_catalog.get_all_items():
+        for item in target_catalog.get_items(recursive=True):
             source_item = ids_to_items.get(item.id)
             if source_item is not None:
                 merge_items(

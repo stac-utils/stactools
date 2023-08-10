@@ -11,14 +11,14 @@ from tests import test_data
 
 def test_copy(tmp_path: Path, planet_disaster: pystac.Collection) -> None:
     collection_path = planet_disaster.get_self_href()
-    item_ids = set([i.id for i in planet_disaster.get_all_items()])
+    item_ids = set([i.id for i in planet_disaster.get_items(recursive=True)])
 
     runner = CliRunner()
     result = runner.invoke(cli, ["copy", collection_path, str(tmp_path)])
     assert result.exit_code == 0
 
     copy_cat = pystac.read_file(tmp_path / "collection.json")
-    copy_cat_ids = set([i.id for i in copy_cat.get_all_items()])
+    copy_cat_ids = set([i.id for i in copy_cat.get_items(recursive=True)])
 
     assert copy_cat_ids == item_ids
 
@@ -34,7 +34,7 @@ def test_copy_to_relative(tmp_path: Path, planet_disaster: pystac.Collection) ->
     assert result.exit_code == 0
 
     dst_cat = pystac.read_file(dst_dir / "collection.json")
-    for item in dst_cat.get_all_items():
+    for item in dst_cat.get_items(recursive=True):
         item_href = item.get_self_href()
         for asset in item.assets.values():
             href = asset.href
@@ -96,7 +96,7 @@ def test_move_assets(tmp_path: Path, planet_disaster: pystac.Collection) -> None
     assert result.exit_code == 0
 
     cat2 = pystac.read_file(cat_href)
-    for item in cat2.get_all_items():
+    for item in cat2.get_items(recursive=True):
         item_href = item.get_self_href()
         for asset in item.assets.values():
             href = asset.href
@@ -121,7 +121,7 @@ def test_copy_assets(tmp_path: Path, planet_disaster: pystac.Collection) -> None
     assert result.exit_code == 0
 
     cat2 = pystac.read_file(tmp_path / "collection.json")
-    for item in cat2.get_all_items():
+    for item in cat2.get_items(recursive=True):
         assert all(v.href.startswith("./") for v in item.assets.values())
 
     assert (

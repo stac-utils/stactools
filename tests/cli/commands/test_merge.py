@@ -25,7 +25,7 @@ def two_planet_disaster_subsets(tmp_path: Path):
         col = pystac.Collection.from_file(
             test_data.get_path("data-files/planet-disaster/collection.json")
         )
-        for item in list(col.get_all_items()):
+        for item in list(col.get_items(recursive=True)):
             if item.id != item_id:
                 item.get_parent().remove_item(item.id)
         col.update_extent_from_items()
@@ -47,7 +47,7 @@ def test_merge_moves_assets(two_planet_disaster_subsets: List[str]):
 
     target_col = pystac.read_file(col_paths[1])
 
-    items = list(target_col.get_all_items())
+    items = list(target_col.get_items(recursive=True))
     assert len(items) == 2
 
     for item in items:

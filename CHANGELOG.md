@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `reproject_shape` without a precision ([#454](https://github.com/stac-utils/stactools/pull/454))
+- Don't use deprecated `Catalog.get_all_items` ([#455](https://github.com/stac-utils/stactools/pull/455))
 
 ## [0.5.0] - 2023-08-04
 

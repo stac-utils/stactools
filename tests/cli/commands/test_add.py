@@ -18,7 +18,7 @@ def item_path() -> str:
 def test_add_item(item_path: str, tmp_planet_disaster: pystac.Collection):
     collection = tmp_planet_disaster
     collection_path = collection.get_self_href()
-    items = list(collection.get_all_items())
+    items = list(collection.get_items(recursive=True))
     assert len(items) == 5
 
     runner = CliRunner()
@@ -26,7 +26,7 @@ def test_add_item(item_path: str, tmp_planet_disaster: pystac.Collection):
     assert result.exit_code == 0
 
     collection_after = pystac.read_file(collection_path)
-    items = list(collection_after.get_all_items())
+    items = list(collection_after.get_items(recursive=True))
     assert len(items) == 6
 
 
@@ -35,7 +35,7 @@ def test_add_item_to_specific_collection(
 ):
     collection = tmp_planet_disaster
     collection_path = collection.get_self_href()
-    items = list(collection.get_all_items())
+    items = list(collection.get_items(recursive=True))
     assert len(items) == 5
     item_before = pystac.read_file(item_path)
 
@@ -62,7 +62,7 @@ def test_add_item_to_missing_collection(
 ):
     collection = tmp_planet_disaster
     collection_path = collection.get_self_href()
-    items = list(collection.get_all_items())
+    items = list(collection.get_items(recursive=True))
     assert len(items) == 5
 
     runner = CliRunner()

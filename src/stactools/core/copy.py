@@ -259,7 +259,7 @@ def move_all_assets(
             the catalog or collection.
     """
 
-    for item in catalog.get_all_items():
+    for item in catalog.get_items(recursive=True):
         move_assets(
             item, asset_subdirectory, make_hrefs_relative, copy, ignore_conflicts
         )
