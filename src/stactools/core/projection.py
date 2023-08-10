@@ -49,6 +49,8 @@ def reproject_shape(
     Returns:
         geom: the reprojected shapely geometry object
     """
+    if precision is None:
+        precision = -1  # rasterio uses -1 for "unspecified"
     return remove_repeated_points(
         shape(transform_geom(src_crs, dst_crs, geom, precision=precision))
     )
