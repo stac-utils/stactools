@@ -96,3 +96,6 @@ warn_unused_ignores = true
 [[tool.mypy.overrides]]
 module = ["fsspec", "osgeo", "rasterio", "s3fs", "shapely"]
 ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+filterwarnings = ["error:::pystac[.*]"]
