@@ -36,7 +36,7 @@ def test_migrate_with_save_no_recursive(tmp_planet_disaster_path: str):
     path = tmp_planet_disaster_path
     root = pystac.Collection.from_file(path)
     child_path = next(root.get_children()).get_self_href()
-    item_path = next(root.get_all_items()).get_self_href()
+    item_path = next(root.get_items(recursive=True)).get_self_href()
 
     with open(path) as f:
         root_before = f.readlines()
@@ -69,7 +69,7 @@ def test_migrate_with_save_and_recursive(tmp_planet_disaster_path: str):
     path = tmp_planet_disaster_path
     root = pystac.Collection.from_file(path)
     child_path = next(root.get_children()).get_self_href()
-    item_path = next(root.get_all_items()).get_self_href()
+    item_path = next(root.get_items(recursive=True)).get_self_href()
 
     with open(path) as f:
         root_before = f.readlines()
@@ -102,7 +102,7 @@ def test_migrate_show_diff(tmp_planet_disaster_path: str):
     path = tmp_planet_disaster_path
     root = pystac.Collection.from_file(path)
     child_path = next(root.get_children()).get_self_href()
-    item_path = next(root.get_all_items()).get_self_href()
+    item_path = next(root.get_items(recursive=True)).get_self_href()
 
     runner = CliRunner()
     result = runner.invoke(cli, ["migrate", path, "--show-diff"])
@@ -118,7 +118,7 @@ def test_migrate_show_diff_and_recursive(tmp_planet_disaster_path: str):
     path = tmp_planet_disaster_path
     root = pystac.Collection.from_file(path)
     child_path = next(root.get_children()).get_self_href()
-    item_path = next(root.get_all_items()).get_self_href()
+    item_path = next(root.get_items(recursive=True)).get_self_href()
 
     runner = CliRunner()
     result = runner.invoke(cli, ["migrate", path, "--show-diff", "--recursive"])
@@ -153,7 +153,7 @@ def test_migrate_hide_diff(tmp_planet_disaster_path: str):
 def test_migrate_recursive_invalid_for_items(tmp_planet_disaster_path: str):
     path = tmp_planet_disaster_path
     root = pystac.Collection.from_file(path)
-    item_path = next(root.get_all_items()).get_self_href()
+    item_path = next(root.get_items(recursive=True)).get_self_href()
 
     runner = CliRunner()
     result = runner.invoke(cli, ["migrate", item_path, "-r"])

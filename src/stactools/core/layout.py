@@ -46,7 +46,7 @@ def layout_catalog(
     """
 
     if remove_existing_subcatalogs:
-        items = catalog.get_all_items()
+        items = catalog.get_items(recursive=True)
         for item in items:
             parent = item.get_parent()
             assert parent is not None

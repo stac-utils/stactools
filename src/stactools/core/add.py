@@ -22,7 +22,7 @@ def add_item(
         move_assets (bool): If true, move the asset files alongside the target item.
     """
 
-    target_item_ids = [item.id for item in target_catalog.get_all_items()]
+    target_item_ids = [item.id for item in target_catalog.get_items(recursive=True)]
     if source_item.id in target_item_ids:
         raise ValueError(
             f"An item with ID {source_item.id} already exists in the target catalog"
