@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.1] - 2023-08-11
+
 ### Added
 
 - Add `stac migrate` command ([#443](https://github.com/stac-utils/stactools/pull/443))
@@ -424,7 +426,8 @@ See [#9](https://github.com/stac-utils/stactools/pull/9)
 - `stac.cli.command.layout` for modifying the layout of STACs
 - `stac.browse` for launching a local instance of stac-browser using docker.
 
-[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.5.0..main>
+[Unreleased]: <https://github.com/stac-utils/stactools/compare/v0.5.1..main>
+[0.5.1]: <https://github.com/stac-utils/stactools/compare/v0.5.0..v0.5.1>
 [0.5.0]: <https://github.com/stac-utils/stactools/compare/v0.4.8..v0.5.0>
 [0.4.8]: <https://github.com/stac-utils/stactools/compare/v0.4.7..v0.4.8>
 [0.4.7]: <https://github.com/stac-utils/stactools/compare/v0.4.6..v0.4.7>
