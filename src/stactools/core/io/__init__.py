@@ -109,7 +109,7 @@ class FsspecStacIO(StacIO):
             txt (str): The text to write.
             **kwargs: Additional keyword arguments to be passed to fsspec.open.
         """
-        with fsspec.open(href, "w", **kwargs) as destination:
+        with fsspec.open(href, "w", auto_mkdir=True, **kwargs) as destination:
             destination.write(txt)
 
 
