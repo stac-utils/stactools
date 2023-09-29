@@ -60,7 +60,7 @@ def _read_bands(href: str, statistics: bool, histogram: bool) -> List[RasterBand
             if statistics:
                 band.statistics = Statistics.create(minimum=minimum, maximum=maximum)
             if histogram:
-                # the entire array is masked, or NAN values are not set to nodata.
+                # the entire array is masked, or all values are NAN.
                 # won't be able to compute histogram and will return empty array.
                 if numpy.isnan(minimum):
                     band.histogram = Histogram.create(0, minimum, maximum, [])
