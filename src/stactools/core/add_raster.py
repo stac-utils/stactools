@@ -25,6 +25,8 @@ def add_raster_to_item(
 
     Args:
         item (Item): The PySTAC Item to extend.
+        statistics (bool): Compute band statistics (min/max). Defaults to True
+        histogram (bool): Compute band histogram. Defaults to True
 
     Returns:
         Item:
