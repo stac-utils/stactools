@@ -68,11 +68,6 @@ def test_add_raster(tmp_asset_path) -> None:
 def test_add_raster_with_nodata(
     count: int, nodata: float, dtype: np.dtype, datafunc: Callable, hist_count: int
 ) -> None:
-    print("COUNT ", count)
-    print("NODATA ", nodata)
-    print("DTYPE ", dtype)
-    print("DATAFUNC ", datafunc)
-
     with tempfile.NamedTemporaryFile(suffix=".tif") as tmpfile:
         with rasterio.open(
             tmpfile.name,
