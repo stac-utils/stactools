@@ -74,7 +74,6 @@ def test_add_raster_with_nodata(
     print("DATAFUNC ", datafunc)
 
     with tempfile.NamedTemporaryFile(suffix=".tif") as tmpfile:
-        print(tmpfile.name)
         with rasterio.open(
             tmpfile.name,
             mode="w",
