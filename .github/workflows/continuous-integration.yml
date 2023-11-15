@@ -44,7 +44,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install with extra_requires
-        run: pip install .[s3,dev]
+        run: pip install .[s3,validate,dev]
       - name: Test
         run: ./scripts/test
   minimum-versions:

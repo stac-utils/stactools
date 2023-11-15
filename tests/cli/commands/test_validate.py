@@ -4,6 +4,8 @@ from stactools.cli.cli import cli
 
 from tests import test_data
 
+pytest.importorskip("stac_validator")
+
 
 def test_valid_item() -> None:
     path = test_data.get_path(
