@@ -1,5 +1,10 @@
 # flake8: noqa
 
+import sys
+from typing import Callable
+
+from click import Group, Command
+
 import stactools.core
 
 try:
@@ -59,11 +64,44 @@ def register_plugin(registry: "Registry") -> None:
         from stactools.cli.commands import validate
 
         registry.register_subcommand(validate.create_validate_command)
+    else:
+        registry.register_subcommand(
+            _missing_optional_dependency(command="validate", dependency="validate")
+        )
 
     if HAS_STAC_CHECK:
         from stactools.cli.commands import lint
 
         registry.register_subcommand(lint.create_lint_command)
+    else:
+        registry.register_subcommand(
+            _missing_optional_dependency(command="lint", dependency="validate")
+        )
+
+
+def _missing_optional_dependency(
+    command: str, dependency: str
+) -> Callable[[Group], Command]:
+    def f(cli: Group) -> Command:
+        @cli.command(
+            command,
+            short_help=f"Unsupported (needs `pip install 'stactools[{dependency}]')",
+        )
+        def inner() -> None:
+            print(f"Error: No such command '{command}'", file=sys.stderr)
+            print(
+                f"This command is provided by an optional dependency '{dependency}'",
+                file=sys.stderr,
+            )
+            print(
+                f"To enable, install stactools with the optional dependency: pip install 'stactools[{dependency}]'",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+
+        return inner
+
+    return f
 
 
 from stactools.cli.registry import Registry
