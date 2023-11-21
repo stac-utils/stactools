@@ -22,9 +22,6 @@ def create_validate_command(cli: click.Group) -> click.Command:
     )
     @click.option("-v", "--verbose", is_flag=True, help="Enables verbose output.")
     @click.option(
-        "--quiet/--no-quiet", help="Do not print output to console.", default=False
-    )
-    @click.option(
         "--log-file",
         help="Save output to file (local filepath).",
     )
@@ -34,7 +31,6 @@ def create_validate_command(cli: click.Group) -> click.Command:
         validate_links: bool,
         validate_assets: bool,
         verbose: bool,
-        quiet: bool,
         log_file: Optional[str],
     ) -> None:
         """Validates a STAC object.
@@ -52,12 +48,10 @@ def create_validate_command(cli: click.Group) -> click.Command:
             links=validate_links,
             assets=validate_assets,
             verbose=verbose,
-            no_output=quiet,
             log=log_file or "",
         )
         is_valid = validate.run()
-        if not quiet:
-            click.echo(json.dumps(validate.message, indent=4))
+        click.echo(json.dumps(validate.message, indent=4))
         if is_valid:
             sys.exit(0)
         else:

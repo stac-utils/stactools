@@ -7,8 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
 - Make computation of statistics and histogram optional for `core.add_raster.add_raster_to_item` ([#467](https://github.com/stac-utils/stactools/pull/467))
 - Make **stac-validator** and **stac-check** optional dependencies ([#468](https://github.com/stac-utils/stactools/pull/468))
+
+### Removed
+
+- `--quiet` argument to `stac validate` ([#471](https://github.com/stac-utils/stactools/pull/471))
 
 ## [0.5.2] - 2023-09-20
 
