@@ -2,6 +2,7 @@ import logging
 from typing import Union
 
 import click
+
 from stactools.cli import registry
 
 

@@ -2,6 +2,7 @@ from typing import Optional
 
 import click
 from pystac import Catalog, Item, read_file
+
 from stactools.core import add_item
 
 

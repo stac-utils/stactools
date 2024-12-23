@@ -1,10 +1,12 @@
 """CLI for test data maintenance and generation."""
+
 import logging
 import os
 import shutil
 from tempfile import TemporaryDirectory
 
 import click
+
 from stactools.core.utils.subprocess import call
 
 logger = logging.getLogger(__name__)

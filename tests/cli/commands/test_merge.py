@@ -5,9 +5,9 @@ from typing import List
 import pystac
 import pytest
 from click.testing import CliRunner
+
 from stactools.cli.cli import cli
 from stactools.core import move_all_assets
-
 from tests import test_data
 
 

@@ -2,8 +2,8 @@ import shutil
 from pathlib import Path
 
 from click.testing import CliRunner
-from stactools.cli.cli import cli
 
+from stactools.cli.cli import cli
 from tests import test_data
 
 

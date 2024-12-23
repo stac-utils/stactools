@@ -37,9 +37,9 @@ for directory, _, file_names in os.walk(directory):
             for i, interval in enumerate(collection.extent.temporal.intervals):
                 for j, datetime in enumerate(interval):
                     if datetime:
-                        collection.extent.temporal.intervals[i][
-                            j
-                        ] = datetime.astimezone(UTC)
+                        collection.extent.temporal.intervals[i][j] = (
+                            datetime.astimezone(UTC)
+                        )
 
         if object.STAC_OBJECT_TYPE == "Feature":
             item = cast(Item, object)

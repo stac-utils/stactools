@@ -2,6 +2,7 @@ from typing import Optional
 
 import click
 import pystac
+
 from stactools.core import merge_all_items
 
 

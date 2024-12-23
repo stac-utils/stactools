@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pystac
 import pytest
-from stactools.core import add_asset, add_asset_to_item
 
+from stactools.core import add_asset, add_asset_to_item
 from tests import test_data
 
 

@@ -1,8 +1,8 @@
 from typing import Any, Iterable, Iterator
 
 from pystac import Collection, Item
-from stactools.core.utils.round import recursive_round, round_coordinates
 
+from stactools.core.utils.round import recursive_round, round_coordinates
 from tests import test_data
 
 

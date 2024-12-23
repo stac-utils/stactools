@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple, cast
 import rasterio
 import rasterio.shutil
 from rasterio.errors import DriverRegistrationError
+
 from stactools.core import utils
 
 DEFAULT_PROFILE = {
