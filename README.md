@@ -1,7 +1,7 @@
 # stactools
 
 > [!WARNING]
-> This library does not have an active maintainer.
+> This repo does not have an active maintainer.
 > If you'd like to help with maintenance, please open an [issue](https://github.com/stac-utils/stactools/issues) saying as much.
 
 ![Build Status](https://github.com/stac-utils/stactools/workflows/CI/badge.svg)
