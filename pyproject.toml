@@ -54,7 +54,7 @@ dev = [
     "pytest-cov~=3.0",
     "pytest~=7.3",
     "requests>=2.27.1",
-    "ruff==0.0.265",
+    "ruff~=0.8.0",
     "types-certifi~=2021.10.8",
     "types-orjson~=3.6",
     "types-python-dateutil~=2.8",
@@ -82,7 +82,7 @@ version = { attr = "stactools.core.__version__" }
 
 [tool.ruff]
 line-length = 88
-select = ["E", "F", "I"]
+lint.select = ["E", "F", "I"]
 
 [tool.mypy]
 mypy_path = "src"

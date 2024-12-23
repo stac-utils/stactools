@@ -17,6 +17,7 @@ from shapely.geometry import mapping, shape
 from shapely.geometry.multipolygon import MultiPolygon
 from shapely.geometry.polygon import Polygon, orient
 from shapely.ops import unary_union
+
 from stactools.core.geometry import mutual_intersection
 
 from ..projection import reproject_shape

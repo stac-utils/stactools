@@ -2,6 +2,7 @@ import os
 
 from pystac import Catalog
 from pystac.layout import TemplateLayoutStrategy
+
 from stactools.core import move_all_assets
 
 

@@ -1,9 +1,9 @@
 from pathlib import Path
 
 import rasterio
+
 from stactools.core import utils
 from stactools.core.utils.convert import cogify, cogify_subdatasets
-
 from tests import test_data
 
 

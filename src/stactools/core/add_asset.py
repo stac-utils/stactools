@@ -4,6 +4,7 @@ from typing import Union, cast
 
 from pystac import Asset, Collection, Item
 from pystac.utils import is_absolute_href, make_relative_href
+
 from stactools.core.copy import move_asset_file
 
 logger = logging.getLogger(__name__)

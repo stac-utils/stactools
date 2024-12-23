@@ -9,7 +9,7 @@ from pystac.summaries import Summarizer
 def format_summary(summary: Dict[str, Any], indent: int = 4) -> str:
     out = ""
     for var in summary:
-        if type(summary[var]) == dict:
+        if summary[var] is dict:
             out += var + ": \n" + " " * indent + str(summary[var]) + "\n"
         else:
             out += var + ": " + str(summary[var]) + "\n"

@@ -1,5 +1,6 @@
 import pystac
 from click.testing import CliRunner
+
 from stactools.cli.cli import cli
 
 

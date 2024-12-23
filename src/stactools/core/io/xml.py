@@ -3,6 +3,7 @@ from typing import Any, Callable, List, Optional, cast
 
 from lxml import etree
 from lxml.etree import _Element as lxmlElement
+
 from stactools.core.io import ReadHrefModifier, read_text
 
 

@@ -4,6 +4,7 @@ import os
 
 from pystac import Catalog, Collection, Item
 from pystac.layout import BestPracticesLayoutStrategy
+
 from stactools.core.copy import move_assets as do_move_assets
 
 

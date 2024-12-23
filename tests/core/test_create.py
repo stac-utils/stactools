@@ -3,8 +3,8 @@ import os
 
 import pytest
 from pystac.extensions.projection import ProjectionExtension
-from stactools.core import create
 
+from stactools.core import create
 from tests import test_data
 
 

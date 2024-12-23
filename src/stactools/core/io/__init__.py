@@ -6,6 +6,7 @@ from typing import Any, Callable, Optional
 import fsspec
 from pystac.link import HREF
 from pystac.stac_io import StacIO
+
 from stactools.core import utils
 
 ReadHrefModifier = Callable[[str], str]

@@ -46,5 +46,4 @@ class GeoInterface(Protocol):
     extract geometries from objects.
     """
 
-    def __geo_interface__(self) -> Dict[str, Any]:
-        ...
+    def __geo_interface__(self) -> Dict[str, Any]: ...
