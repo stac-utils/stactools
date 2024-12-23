@@ -1,6 +1,7 @@
 import pystac
-import stactools
 from click.testing import CliRunner
+
+import stactools
 from stactools.cli.cli import cli
 from stactools.core.utils.subprocess import call
 

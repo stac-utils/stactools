@@ -3,6 +3,7 @@ from typing import Optional
 import click
 import pystac
 from pystac.utils import make_absolute_href
+
 from stactools.core.copy import copy_catalog, move_all_assets
 
 

@@ -4,8 +4,8 @@ from pathlib import Path
 import pystac
 import pytest
 from click.testing import CliRunner
-from stactools.cli.cli import cli
 
+from stactools.cli.cli import cli
 from tests import test_data
 
 

@@ -162,12 +162,6 @@ Once the container is built, you can run the `scripts/` scripts inside a docker 
 docker/console
 ```
 
-A complete build and test can be run with:
-
-```sh
-docker/cibuild
-```
-
 In scenarios where you want to run scripts in `docker/` but don't want to run the build, images can be downloaded via the `pull` script:
 
 ```sh

@@ -1,5 +1,6 @@
 import click
 import pystac
+
 from stactools.core import migrate_object
 
 

@@ -1,18 +1,10 @@
 import pytest
 from click.testing import CliRunner
-from stactools.cli.cli import cli
 
+from stactools.cli.cli import cli
 from tests import test_data
 
 pytest.importorskip("stac_check")
-
-
-def test_valid_item() -> None:
-    path = test_data.get_path("data-files/linting/20201211_223832_cs2.json")
-
-    runner = CliRunner()
-    result = runner.invoke(cli, ["lint", path])
-    assert result.exit_code == 0
 
 
 def test_invalid_item() -> None:

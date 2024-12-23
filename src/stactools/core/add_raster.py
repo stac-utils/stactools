@@ -69,7 +69,10 @@ def _read_bands(href: str, statistics: bool, histogram: bool) -> List[RasterBand
                         data, range=(minimum, maximum), bins=BINS
                     )
                     band.histogram = Histogram.create(
-                        BINS, minimum, maximum, hist_data.tolist()
+                        BINS,
+                        minimum,
+                        maximum,
+                        hist_data.tolist(),  # type: ignore
                     )
             bands.append(band)
     return bands

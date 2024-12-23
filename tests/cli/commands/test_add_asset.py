@@ -3,8 +3,8 @@ import os
 import pystac
 import pystac.utils
 from click.testing import CliRunner
-from stactools.cli.cli import cli
 
+from stactools.cli.cli import cli
 from tests import test_data
 
 
