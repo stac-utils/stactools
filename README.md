@@ -1,6 +1,6 @@
 # stactools
 
-> ![WARNING]
+> [!WARNING]
 > This library does not have an active maintainer.
 > If you'd like to help with maintenance, please open an [issue](https://github.com/stac-utils/stactools/issues) saying as much.
 
