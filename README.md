@@ -1,5 +1,9 @@
 # stactools
 
+> ![WARNING]
+> This library does not have an active maintainer.
+> If you'd like to help with maintenance, please open an [issue](https://github.com/stac-utils/stactools/issues) saying as much.
+
 ![Build Status](https://github.com/stac-utils/stactools/workflows/CI/badge.svg)
 [![Documentation](https://readthedocs.org/projects/stactools/badge/?version=latest)](https://stactools.readthedocs.io/en/latest/)
 [![PyPI version](https://img.shields.io/pypi/v/stactools)](https://pypi.org/project/stactools/)
