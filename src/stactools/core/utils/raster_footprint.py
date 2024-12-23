@@ -292,7 +292,7 @@ class RasterFootprint:
                 mask[~np.isnan(self.data_array)] = 1
             else:
                 mask[self.data_array != self.no_data] = 1
-            mask = np.sum(mask, axis=0, dtype=np.uint8)
+            mask = np.sum(mask, axis=0, dtype=np.uint8)  # type: ignore
             mask[mask > 0] = 1
         else:
             mask = np.full(shape, 1, dtype=np.uint8)
