@@ -88,23 +88,6 @@ jobs:
         run: pip install -U --pre pystac rasterio --no-binary rasterio
       - name: Run tests
         run: scripts/test
-  codecov:
-    name: Codecov
-    needs:
-      - standard
-      - extra-requires
-      - minimum-versions
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Execute linters and test suites
-        run: ./docker/cibuild
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
-          fail_ci_if_error: false
   docker:
     name: Docker
     needs:
